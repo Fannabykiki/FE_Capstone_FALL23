@@ -5,7 +5,7 @@ import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
-  { path: "/login", component: LoginPage },
+  { path: "/login", component: LoginPage, layout: null },
   { path: "/register", component: RegisterPage, layout: null },
 ];
 
