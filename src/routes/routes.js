@@ -10,10 +10,11 @@ const publicRoutes = [
   { path: "/login", component: LoginPage, layout: null },
   { path: "/register", component: RegisterPage, layout: null },
   { path: "/verify-mail", component: VerifyMail, layout: null },
+  { path: "/user", component: HomeUser, layout: null },
 ];
 
 const privateRoutes = [
-  { path: "/user", component: HomeUser, layout: null },
+  // { path: "/user", component: HomeUser, layout: null },
   { path: "/admin", component: HomeAdmin, layout: null },
 ];
 
