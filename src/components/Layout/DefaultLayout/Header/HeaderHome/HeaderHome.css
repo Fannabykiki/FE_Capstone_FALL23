@@ -1,0 +1,47 @@
+.HeaderHome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ebedf5; /* Màu nền của header */
+  color: #000000; /* Màu chữ của header */
+  z-index: 100; /* Đảm bảo header hiển thị trên cùng */
+}
+
+.logoHeader {
+  margin-left: 60px;
+}
+
+.buttonHeader {
+  margin-right: 60px;
+}
+
+.btnLogin {
+  width: 100px;
+  height: 40px;
+  margin-right: 20px;
+  background-color: #056176;
+}
+
+.btnLogin:hover {
+  background-color: #11ceba;
+}
+
+.btnRegister {
+  width: 100px;
+  height: 40px;
+  background-color: #11ceba;
+}
+
+.btnRegister:hover {
+  background-color: #056176;
+}
+
+.txt {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+}

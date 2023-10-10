@@ -1,0 +1,15 @@
+.Footer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 50px; /* Điều chỉnh chiều cao của footer theo ý muốn */
+  background-color: #ebedf5; /* Màu nền của footer */
+  /* position: fixed; */
+  bottom: 0;
+  left: 0;
+}
+
+.Content-footer {
+  margin-left: 30px;
+  font-weight: 500;
+}
