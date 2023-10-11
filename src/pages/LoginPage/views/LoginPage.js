@@ -1,34 +1,88 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../../../assets/images/Devtask.png";
 import "./LoginPage.css";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Divider, Form, Input, Typography } from "antd";
 import GoogleButton from "react-google-button";
 import ReCAPTCHA from "react-google-recaptcha";
-import { loginHandler } from "../domain/LoginDomain";
+import { loginHandler, loginGoogle } from "../domain/LoginDomain";
+import { useNavigate } from "react-router-dom";
 
 const { Text, Link } = Typography;
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
   const [form] = Form.useForm();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const validateEmail = (rule, value) => {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!value || emailRegex.test(value)) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject("Email is not valid");
+    }
+  };
 
   const handleLogin = async () => {
     try {
       const values = await form.validateFields();
-      const { username, password } = values;
-      const userData = await loginHandler(username, password);
-
+      const { email, password } = values;
+      const userData = await loginHandler(email, password);
       if (userData) {
-        window.location.href = "/";
+        if (userData.isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/user");
+        }
+        if (rememberMe) {
+          localStorage.setItem("rememberedPassword", password);
+        }
+        console.log(userData);
       } else {
         console.error("Đăng nhập không thành công");
       }
     } catch (errorInfo) {
       console.error("Validate fields failed:", errorInfo);
     }
+  };
+
+  const handleLoginGoogle = async () => {
+    try {
+      // Không cần gọi form.validateFields() ở đây
+      const userData = await loginGoogle();
+      if (userData) {
+        // Kiểm tra giá trị isAdmin trong userData
+        if (userData.isAdmin) {
+          // Nếu là admin, chuyển hướng đến trang admin
+          navigate("/admin");
+        } else {
+          // Nếu không phải admin, chuyển hướng đến trang user
+          navigate("/user");
+        }
+
+        // Log thông tin tài khoản
+        console.log(userData);
+      } else {
+        console.error("Đăng nhập không thành công");
+      }
+    } catch (errorInfo) {
+      console.error("Đăng nhập bằng Google không thành công:", errorInfo);
+    }
+  };
+
+  useEffect(() => {
+    const savedPassword = localStorage.getItem("rememberedPassword");
+    if (savedPassword && rememberMe) {
+      setPassword(savedPassword);
+    }
+  }, [rememberMe]);
+
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
   };
 
   return (
@@ -44,19 +98,22 @@ const LoginPage = () => {
           onFinish={handleLogin}
         >
           <Form.Item
-            name="username"
+            name="email"
             rules={[
               {
                 whitespace: true,
                 required: true,
-                message: "Username or Email is required",
+                message: "Email is required",
+              },
+              {
+                validator: validateEmail, // Sử dụng hàm validateEmail
               },
             ]}
             validateTrigger={["onBlur", "onChange"]}
-            label={<b>Username or Email</b>}
+            label={<b>Email</b>}
           >
             <Input
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
               size="large"
               prefix={<UserOutlined />}
             />
@@ -70,6 +127,34 @@ const LoginPage = () => {
                 required: true,
                 message: "Password is required",
               },
+              {
+                validator: (rule, value) => {
+                  if (!value) {
+                    return Promise.resolve(); // Không kiểm tra nếu trường rỗng
+                  }
+                  if (value.length < 6) {
+                    return Promise.reject(
+                      "Password must be at least 6 characters"
+                    );
+                  }
+                  if (!/[A-Z]/.test(value)) {
+                    return Promise.reject(
+                      "Password must contain at least one uppercase letter"
+                    );
+                  }
+                  if (!/[a-z]/.test(value)) {
+                    return Promise.reject(
+                      "Password must contain at least one lowercase letter"
+                    );
+                  }
+                  if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value)) {
+                    return Promise.reject(
+                      "Password must contain at least one special character"
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
             ]}
             validateTrigger={["onBlur", "onChange"]}
           >
@@ -81,8 +166,10 @@ const LoginPage = () => {
           </Form.Item>
 
           <Form.Item>
-            <Checkbox>Remember Password</Checkbox>
-            <Link style={{ float: "right" }} href="#">
+            <Checkbox checked={rememberMe} onChange={handleRememberMeChange}>
+              Remember Password
+            </Checkbox>
+            <Link style={{ float: "right" }} href="/forgot-password">
               Forgot Your Password?
             </Link>
           </Form.Item>
@@ -119,12 +206,7 @@ const LoginPage = () => {
           or
         </Divider>
         <div className="ButtonGoogle">
-          <GoogleButton
-            type="light"
-            onClick={() => {
-              console.log("Google button clicked");
-            }}
-          />
+          <GoogleButton type="light" onClick={handleLoginGoogle} />
         </div>
       </div>
     </div>

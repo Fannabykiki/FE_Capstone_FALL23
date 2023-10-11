@@ -1,0 +1,9 @@
+.sidebar-user {
+  position: fixed; /* Để định vị cố định */
+  left: 0; /* Đặt vị trí bên trái */
+  top: 0; /* Đặt vị trí ở đầu trang */
+  height: 100%; /* Đặt chiều cao cho sidebar */
+  width: 250px; /* Đặt chiều rộng cho sidebar */
+  background-color: #bd2020; /* Màu nền cho sidebar */
+  color: black; /* Màu chữ trong sidebar */
+}
