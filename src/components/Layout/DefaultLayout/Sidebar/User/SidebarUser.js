@@ -3,6 +3,7 @@ import "./SidebarUser.css";
 import { Menu } from "antd";
 import logoHeader from "../../../../../assets/images/LogoHeader.png";
 import { HomeOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const SidebarUser = () => {
   return (
@@ -15,7 +16,7 @@ const SidebarUser = () => {
           Home
         </Menu.Item>
         <Menu.Item key="profile" icon={<UserOutlined />}>
-          Profile
+          <Link to="/profile">Profile</Link>
         </Menu.Item>
         <Menu.Item key="settings" icon={<SettingOutlined />}>
           Settings

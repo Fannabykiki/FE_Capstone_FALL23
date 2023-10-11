@@ -169,7 +169,7 @@ const LoginPage = () => {
             <Checkbox checked={rememberMe} onChange={handleRememberMeChange}>
               Remember Password
             </Checkbox>
-            <Link style={{ float: "right" }} href="/forgotpassword">
+            <Link style={{ float: "right" }} href="/forgot-password">
               Forgot Your Password?
             </Link>
           </Form.Item>

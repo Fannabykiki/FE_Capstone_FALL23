@@ -2,9 +2,10 @@ import React from "react";
 import SidebarUser from "../../../../components/Layout/DefaultLayout/Sidebar/User/SidebarUser";
 
 const HomeUser = () => {
+  
   return (
-    <div>
-      <SidebarUser />
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {/* <SidebarUser /> */}
       <div>Home</div>
     </div>
   );
