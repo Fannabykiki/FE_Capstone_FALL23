@@ -14,9 +14,15 @@ const loginHandler = async (email, password) => {
     console.log("abc" + response);
     if (response.status === 200) {
       const userData = response.data;
+      const userId = response.data.userId;
+      const isAdmin = response.data.isAdmin;
+
       localStorage.setItem("userData", JSON.stringify(userData));
       sessionStorage.setItem("userData", JSON.stringify(userData));
+      sessionStorage.setItem("userId", JSON.stringify(userId));
+      sessionStorage.setItem("isAdmin", JSON.stringify(isAdmin));
 
+      getUserLogin();
       console.log("Đăng nhập thành công");
       message.success("Đăng nhập thành công");
       return userData;
@@ -42,6 +48,18 @@ const loginHandler = async (email, password) => {
 
     return null;
   }
+};
+
+const getUserLogin = async () => {
+  const userId = JSON.parse(decodeURIComponent(sessionStorage.userId));
+  console.log(userId);
+
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/users/profile/${userId}`
+    );
+    console.log(response);
+  } catch (error) {}
 };
 
 const loginGoogle = async () => {
@@ -80,4 +98,4 @@ const loginGoogle = async () => {
   }
 };
 
-export { loginHandler, loginGoogle };
+export { loginHandler, loginGoogle, getUserLogin };

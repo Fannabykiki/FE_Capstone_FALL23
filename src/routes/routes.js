@@ -5,6 +5,7 @@ import HomeUser from "../pages/User/HomeUser/views/HomeUser";
 import HomeAdmin from "../pages/Admin/HomeAdmin/views/HomeAdmin";
 import VerifyMail from "../pages/RegisterPage/views/VerifyMail";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/views/ForgotPasswordPage";
+import Home from "../pages/User/Home/views/Home";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
@@ -12,7 +13,7 @@ const publicRoutes = [
   { path: "/register", component: RegisterPage, layout: null },
   { path: "/forgot-password", component: ForgotPasswordPage, layout: null },
   { path: "/verify-mail", component: VerifyMail, layout: null },
-  { path: "/user", component: HomeUser, layout: null },
+  { path: "/user", component: Home, layout: null },
 ];
 
 const privateRoutes = [
