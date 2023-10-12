@@ -5,7 +5,9 @@ import { Typography } from "antd";
 const Footer = () => {
   return (
     <div className="Footer">
-      <Typography className="Content-footer">Copyright © 2023 SEP490 - G57</Typography>
+      <Typography className="Content-footer">
+        Copyright © 2023 SEP490 - G57
+      </Typography>
     </div>
   );
 };
