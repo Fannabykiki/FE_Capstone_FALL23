@@ -1,15 +1,61 @@
 import React, { useState } from "react";
 import "./RegisterPage.css";
 import logo from "../../../assets/images/Devtask.png";
-import { Button, Divider, Form, Input, Typography } from "antd";
-import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Divider,
+  Form,
+  Input,
+  Typography,
+  message,
+  notification,
+} from "antd";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import GoogleButton from "react-google-button";
+import { registerHandler } from "../domain/RegisterDomain";
+import { useNavigate } from "react-router-dom";
 
 const { Text, Link } = Typography;
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
+  const [form] = Form.useForm();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setconfirmPassword] = useState("");
+
+  const handleRegister = async () => {
+    try {
+      const result = await registerHandler(email, password, confirmPassword);
+
+      if (result) {
+        notification.success({
+          message: "Đăng ký thành công",
+          description:
+            "Vui lòng kiểm tra email của bạn để xác minh tài khoản trước khi đăng nhập.",
+          duration: 60,
+        });
+        navigate("/login");
+      } else {
+        // Đăng ký thất bại, bạn có thể hiển thị thông báo hoặc xử lý khác
+        message.error("Đăng ký thất bại, vui lòng kiểm tra lại thông tin.");
+      }
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      console.error("Lỗi trong quá trình đăng ký:", error);
+    }
+  };
+
+  const validateEmail = (rule, value) => {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!value || emailRegex.test(value)) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject("Email is not valid");
+    }
+  };
 
   return (
     <div className="Register">
@@ -18,19 +64,102 @@ const RegisterPage = () => {
           <img className="ImageLogo" src={logo} />
         </div>
 
-        <Form className="container" layout="vertical">
-          <Form.Item label={<b>Username</b>}>
-            <Input size="large" prefix={<UserOutlined />} />
+        <Form
+          onFinish={handleRegister}
+          form={form}
+          className="container"
+          layout="vertical"
+        >
+          <Form.Item
+            name="email"
+            label={<b>Email</b>}
+            rules={[
+              {
+                whitespace: true,
+                required: true,
+                message: "Email is required",
+              },
+              {
+                validator: validateEmail,
+              },
+            ]}
+            validateTrigger={["onBlur", "onChange"]}
+          >
+            <Input
+              onChange={(e) => setEmail(e.target.value)}
+              size="large"
+              prefix={<MailOutlined />}
+            />
           </Form.Item>
 
-          <Form.Item label={<b>Email</b>}>
-            <Input size="large" prefix={<MailOutlined />} />
-            <Text className="txtalert">We recommend a work email address.</Text>
+          <Form.Item
+            name="password"
+            label={<b>Password</b>}
+            rules={[
+              {
+                required: true,
+                message: "Password is required",
+              },
+              {
+                validator: (rule, value) => {
+                  if (!value) {
+                    return Promise.resolve(); // Không kiểm tra nếu trường rỗng
+                  }
+                  if (value.length < 6) {
+                    return Promise.reject(
+                      "Password must be at least 6 characters"
+                    );
+                  }
+                  if (!/[A-Z]/.test(value)) {
+                    return Promise.reject(
+                      "Password must contain at least one uppercase letter"
+                    );
+                  }
+                  if (!/[a-z]/.test(value)) {
+                    return Promise.reject(
+                      "Password must contain at least one lowercase letter"
+                    );
+                  }
+                  if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value)) {
+                    return Promise.reject(
+                      "Password must contain at least one special character"
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            validateTrigger={["onBlur", "onChange"]}
+          >
+            <Input.Password
+              onChange={(e) => setPassword(e.target.value)}
+              size="large"
+              prefix={<LockOutlined />}
+            />
           </Form.Item>
 
-          <Form.Item label={<b>Password</b>}>
+          <Form.Item
+            onChange={(e) => setconfirmPassword(e.target.value)}
+            name="confirmPassword"
+            label={<b>Confirm Password</b>}
+            rules={[
+              {
+                required: true,
+                message: "Confirm password is required",
+              },
+              {
+                validator: (rule, value) => {
+                  if (value === password) {
+                    return Promise.resolve();
+                  } else {
+                    return Promise.reject("Passwords do not match");
+                  }
+                },
+              },
+            ]}
+            validateTrigger={["onBlur", "onChange"]}
+          >
             <Input.Password size="large" prefix={<LockOutlined />} />
-            <Text className="txtalert">Minimum length is 8 characters.</Text>
           </Form.Item>
 
           <Form.Item>
@@ -49,6 +178,7 @@ const RegisterPage = () => {
               className="custombtn"
               block
               type="primary"
+              onClick={handleRegister}
             >
               <Text className="customtxt">Register</Text>
             </Button>
