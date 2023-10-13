@@ -22,7 +22,7 @@ const HomeUser = ({ chidlren }) => {
         </div>
         <div>
           <Divider className="divider-custom" />
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </div>
     </div>
