@@ -53,4 +53,4 @@ jobs:
           app-name: 'devtasker'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C93E9917C4CC4820853B51FBEC7C79BD }}
-          package: build/
+          package: build.
