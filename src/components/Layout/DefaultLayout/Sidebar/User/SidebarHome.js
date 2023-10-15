@@ -1,34 +1,39 @@
 import React from "react";
-import "./SidebarUser.css";
-import { Menu, Button } from "antd";
+import "./Sidebar.css";
+import { Menu, Button, Typography } from "antd";
 import logoHeader from "../../../../../assets/images/LogoHeader.png";
-import { HomeOutlined, SettingOutlined, UserOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import Avatar from "react-avatar";
+import { LogoutOutlined } from "@ant-design/icons";
 
-const { SubMenu } = Menu;
+const { Text } = Typography;
 
 const SidebarUser = () => {
   return (
     <div className="sidebar-user-home">
       <Menu mode="vertical" theme="light">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <div className="imgSidebar">
           <img src={logoHeader} alt="logoHeader" />
         </div>
-        <SubMenu key="overview" title="Overview" icon={<UserOutlined />}>
-          <Menu.Item key="summary">
-            <Link to="/user/overview/summary">Summary</Link>
-          </Menu.Item>
-          {/* Add more sub-items as needed */}
-        </SubMenu>
+        <Menu.Item key="overview" title="Overview">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Avatar className="avatar" square size="35" textSizeRatio={2} />
+            <Text style={{ marginLeft: "15px" }}>ABC</Text>
+          </div>
+        </Menu.Item>
       </Menu>
       <div className="sidebar-footer">
-        <Button className="logout-button">Logout</Button>
+        <Button
+          size="middle"
+          icon={<LogoutOutlined />}
+          className="logout-button"
+        >
+          Sign out
+        </Button>
       </div>
     </div>
   );
