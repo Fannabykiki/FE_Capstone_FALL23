@@ -10,6 +10,10 @@
   justify-content: safe;
 }
 
+.FooterUser {
+  margin-top: auto;
+}
+
 .divider-custom {
   margin: 0 !important;
 }
