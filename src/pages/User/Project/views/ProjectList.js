@@ -2,45 +2,35 @@ import React from "react";
 import CardProject from "./Conponents/CardProject";
 import TaskCreateProject from "./Conponents/TaskCreateProject";
 import { Layout, List } from 'antd';
+import { Col, Divider, Row } from 'antd';
+const style = {
+  background: '#0092ff',
+  padding: '8px 0',
+}
 
 const data = [
   {
-    title: 'tt1'
-  },
-  {
-    title: 'tt1'
-  },
-  {
-    title: 'tt1'
-  },
-  {
-    title: 'tt1'
   },
 ];
 const ProjectList = () => {
 
-
   return (
     <>
-
-      <div >
+      <div>
         <TaskCreateProject></TaskCreateProject>
       </div>
       <br></br>
       <List
-        grid={{
-          gutter: 16,
-          column: 4,
-        }}
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
-            {/* <Card title={item.title}>Card content</Card> */}
             <CardProject></CardProject>
           </List.Item>
         )}
       />
-
+     
+   
+    
     </>
   );
 };
