@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Radio, Row, Switch } from "antd";
+import { Button, Col, Form, Input, Radio, Row, Spin, Switch } from "antd";
 import React, { useEffect, useState } from "react";
 import Avatar from "react-avatar";
 import "./UserProfile.css";
@@ -11,21 +11,23 @@ const options = [
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const userId = JSON.parse(decodeURIComponent(sessionStorage.userId));
+
+    setLoading(true);
 
     // Gọi API và cập nhật state userData
     getUser(userId)
       .then((data) => {
         setUserData(data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Lỗi khi lấy dữ liệu từ API:", error);
       });
   }, []);
-
-  console.log(userData?.status);
 
   return (
     <>
@@ -36,7 +38,7 @@ const UserProfile = () => {
         </Col>
         <Col span={1}></Col>
         <Col span={17}>
-          <Form layout="vertical">
+          <Form layout="vertical" loading={loading && <Spin size="large" />}>
             <Form.Item label={<b>Full Name</b>}>
               <Input value={userData?.fullname} />
             </Form.Item>

@@ -1,29 +1,26 @@
 import React from "react";
 import CardProject from "./Conponents/CardProject";
 import TaskCreateProject from "./Conponents/TaskCreateProject";
-import { Layout, List } from 'antd';
+import { Layout, List } from "antd";
 
 const data = [
   {
-    title: 'tt1'
+    title: "tt1",
   },
   {
-    title: 'tt1'
+    title: "tt1",
   },
   {
-    title: 'tt1'
+    title: "tt1",
   },
   {
-    title: 'tt1'
+    title: "tt1",
   },
 ];
 const ProjectList = () => {
-
-
   return (
     <>
-
-      <div >
+      <div>
         <TaskCreateProject></TaskCreateProject>
       </div>
       <br></br>
@@ -40,7 +37,6 @@ const ProjectList = () => {
           </List.Item>
         )}
       />
-
     </>
   );
 };
