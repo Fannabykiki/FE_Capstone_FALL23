@@ -1,15 +1,71 @@
 // LoginDomain.js
-import { message } from "antd";
+import { message, notification } from "antd";
 import axios from "axios";
 
-const loginHandler = async (username, password) => {
+const loginHandler = async (email, password) => {
   try {
     const response = await axios.post(
       `${process.env.REACT_APP_API_URL}/api/authentication/token`,
       {
-        username,
+        email,
         password,
       }
+    );
+    console.log("abc" + response);
+    if (response.status === 200) {
+      const userData = response.data;
+      const userId = response.data.userId;
+      const isAdmin = response.data.isAdmin;
+
+      localStorage.setItem("userData", JSON.stringify(userData));
+      sessionStorage.setItem("userData", JSON.stringify(userData));
+      sessionStorage.setItem("userId", JSON.stringify(userId));
+      sessionStorage.setItem("isAdmin", JSON.stringify(isAdmin));
+
+      getUserLogin();
+      console.log("Đăng nhập thành công");
+      message.success("Đăng nhập thành công");
+      return userData;
+    } else {
+      console.error("Đăng nhập thất bại");
+      // Hiển thị thông báo lỗi cụ thể từ API response
+      notification.error({
+        message: "Lỗi đăng nhập",
+        description: { response },
+      });
+
+      return null;
+    }
+  } catch (error) {
+    // Xử lý lỗi nếu có lỗi trong quá trình gọi API
+    console.error("Lỗi trong quá trình đăng nhập:", error);
+
+    // Hiển thị thông báo lỗi chung
+    notification.error({
+      message: "Lỗi đăng nhập",
+      description: "Đã xảy ra lỗi trong quá trình đăng nhập",
+    });
+
+    return null;
+  }
+};
+
+const getUserLogin = async () => {
+  const userId = JSON.parse(decodeURIComponent(sessionStorage.userId));
+  console.log(userId);
+
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/users/profile/${userId}`
+    );
+    console.log(response);
+  } catch (error) {}
+};
+
+const loginGoogle = async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/authentication/external-login`
     );
 
     if (response.status === 200) {
@@ -42,4 +98,4 @@ const loginHandler = async (username, password) => {
   }
 };
 
-export { loginHandler };
+export { loginHandler, loginGoogle, getUserLogin };

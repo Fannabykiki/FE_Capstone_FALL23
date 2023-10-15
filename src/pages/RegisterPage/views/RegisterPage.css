@@ -11,6 +11,14 @@
   padding-bottom: 3%;
 }
 
+.FormVerify {
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 1.5);
+  margin-top: 30px;
+  width: 1000px;
+  height: 700px;
+}
+
 .FormRegister {
   background-color: white;
   width: 500px;
