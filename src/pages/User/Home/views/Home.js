@@ -6,7 +6,7 @@ import ProjectList from "../../Project/views/ProjectList";
 import "./Home.css";
 import { Divider } from "antd";
 
-const HomeUser = ({ chidlren }) => {
+const HomeUser = () => {
   console.log(sessionStorage.isAdmin);
 
   return (
@@ -20,9 +20,9 @@ const HomeUser = ({ chidlren }) => {
         <div>
           <ProjectList />
         </div>
-        <div>
+        <div className="FooterUser">
           <Divider className="divider-custom" />
-          {/* <Footer /> */}
+          <Footer />
         </div>
       </div>
     </div>

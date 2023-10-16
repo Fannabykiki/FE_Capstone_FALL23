@@ -77,8 +77,10 @@ const HeaderUser = () => {
       </div>
 
       <Modal
+        style={{ top: 20 }}
+        width={700}
         title="User Profile"
-        visible={isProfileModalVisible}
+        open={isProfileModalVisible}
         onCancel={() => setIsProfileModalVisible(false)}
         footer={null}
       >
