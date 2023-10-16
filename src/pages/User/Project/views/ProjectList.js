@@ -10,12 +10,10 @@ const style = {
 
 const data = [
   {
-<<<<<<< HEAD
+
 
   }
-=======
-  },
->>>>>>> 842f7e659d5fa2ad540d9aeca058aa1413d8fe9f
+
 ];
 const ProjectList = () => {
 
@@ -26,7 +24,7 @@ const ProjectList = () => {
       </div>
       <br></br>
       <List
-<<<<<<< HEAD
+        HEAD
         grid={{
           gutter: 10,
           column: 4,
@@ -36,18 +34,13 @@ const ProjectList = () => {
           <List.Item>
             {/* <Card title={item.title}>Card content</Card> */}
             <CardProject ></CardProject>
-=======
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            <CardProject></CardProject>
->>>>>>> 842f7e659d5fa2ad540d9aeca058aa1413d8fe9f
+
           </List.Item>
         )}
       />
-     
-   
-    
+
+
+
     </>
   );
 };

@@ -20,6 +20,7 @@ const registerHandler = async (email, password, confirmPassword) => {
 
       if (sendMailResponse.status === 200) {
         // Gửi email thành công
+        localStorage.setItem("verifyToken", JSON.stringify(verifyToken));
         return true;
       } else {
         // Gửi email thất bại

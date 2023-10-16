@@ -36,7 +36,11 @@ const RegisterPage = () => {
           description:
             "Vui lòng kiểm tra email của bạn để xác minh tài khoản trước khi đăng nhập.",
           duration: 60,
+
         });
+        localStorage.setItem("email", JSON.stringify(email));
+
+
         navigate("/login");
       } else {
         // Đăng ký thất bại, bạn có thể hiển thị thông báo hoặc xử lý khác
@@ -180,7 +184,7 @@ const RegisterPage = () => {
               type="primary"
               onClick={handleRegister}
             >
-              <Text className="customtxt">Register</Text>
+              <Text href="/verify-account" className="customtxt">Register</Text>
             </Button>
           </Form.Item>
 
