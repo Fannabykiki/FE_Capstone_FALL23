@@ -15,6 +15,18 @@ const TaskCreateProject = ({ onProjectCreated }) => {
     setOpen(true);
   };
 
+<<<<<<< HEAD
+const TaskCreateProject = () => {
+    const [open, setOpen] = useState(false);
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleCancel = () => {
+        setOpen(false);
+    };
+    const [componentDisabled, setComponentDisabled] = useState(true);
+=======
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
@@ -39,6 +51,7 @@ const TaskCreateProject = ({ onProjectCreated }) => {
       message.error('Failed to create project. Please try again.');
     }
   };
+>>>>>>> 842f7e659d5fa2ad540d9aeca058aa1413d8fe9f
 
   const handleCancel = () => {
     form.resetFields();
@@ -82,6 +95,63 @@ const TaskCreateProject = ({ onProjectCreated }) => {
             <TextArea disabled={componentDisabled} />
           </Form.Item>
 
+<<<<<<< HEAD
+            <Space >
+                <Button type="primary" onClick={showModal} style={{ margin: '10px', backgroundColor: 'rgb(48 186 168)', fontWeight: 'bold' }}>
+                    Create New Project
+                </Button>
+
+            </Space>
+            <Modal open={open} title="Create New Project" onCancel={handleCancel} footer={(_, { CancelBtn }) => (
+                <>
+                    <Button style={{ backgroundColor: '#689df4', color: 'white' }} >Create Project</Button>
+                    <CancelBtn />
+
+                </>
+            )}
+            >
+                <>
+
+                    <Form labelCol={{ span: 8, }} wrapperCol={{ span: 18, }}
+                        layout="horizontal"
+                        disabled={componentDisabled}
+                        style={{
+                            maxWidth: 900,
+                        }}
+                    >
+
+
+
+
+                        <Form.Item label="Name Project">
+                            <Input />
+                        </Form.Item>
+                        <Form.Item label="Description">
+                            <TextArea rows={4} />
+                        </Form.Item>
+                        <Form.Item label="Start Date">
+                            <DatePicker />
+                        </Form.Item>
+                        <Form.Item label="End Date">
+                            <DatePicker />
+                        </Form.Item>
+                        <Form.Item label="Privacy">
+                            <Radio.Group>
+                                <Radio value="apple"> Private </Radio>
+                                <Radio value="pear"> Public </Radio>
+                            </Radio.Group>
+                        </Form.Item>
+
+
+                    </Form>
+                </>
+
+            </Modal>
+
+
+        </>
+    );
+=======
           <Form.Item name="startDate" label="Start Date">
             <DatePicker disabled={componentDisabled} />
           </Form.Item>
@@ -100,6 +170,7 @@ const TaskCreateProject = ({ onProjectCreated }) => {
       </Modal>
     </>
   );
+>>>>>>> 842f7e659d5fa2ad540d9aeca058aa1413d8fe9f
 };
 
 export default TaskCreateProject;
