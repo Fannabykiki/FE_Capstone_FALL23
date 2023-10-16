@@ -14,9 +14,7 @@ const TaskCreateProject = () => {
     const showModal = () => {
         setOpen(true);
     };
-    const handleOk = () => {
-        setOpen(false);
-    };
+
     const handleCancel = () => {
         setOpen(false);
     };
@@ -28,26 +26,21 @@ const TaskCreateProject = () => {
         <>
 
             <Space >
-                <Button type="primary" onClick={showModal} style={{ margin: '10px' }}>
+                <Button type="primary" onClick={showModal} style={{ margin: '10px', backgroundColor: 'rgb(48 186 168)', fontWeight: 'bold' }}>
                     Create New Project
                 </Button>
 
             </Space>
-            <Modal open={open} title="Title" onOk={handleOk} onCancel={handleCancel} footer={(_, { CancelBtn }) => (
+            <Modal open={open} title="Create New Project" onCancel={handleCancel} footer={(_, { CancelBtn }) => (
                 <>
-                    <Button >Create Project</Button>
+                    <Button style={{ backgroundColor: '#689df4', color: 'white' }} >Create Project</Button>
                     <CancelBtn />
 
                 </>
             )}
             >
                 <>
-                    <Checkbox
-                        checked={componentDisabled}
-                        onChange={(e) => setComponentDisabled(e.target.checked)}
-                    >
-                        Form disabled (Tick here to Create New)
-                    </Checkbox>
+
                     <Form labelCol={{ span: 8, }} wrapperCol={{ span: 18, }}
                         layout="horizontal"
                         disabled={componentDisabled}
@@ -55,9 +48,9 @@ const TaskCreateProject = () => {
                             maxWidth: 900,
                         }}
                     >
-                        <Form.Item label="Checkbox" name="disabled" valuePropName="checked">
 
-                        </Form.Item>
+
+
 
                         <Form.Item label="Name Project">
                             <Input />

@@ -5,17 +5,8 @@ import { Layout, List } from 'antd';
 
 const data = [
   {
-    title: 'tt1'
-  },
-  {
-    title: 'tt1'
-  },
-  {
-    title: 'tt1'
-  },
-  {
-    title: 'tt1'
-  },
+
+  }
 ];
 const ProjectList = () => {
 
@@ -29,14 +20,14 @@ const ProjectList = () => {
       <br></br>
       <List
         grid={{
-          gutter: 16,
+          gutter: 10,
           column: 4,
         }}
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
             {/* <Card title={item.title}>Card content</Card> */}
-            <CardProject></CardProject>
+            <CardProject ></CardProject>
           </List.Item>
         )}
       />
