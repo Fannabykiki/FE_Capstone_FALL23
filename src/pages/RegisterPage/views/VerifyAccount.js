@@ -12,7 +12,6 @@ const VerifyAccount = () => {
 
 
 
-
     useEffect(() => {
 
         const link = window.location.href;

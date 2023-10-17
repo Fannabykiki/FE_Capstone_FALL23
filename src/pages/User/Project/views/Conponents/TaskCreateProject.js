@@ -39,7 +39,11 @@ const TaskCreateProject = ({ onProjectCreated }) => {
         <Button
           type="primary"
           onClick={showModal}
-          style={{ margin: '10px', backgroundColor: '#36af99', fontWeight: 'bold' }}
+          style={{
+            margin: '10px', backgroundColor: '#36af99', fontWeight: 'bold', width: '160px',
+            height: '60px'
+          }}
+
         >
           Create New Project
         </Button>

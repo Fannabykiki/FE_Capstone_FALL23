@@ -19,7 +19,7 @@ const ProjectList = () => {
 
   return (
     <>
-      <div>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
         <TaskCreateProject></TaskCreateProject>
       </div>
       <br></br>

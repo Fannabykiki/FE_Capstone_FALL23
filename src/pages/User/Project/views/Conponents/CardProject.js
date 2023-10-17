@@ -23,7 +23,7 @@ const CardProject = () => {
   }, []);
 
   if (projectCard.length === 0) {
-    return <div>You don't have any project.</div>;
+    return <div style={{ display: 'flex', justifyContent: 'center' }}><h2>You don't have any Project !</h2></div>;
   }
 
   return (

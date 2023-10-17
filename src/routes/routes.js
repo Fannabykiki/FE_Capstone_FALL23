@@ -7,6 +7,7 @@ import VerifyMail from "../pages/RegisterPage/views/VerifyMail";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/views/ForgotPasswordPage";
 import Home from "../pages/User/Home/views/Home";
 import VerifyAccount from "../pages/RegisterPage/views/VerifyAccount";
+import CreateNewPassword from "../pages/ForgotPasswordPage/views/CreateNewPassword";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
@@ -16,6 +17,7 @@ const publicRoutes = [
   { path: "/verify-mail", component: VerifyMail, layout: null },
   { path: "/user", component: Home, layout: null },
   { path: "/verify-account", component: VerifyAccount, layout: null },
+  { path: "/create-newpwd", component: CreateNewPassword, layout: null },
 ];
 
 const privateRoutes = [
