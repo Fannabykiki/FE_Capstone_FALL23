@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Modal, Space, message } from 'antd';
+import { Button, Modal, Space, message, Form, Input, Radio, DatePicker } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { Checkbox, DatePicker, Form, Input, Radio } from 'antd';
 import axios from 'axios';
 
 const { TextArea } = Input;
@@ -15,6 +14,7 @@ const TaskCreateProject = ({ onProjectCreated }) => {
     setOpen(true);
   };
 
+<<<<<<< HEAD
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
@@ -40,15 +40,35 @@ const TaskCreateProject = ({ onProjectCreated }) => {
     }
   };
 
+=======
+>>>>>>> 57552be7733a9c303485cf3c2ede82e2b33f496b
   const handleCancel = () => {
     form.resetFields();
     setOpen(false);
   };
 
+  const handleOk = () => {
+    form
+      .validateFields()
+      .then(values => {
+        form.resetFields();
+        setOpen(false);
+        // Call the onProjectCreated function with the created project data
+        onProjectCreated(values);
+      })
+      .catch(errorInfo => {
+        console.log('Validation failed:', errorInfo);
+      });
+  };
+
   return (
     <>
       <Space>
-        <Button type="primary" onClick={showModal} style={{ margin: '10px' , Backgroundcolor:"#36af99",fontWeight:'bold' }}>
+        <Button
+          type="primary"
+          onClick={showModal}
+          style={{ margin: '10px', backgroundColor: '#36af99', fontWeight: 'bold' }}
+        >
           Create New Project
         </Button>
       </Space>
@@ -66,7 +86,6 @@ const TaskCreateProject = ({ onProjectCreated }) => {
           </Button>,
         ]}
       >
-       
         <Form
           form={form}
           labelCol={{ span: 8 }}
@@ -74,26 +93,34 @@ const TaskCreateProject = ({ onProjectCreated }) => {
           layout="horizontal"
           initialValues={{ disabled: componentDisabled }}
         >
-          <Form.Item name="name" label="Name Project" rules={[{ required: true, message: 'Please enter the project name' }]}>
+          <Form.Item
+            name="name"
+            label="Name Project"
+            rules={[{ required: true, message: 'Please enter the project name' }]}
+          >
             <Input disabled={componentDisabled} />
           </Form.Item>
 
-          <Form.Item name="description" label="Description" rules={[{ required: true, message: 'Please enter the project description' }]}>
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: 'Please enter the project description' }]}
+          >
             <TextArea disabled={componentDisabled} />
           </Form.Item>
 
           <Form.Item name="startDate" label="Start Date">
-            <DatePicker disabled={componentDisabled} />
+            <DatePicker />
           </Form.Item>
 
           <Form.Item name="endDate" label="End Date">
-            <DatePicker disabled={componentDisabled} />
+            <DatePicker />
           </Form.Item>
 
           <Form.Item name="privacy" label="Privacy">
-            <Radio.Group disabled={componentDisabled}>
-              <Radio value={false}>Private</Radio>
-              <Radio value={true}>Public</Radio>
+            <Radio.Group>
+              <Radio value="private">Private</Radio>
+              <Radio value="public">Public</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>

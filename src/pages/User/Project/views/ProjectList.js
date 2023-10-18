@@ -10,7 +10,10 @@ const style = {
 
 const data = [
   {
-  },
+
+
+  }
+
 ];
 const ProjectList = () => {
 
@@ -21,16 +24,23 @@ const ProjectList = () => {
       </div>
       <br></br>
       <List
+        HEAD
+        grid={{
+          gutter: 10,
+          column: 4,
+        }}
         dataSource={data}
         renderItem={(item) => (
           <List.Item>
-            <CardProject></CardProject>
+            {/* <Card title={item.title}>Card content</Card> */}
+            <CardProject ></CardProject>
+
           </List.Item>
         )}
       />
-     
-   
-    
+
+
+
     </>
   );
 };
