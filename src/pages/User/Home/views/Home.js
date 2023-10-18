@@ -7,7 +7,6 @@ import "./Home.css";
 import { Divider } from "antd";
 
 const HomeUser = () => {
-  console.log(sessionStorage.isAdmin);
 
   return (
     <div className="HomeUser">

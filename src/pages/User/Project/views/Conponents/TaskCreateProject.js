@@ -19,7 +19,7 @@ const TaskCreateProject = ({ onProjectCreated }) => {
     try {
       const values = await form.validateFields();
       
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/project-management/projects/`, 
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/project-management/projects`, 
       {
         projectName: values.name,
         description: values.description,
