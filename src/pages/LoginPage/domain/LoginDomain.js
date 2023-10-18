@@ -16,11 +16,16 @@ const loginHandler = async (email, password) => {
       const userData = response.data;
       const userId = response.data.userId;
       const isAdmin = response.data.isAdmin;
+      const email = response.data.email;
+      const token = response.data.token;
 
       localStorage.setItem("userData", JSON.stringify(userData));
+
       sessionStorage.setItem("userData", JSON.stringify(userData));
       sessionStorage.setItem("userId", JSON.stringify(userId));
       sessionStorage.setItem("isAdmin", JSON.stringify(isAdmin));
+      sessionStorage.setItem("email", JSON.stringify(email));
+      sessionStorage.setItem("token", JSON.stringify(token));
 
       getUserLogin();
       console.log("Đăng nhập thành công");
@@ -34,7 +39,7 @@ const loginHandler = async (email, password) => {
         description: { response },
       });
 
-      return null;
+      return response;
     }
   } catch (error) {
     // Xử lý lỗi nếu có lỗi trong quá trình gọi API
@@ -42,8 +47,8 @@ const loginHandler = async (email, password) => {
 
     // Hiển thị thông báo lỗi chung
     notification.error({
-      message: "Lỗi đăng nhập",
-      description: "Đã xảy ra lỗi trong quá trình đăng nhập",
+      message: "Login Fail!",
+      description: "Email or Password wrong !",
     });
 
     return null;
