@@ -45,6 +45,11 @@
   align-items: center;
 }
 
+.iconSidebar {
+  width: 24px;
+  height: 24px;
+}
+
 .avatar {
   border-radius: 5px;
 }

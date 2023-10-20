@@ -11,8 +11,16 @@ const { Text, Link } = Typography;
 const ForgotPasswordPage = () => {
   const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
   const [form] = Form.useForm();
-
   const [email, setEmail] = useState("");
+
+  const validateEmail = (rule, value) => {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    if (!value || emailRegex.test(value)) {
+      return Promise.resolve();
+    } else {
+      return Promise.reject("Email is not valid");
+    }
+  };
 
   const handleForgotPassword = async () => {
     try {
@@ -50,6 +58,9 @@ const ForgotPasswordPage = () => {
                 whitespace: true,
                 required: true,
                 message: "Email is required",
+              },
+              {
+                validator: validateEmail,
               },
             ]}
             validateTrigger={["onBlur", "onChange"]}
