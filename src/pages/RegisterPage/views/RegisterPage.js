@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import "./RegisterPage.css";
 import logo from "../../../assets/images/Devtask.png";
-import {
-  Button,
-  Divider,
-  Form,
-  Input,
-  Typography,
-  message,
-  notification,
-} from "antd";
+import { Button, Divider, Form, Input, Typography, message } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import ReCAPTCHA from "react-google-recaptcha";
 import GoogleButton from "react-google-button";
@@ -26,32 +18,6 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
 
-  const handleRegister = async () => {
-    try {
-      const result = await registerHandler(email, password, confirmPassword);
-
-      if (result) {
-        notification.success({
-          message: "Đăng ký thành công",
-          description:
-            "Vui lòng kiểm tra email của bạn để xác minh tài khoản trước khi đăng nhập.",
-          duration: 60,
-
-        });
-        localStorage.setItem("email", JSON.stringify(email));
-
-
-        navigate("/login");
-      } else {
-        // Đăng ký thất bại, bạn có thể hiển thị thông báo hoặc xử lý khác
-        message.error("Đăng ký thất bại, vui lòng kiểm tra lại thông tin.");
-      }
-    } catch (error) {
-      // Xử lý lỗi nếu có
-      console.error("Lỗi trong quá trình đăng ký:", error);
-    }
-  };
-
   const validateEmail = (rule, value) => {
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!value || emailRegex.test(value)) {
@@ -61,11 +27,30 @@ const RegisterPage = () => {
     }
   };
 
+  const handleRegister = async () => {
+    try {
+      const result = await registerHandler(email, password, confirmPassword);
+
+      if (result) {
+        message.success(
+          "Registration successful. Please check your email to verify your account before logging in."
+        );
+        localStorage.setItem("email", JSON.stringify(email));
+
+        navigate("/login");
+      } else {
+        message.error("Đăng ký thất bại, vui lòng kiểm tra lại thông tin.");
+      }
+    } catch (error) {
+      message.error(error.response.data);
+    }
+  };
+
   return (
     <div className="Register">
       <div className="FormRegister">
         <div className="Logo">
-          <img className="ImageLogo" src={logo} />
+          <img className="ImageLogo" src={logo} alt="logo" />
         </div>
 
         <Form
@@ -107,7 +92,7 @@ const RegisterPage = () => {
               {
                 validator: (rule, value) => {
                   if (!value) {
-                    return Promise.resolve(); // Không kiểm tra nếu trường rỗng
+                    return Promise.resolve();
                   }
                   if (value.length < 6) {
                     return Promise.reject(
@@ -184,7 +169,9 @@ const RegisterPage = () => {
               type="primary"
               onClick={handleRegister}
             >
-              <Text href="/verify-account" className="customtxt">Register</Text>
+              <Text href="/verify-account" className="customtxt">
+                Register
+              </Text>
             </Button>
           </Form.Item>
 

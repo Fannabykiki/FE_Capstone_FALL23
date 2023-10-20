@@ -10,27 +10,27 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
-const { Link } = Typography;
+const { Text } = Typography;
 
 const items = [
   {
-    label: <Link href="/admin/dashboard">Dashboard</Link>,
-    key: "dashboard",
+    label: "Dashboard",
+    key: "/admin/dashboard",
     icon: <SignalFilled />,
   },
   {
-    label: <Link href="/admin/user">User</Link>,
-    key: "user",
+    label: "User",
+    key: "/admin/user",
     icon: <UserOutlined />,
   },
   {
-    label: <Link href="/admin/project">Project</Link>,
-    key: "project",
+    label: "Project",
+    key: "/admin/project",
     icon: <ProjectFilled />,
   },
   {
-    label: <Link href="/admin/permission">Permission</Link>,
-    key: "permission",
+    label: "Permission",
+    key: "/admin/permission",
   },
 ];
 
@@ -47,7 +47,13 @@ const SidebarAdmin = () => {
       <div className="imgSidebar">
         <img src={logoHeader} alt="logoHeader" />
       </div>
-      <Menu mode="inline" items={items} />
+      <Menu
+        onClick={(items) => {
+          navigate(items.key);
+        }}
+        mode="inline"
+        items={items}
+      />
       <div className="sidebar-footer">
         <Button
           onClick={signOutHandler}

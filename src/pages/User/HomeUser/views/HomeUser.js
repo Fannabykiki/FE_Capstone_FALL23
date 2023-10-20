@@ -4,6 +4,7 @@ import HeaderUser from "../../../../components/Layout/DefaultLayout/Header/Heade
 import Footer from "../../../../components/Layout/DefaultLayout/Footer/Footer";
 import { Route, Routes } from "react-router-dom";
 import Summary from "../../../User/Overview/Summary/Summary";
+import Dashboard from "../../../User/Overview/Dashboard/Dashboard";
 
 const HomeUser = ({ chidlren }) => {
   console.log(sessionStorage.isAdmin);
@@ -22,6 +23,7 @@ const HomeUser = ({ chidlren }) => {
         <HeaderUser />
         <Routes>
           <Route path="/overview/summary" element={<Summary />} />
+          <Route path="/overview/Dashboard" element={<Dashboard />} />
         </Routes>
         <Footer />
       </div>

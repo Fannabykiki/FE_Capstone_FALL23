@@ -16,6 +16,8 @@ import {
   SettingOutlined,
   TableOutlined,
 } from "@ant-design/icons";
+import Overview from "../../../../../assets/images/Overview.png";
+import Board from "../../../../../assets/images/Board.png";
 import { useNavigate } from "react-router-dom";
 const { Link } = Typography;
 
@@ -30,19 +32,60 @@ function getItem(label, key, icon, children, type) {
 }
 
 const items = [
-  getItem("Overview", "overview", <MailOutlined />, [
-    getItem(<Link href="#">Summary</Link>, "summary", <InboxOutlined />),
-    getItem(<Link>Dashboard</Link>, "dashboard", <DashboardOutlined />),
-    getItem(<Link>Wiki</Link>, "wiki", <ReadOutlined />),
-  ]),
-  getItem("Board", "board", <AppstoreOutlined />, [
-    getItem(<Link>Work items</Link>, "workitem", <FileDoneOutlined />),
-    getItem(<Link>Board</Link>, "board", <TableOutlined />),
-    getItem(<Link>Sprints</Link>, "sprint", <NodeExpandOutlined />),
-    getItem(<Link>Calendar</Link>, "calendar", <CalendarOutlined />),
-    getItem(<Link>Plans</Link>, "plan", <ProjectOutlined />),
-  ]),
-  getItem("Project settings", "projectsetting", <SettingOutlined />),
+  {
+    label: <b>Overview</b>,
+    key: "/user/overview",
+    icon: <img className="iconSidebar" src={Overview} alt="overview" />,
+    children: [
+      {
+        label: "Summary",
+        key: "/user/overview/summary",
+        icon: <InboxOutlined />,
+      },
+      {
+        label: "Dashboard",
+        key: "/user/overview/dashboard",
+        icon: <DashboardOutlined />,
+      },
+      {
+        label: "Wiki",
+        key: "/user/overview/wiki",
+        icon: <ReadOutlined />,
+      },
+    ],
+  },
+  {
+    label: <b>Board</b>,
+    key: "user/board",
+    icon: <img className="iconSidebar" src={Board} alt="board" />,
+    children: [
+      {
+        label: "Work items",
+        key: "user/board/workitems",
+        icon: <FileDoneOutlined />,
+      },
+      {
+        label: "Board",
+        key: "user/board/boards",
+        icon: <TableOutlined />,
+      },
+      {
+        label: "Sprints",
+        key: "user/board/sprints",
+        icon: <NodeExpandOutlined />,
+      },
+      {
+        label: "Calendar",
+        key: "user/board/calendar",
+        icon: <CalendarOutlined />,
+      },
+      {
+        label: "Plans",
+        key: "user/board/plans",
+        icon: <ProjectOutlined />,
+      },
+    ],
+  },
 ];
 
 const SidebarUser = () => {
@@ -64,6 +107,9 @@ const SidebarUser = () => {
         mode="inline"
         theme="light"
         items={items}
+        onClick={(items) => {
+          navigate(items.key);
+        }}
       />
       <div className="sidebar-footer">
         <Button
