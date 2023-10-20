@@ -17,7 +17,7 @@ const forgotpasswordHandler = async (email) => {
     }
   } catch (error) {
     console.error("Lỗi trong quá trình gửi email:", error);
-    message.error("Đã xảy ra lỗi trong quá trình gửi email");
+    message.error(error.response.data);
     return null;
   }
 };
