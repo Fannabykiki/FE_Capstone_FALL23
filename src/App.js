@@ -4,10 +4,11 @@ import { publicRoutes } from "./routes/routes";
 import DefaultLayout from "./components/Layout/DefaultLayout/DefaulLayout";
 import HomeUser from "./pages/User/HomeUser/views/HomeUser";
 import Summary from "./pages/User/Overview/Summary/Summary";
-import Dashboard from "./pages/Admin/Dashboard/Dashboard";
+import Dashboard from "./pages/Admin/Dashboard/views/Dashboard";
 import HomeAdmin from "./pages/Admin/HomeAdmin/views/HomeAdmin";
 import ListUser from "./pages/Admin/UserManage/ListUser/views/ListUser";
 import ListProject from "./pages/Admin/ProjectManage/ListProject";
+import ViewUser from "./pages/Admin/UserManage/ViewUser/views/ViewUser";
 
 function App() {
   return (
@@ -48,9 +49,12 @@ function App() {
             element={
               <HomeAdmin>
                 <Routes>
-                  {/* Define your user-specific routes here */}
+                  {/* Dashboard */}
                   <Route path="/dashboard" element={<Dashboard />} />
+                  {/* User */}
                   <Route path="/user" element={<ListUser />} />
+                  <Route path="/user/view/:id" element={<ViewUser />} />
+                  {/* User */}
                   <Route path="/dashboard" element={<ListProject />} />
                   {/* <Route path="/profile" element={<UserProfile />} /> */}
                 </Routes>
