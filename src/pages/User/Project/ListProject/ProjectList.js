@@ -1,25 +1,20 @@
 import React from "react";
 import CardProject from "./Conponents/CardProject";
 import TaskCreateProject from "./Conponents/TaskCreateProject";
-import { Layout, List } from 'antd';
-import { Col, Divider, Row } from 'antd';
+import { Layout, List } from "antd";
+import { Col, Divider, Row } from "antd";
 const style = {
-  background: '#0092ff',
-  padding: '8px 0',
-}
+  background: "#0092ff",
+  padding: "8px 0",
+};
 
-const data = [
-  {
-
-
-  }
-
-];
+const data = [{}];
 const ProjectList = () => {
-
   return (
     <>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+      <div
+        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+      >
         <TaskCreateProject></TaskCreateProject>
       </div>
       <br></br>
@@ -33,14 +28,10 @@ const ProjectList = () => {
         renderItem={(item) => (
           <List.Item>
             {/* <Card title={item.title}>Card content</Card> */}
-            <CardProject ></CardProject>
-
+            <CardProject></CardProject>
           </List.Item>
         )}
       />
-
-
-
     </>
   );
 };

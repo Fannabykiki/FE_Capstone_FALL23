@@ -7,9 +7,7 @@ import VerifyMail from "../pages/RegisterPage/views/VerifyMail";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/views/ForgotPasswordPage";
 import Home from "../pages/User/Home/views/Home";
 import VerifyAccount from "../pages/RegisterPage/views/VerifyAccount";
-import CreateNewPassword from "../pages/ForgotPasswordPage/views/CreateNewPassword";
-import ProjectSettingDetails from "../pages/User/ProjectSettings/ProjectSettingDetails";
-import ProjectDetails from "../pages/User/ProjectSettings/Components/ProjectDetails";
+import HomeUser from "../pages/User/HomeUser/views/HomeProject";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
@@ -21,15 +19,7 @@ const publicRoutes = [
   { path: "/user", component: Home, layout: null },
   { path: "/admin", component: HomeAdmin, layout: null },
   { path: "/verify-account", component: VerifyAccount, layout: null },
-  { path: "/create-newpwd", component: CreateNewPassword, layout: null },
-
-  { path: "/project-settings", component: ProjectSettingDetails, layout: null },
-
-  {
-    path: "/project-settings/details",
-    component: ProjectDetails,
-    layout: null,
-  },
+  { path: "/user/project/:id", component: HomeUser, layout: null },
 ];
 
 const privateRoutes = [];

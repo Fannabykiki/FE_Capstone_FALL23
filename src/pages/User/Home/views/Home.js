@@ -7,26 +7,17 @@ import "./Home.css";
 import { Divider } from "antd";
 
 const HomeUser = () => {
-
   return (
-    <div className="Container">
-      <div className="HomeUser">
-        <SidebarHome />
-      </div>
-      <div>
-
+    <div className="HomeUser">
+      <SidebarHome />
+      <div className="Container">
         <div>
           <HeaderUser />
           <Divider className="divider-custom" />
         </div>
         <ProjectList />
-
-        <div>
-
-        </div>
         <div className="FooterUser">
           <Divider className="divider-custom" />
-
           <Footer />
         </div>
       </div>
