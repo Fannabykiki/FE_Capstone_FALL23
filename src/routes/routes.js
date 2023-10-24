@@ -9,6 +9,7 @@ import Home from "../pages/User/Home/views/Home";
 import VerifyAccount from "../pages/RegisterPage/views/VerifyAccount";
 import CreateNewPassword from "../pages/ForgotPasswordPage/views/CreateNewPassword";
 import ProjectSettingDetails from "../pages/User/ProjectSettings/ProjectSettingDetails";
+import ProjectDetails from "../pages/User/ProjectSettings/Components/ProjectDetails";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
@@ -21,6 +22,9 @@ const publicRoutes = [
   { path: "/create-newpwd", component: CreateNewPassword, layout: null },
 
   { path: "/project-settings", component: ProjectSettingDetails, layout: null },
+
+  { path: "/project-settings/details", component: ProjectDetails, layout: null },
+
 ];
 
 const privateRoutes = [

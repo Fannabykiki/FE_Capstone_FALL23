@@ -18,7 +18,10 @@ const TaskCreateProject = ({ onProjectCreated }) => {
     form.resetFields();
     setOpen(false);
   };
-
+  const disabledEndDate = (current) => {
+    const startDateValue = form.getFieldValue('startDate');
+    return current && current.isBefore(startDateValue, 'day');
+  };
   const handleOk = () => {
     form
       .validateFields()
@@ -86,11 +89,11 @@ const TaskCreateProject = ({ onProjectCreated }) => {
           </Form.Item>
 
           <Form.Item name="startDate" label="Start Date">
-            <DatePicker />
+            <DatePicker format="DD/MM/YYYY" />
           </Form.Item>
 
           <Form.Item name="endDate" label="End Date">
-            <DatePicker />
+            <DatePicker format="DD/MM/YYYY" disabledDate={disabledEndDate} />
           </Form.Item>
 
           <Form.Item name="privacy" label="Privacy">
