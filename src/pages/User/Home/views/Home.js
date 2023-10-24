@@ -10,9 +10,11 @@ const HomeUser = () => {
   console.log(sessionStorage.isAdmin);
 
   return (
-    <div className="HomeUser">
-      <SidebarHome />
-      <div className="Container">
+    <div className="Container">
+      <div className="HomeUser">
+        <SidebarHome />
+      </div>
+      <div>
         <div>
           <HeaderUser />
           <Divider className="divider-custom" />

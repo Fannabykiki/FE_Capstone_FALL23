@@ -8,6 +8,7 @@ import ForgotPasswordPage from "../pages/ForgotPasswordPage/views/ForgotPassword
 import Home from "../pages/User/Home/views/Home";
 import VerifyAccount from "../pages/RegisterPage/views/VerifyAccount";
 import CreateNewPassword from "../pages/ForgotPasswordPage/views/CreateNewPassword";
+import ProjectSettingDetails from "../pages/User/ProjectSettings/ProjectSettingDetails";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
@@ -18,6 +19,8 @@ const publicRoutes = [
   { path: "/user", component: Home, layout: null },
   { path: "/verify-account", component: VerifyAccount, layout: null },
   { path: "/create-newpwd", component: CreateNewPassword, layout: null },
+
+  { path: "/project-settings", component: ProjectSettingDetails, layout: null },
 ];
 
 const privateRoutes = [

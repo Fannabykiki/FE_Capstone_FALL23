@@ -11,7 +11,7 @@ const CardProject = () => {
       try {
         const userId = JSON.parse(decodeURIComponent(sessionStorage.userId));
 
-        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project-management/projects/${userId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/project-management/projects/user/${userId}`);
         setProjectCard(response.data);
         console.log(response);
       } catch (error) {
