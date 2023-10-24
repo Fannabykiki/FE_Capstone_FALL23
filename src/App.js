@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Switch } from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
 import DefaultLayout from "./components/Layout/DefaultLayout/DefaulLayout";
 import HomeUser from "./pages/User/HomeUser/views/HomeUser";
@@ -58,6 +58,11 @@ function App() {
             }
           />
         </Routes>
+
+
+
+
+
       </div>
     </Router>
   );

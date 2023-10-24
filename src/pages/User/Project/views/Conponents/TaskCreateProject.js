@@ -122,7 +122,7 @@ const TaskCreateProject = ({ onProjectCreated }) => {
           </Form.Item>
 
           <Form.Item name="startDate" label="Start Date">
-            <DatePicker  format="DD/MM/YYYY"/>
+            <DatePicker format="DD/MM/YYYY" />
           </Form.Item>
 
           <Form.Item name="endDate" label="End Date">

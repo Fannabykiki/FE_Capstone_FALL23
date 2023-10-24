@@ -9,18 +9,24 @@ import { Divider } from "antd";
 const HomeUser = () => {
 
   return (
-    <div className="HomeUser">
-      <SidebarHome />
-      <div className="Container">
+    <div className="Container">
+      <div className="HomeUser">
+        <SidebarHome />
+      </div>
+      <div>
+
         <div>
           <HeaderUser />
           <Divider className="divider-custom" />
         </div>
+        <ProjectList />
+
         <div>
-          <ProjectList />
+
         </div>
         <div className="FooterUser">
           <Divider className="divider-custom" />
+
           <Footer />
         </div>
       </div>
