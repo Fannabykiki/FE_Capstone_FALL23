@@ -8,8 +8,11 @@ import {
   Input,
   Radio,
   DatePicker,
+
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+
+import moment from 'moment';
 import axios from "axios";
 
 const { TextArea } = Input;
@@ -53,6 +56,10 @@ const TaskCreateProject = ({ onProjectCreated }) => {
   const handleCancel = () => {
     form.resetFields();
     setOpen(false);
+  };
+  const disabledEndDate = (current) => {
+    const startDateValue = form.getFieldValue('startDate');
+    return current && current.isBefore(startDateValue, 'day');
   };
 
   return (
@@ -115,11 +122,11 @@ const TaskCreateProject = ({ onProjectCreated }) => {
           </Form.Item>
 
           <Form.Item name="startDate" label="Start Date">
-            <DatePicker />
+            <DatePicker  format="DD/MM/YYYY"/>
           </Form.Item>
 
           <Form.Item name="endDate" label="End Date">
-            <DatePicker />
+            <DatePicker format="DD/MM/YYYY" disabledDate={disabledEndDate} />
           </Form.Item>
 
           <Form.Item name="privacy" label="Privacy">
