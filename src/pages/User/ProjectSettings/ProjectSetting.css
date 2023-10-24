@@ -1,0 +1,19 @@
+.HomeUser {
+    display: flex;
+    flex-direction: row;
+}
+
+.Container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: safe;
+}
+
+.FooterUser {
+    margin-top: auto;
+}
+
+.divider-custom {
+    margin: 0 !important;
+}

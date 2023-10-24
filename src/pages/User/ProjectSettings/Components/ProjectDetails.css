@@ -1,0 +1,25 @@
+.Container {
+    background-image: url(/src/assets/images/BG.jpg);
+
+}
+
+.content {
+    font-weight: bold;
+}
+
+.title {
+
+    margin: 10px;
+    font-size: large;
+}
+
+.hihi {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: space-between;
+    justify-content: space-evenly;
+    background-color: #78c6c6a3;
+
+}
