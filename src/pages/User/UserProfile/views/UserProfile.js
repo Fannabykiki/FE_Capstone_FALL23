@@ -1,8 +1,17 @@
-import { Button, Col, DatePicker, Form, Input, Radio, Row, Spin } from "antd";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Radio,
+  Row,
+  message,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import Avatar from "react-avatar";
 import "./UserProfile.css";
-import { getUser } from "../domains/UserProfileDomain";
+import { getUser, updateUser } from "../domains/UserProfileDomain";
 import moment from "moment/moment";
 
 const options = [
@@ -26,6 +35,33 @@ const UserProfile = () => {
       });
   }, []);
 
+  const handleSave = () => {
+    updateUser(userData)
+      .then((updatedData) => {
+        // Cập nhật lại dữ liệu người dùng sau khi cập nhật thành công
+        getUser(updatedData.userId)
+          .then((data) => {
+            setUserData(data);
+            message.success("Update successful");
+          })
+          .catch((error) => {
+            console.error("Lỗi khi tải lại thông tin người dùng:", error);
+          });
+        console.log("Thông tin người dùng đã được cập nhật:", updatedData);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi cập nhật thông tin người dùng:", error);
+      });
+  };
+
+  const handleDobChange = (date, dateString) => {
+    setUserData({ ...userData, doB: dateString });
+  };
+
+  const handleGenderChange = (e) => {
+    setUserData({ ...userData, gender: e.target.value });
+  };
+
   return (
     <>
       <Row></Row>
@@ -37,11 +73,21 @@ const UserProfile = () => {
         <Col span={17}>
           <Form layout="vertical">
             <Form.Item label={<b>Full Name</b>}>
-              <Input value={userData?.fullname} />
+              <Input
+                value={userData?.fullname}
+                onChange={(e) =>
+                  setUserData({ ...userData, fullname: e.target.value })
+                }
+              />
             </Form.Item>
 
             <Form.Item label={<b>User Name</b>}>
-              <Input value={userData?.userName} />
+              <Input
+                value={userData?.userName}
+                onChange={(e) =>
+                  setUserData({ ...userData, userName: e.target.value })
+                }
+              />
             </Form.Item>
 
             <Form.Item label={<b>Email</b>}>
@@ -49,11 +95,21 @@ const UserProfile = () => {
             </Form.Item>
 
             <Form.Item label={<b>Phone Number</b>}>
-              <Input value={userData?.phoneNumber} />
+              <Input
+                value={userData?.phoneNumber}
+                onChange={(e) =>
+                  setUserData({ ...userData, phoneNumber: e.target.value })
+                }
+              />
             </Form.Item>
 
             <Form.Item label={<b>Address</b>}>
-              <Input value={userData?.address} />
+              <Input
+                value={userData?.address}
+                onChange={(e) =>
+                  setUserData({ ...userData, address: e.target.value })
+                }
+              />
             </Form.Item>
 
             <Form.Item label={<b>Date of Birth</b>}>
@@ -61,16 +117,21 @@ const UserProfile = () => {
                 value={moment(userData?.doB)}
                 format={"DD/MM/YYYY"}
                 allowClear={false}
+                onChange={handleDobChange}
               />
             </Form.Item>
 
             <Form.Item label={<b>Gender</b>}>
-              <Radio.Group value={userData?.gender} options={options} />
+              <Radio.Group
+                value={userData?.gender}
+                options={options}
+                onChange={handleGenderChange}
+              />
             </Form.Item>
 
             <div className="btnModal">
               <Button className="btn-close">Close</Button>
-              <Button type="primary" className="btn-save">
+              <Button type="primary" className="btn-save" onClick={handleSave}>
                 Save
               </Button>
             </div>

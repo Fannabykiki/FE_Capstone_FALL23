@@ -7,6 +7,7 @@ import VerifyMail from "../pages/RegisterPage/views/VerifyMail";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/views/ForgotPasswordPage";
 import Home from "../pages/User/Home/views/Home";
 import VerifyAccount from "../pages/RegisterPage/views/VerifyAccount";
+import HomeUser from "../pages/User/HomeUser/views/HomeProject";
 
 const publicRoutes = [
   { path: "/", component: HomePage },
@@ -18,6 +19,7 @@ const publicRoutes = [
   { path: "/user", component: Home, layout: null },
   { path: "/admin", component: HomeAdmin, layout: null },
   { path: "/verify-account", component: VerifyAccount, layout: null },
+  { path: "/user/project/:id", component: HomeUser, layout: null },
 ];
 
 const privateRoutes = [];

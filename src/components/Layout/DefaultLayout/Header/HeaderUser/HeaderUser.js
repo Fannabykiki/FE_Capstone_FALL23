@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
 import "./HeaderUser.css";
 import { Dropdown, Menu, Badge, Modal } from "antd";
-import { BellOutlined, UserOutlined } from "@ant-design/icons";
+import { BellOutlined } from "@ant-design/icons";
 import axios from "axios";
 import UserProfile from "../../../../../pages/User/UserProfile/views/UserProfile";
 import ChangePassword from "../../../../../pages/User/ChangePassword/views/ChangePassword";
 import Avatar from "react-avatar";
+import { useNavigate } from "react-router-dom";
 
 const HeaderUser = () => {
+  const navigate = useNavigate();
   const notificationCount = 3; // Số lượng thông báo (thay đổi tùy ý)
   const [userInfo, setUserInfo] = useState({ username: "" });
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
   const [isChangePassword, setIsChangePassword] = useState(false);
+
+  const signOutHandler = () => {
+    sessionStorage.clear();
+    navigate("/logout");
+  };
 
   useEffect(() => {
     getUserLogin(); // Gọi hàm để lấy thông tin người dùng
@@ -52,7 +59,9 @@ const HeaderUser = () => {
       <Menu.Item key="changepassword" onClick={showChangePasswordModal}>
         Change Password
       </Menu.Item>
-      <Menu.Item key="logout">Logout</Menu.Item>
+      <Menu.Item key="logout" onClick={signOutHandler}>
+        Logout
+      </Menu.Item>
     </Menu>
   );
 

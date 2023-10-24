@@ -1,17 +1,15 @@
 import React from "react";
-import SidebarUser from "../../../../components/Layout/DefaultLayout/Sidebar/User/SidebarUser";
+import SidebarProject from "../../../../components/Layout/DefaultLayout/Sidebar/User/SidebarProject";
 import HeaderUser from "../../../../components/Layout/DefaultLayout/Header/HeaderUser/HeaderUser";
 import Footer from "../../../../components/Layout/DefaultLayout/Footer/Footer";
 import { Route, Routes } from "react-router-dom";
-import Summary from "../../../User/Overview/Summary/Summary";
-import Dashboard from "../../../User/Overview/Dashboard/Dashboard";
+import Summary from "../../Overview/Summary/Summary";
+import Dashboard from "../../Overview/Dashboard/Dashboard";
 
-const HomeUser = ({ chidlren }) => {
-  console.log(sessionStorage.isAdmin);
-
+const HomeProject = () => {
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
-      <SidebarUser />
+      <SidebarProject />
       <div
         style={{
           display: "flex",
@@ -31,4 +29,4 @@ const HomeUser = ({ chidlren }) => {
   );
 };
 
-export default HomeUser;
+export default HomeProject;
