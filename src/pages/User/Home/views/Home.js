@@ -2,12 +2,11 @@ import React from "react";
 import SidebarHome from "../../../../components/Layout/DefaultLayout/Sidebar/User/SidebarHome";
 import HeaderUser from "../../../../components/Layout/DefaultLayout/Header/HeaderUser/HeaderUser";
 import Footer from "../../../../components/Layout/DefaultLayout/Footer/Footer";
-import ProjectList from "../../Project/views/ProjectList";
+import ProjectList from "../../Project/ListProject/ProjectList";
 import "./Home.css";
 import { Divider } from "antd";
 
 const HomeUser = () => {
-
   return (
     <div className="HomeUser">
       <SidebarHome />
@@ -16,9 +15,7 @@ const HomeUser = () => {
           <HeaderUser />
           <Divider className="divider-custom" />
         </div>
-        <div>
-          <ProjectList />
-        </div>
+        <ProjectList />
         <div className="FooterUser">
           <Divider className="divider-custom" />
           <Footer />

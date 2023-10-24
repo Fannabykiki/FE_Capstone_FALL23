@@ -1,4 +1,4 @@
-.HomeUser {
+/* .HomeUser {
   display: flex;
   flex-direction: row;
 }
@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  justify-content: safe;
 }
 
 .FooterUser {
@@ -15,4 +16,4 @@
 
 .divider-custom {
   margin: 0 !important;
-}
+} */
