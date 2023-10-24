@@ -1,0 +1,22 @@
+.Logout {
+  background-image: url(../../assets/images/BG.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding-bottom: 10%;
+}
+
+.FormLogout {
+  width: 800px;
+  height: 500px;
+  background-color: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+  border-radius: 10px;
+  margin-top: 100px;
+  position: relative;
+}

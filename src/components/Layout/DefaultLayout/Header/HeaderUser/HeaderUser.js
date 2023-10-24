@@ -4,12 +4,14 @@ import { Dropdown, Menu, Badge, Modal } from "antd";
 import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 import UserProfile from "../../../../../pages/User/UserProfile/views/UserProfile";
+import ChangePassword from "../../../../../pages/User/ChangePassword/views/ChangePassword";
 import Avatar from "react-avatar";
 
 const HeaderUser = () => {
   const notificationCount = 3; // Số lượng thông báo (thay đổi tùy ý)
-  const [userInfo, setUserInfo] = useState({ username: "", img: "" });
+  const [userInfo, setUserInfo] = useState({ username: "" });
   const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
+  const [isChangePassword, setIsChangePassword] = useState(false);
 
   useEffect(() => {
     getUserLogin(); // Gọi hàm để lấy thông tin người dùng
@@ -27,8 +29,7 @@ const HeaderUser = () => {
 
       // Sau khi nhận dữ liệu từ API, cập nhật state userInfo
       setUserInfo({
-        username: response.data.email,
-        img: response.data.imgUrl,
+        username: response.data.userName,
       });
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -39,12 +40,18 @@ const HeaderUser = () => {
     setIsProfileModalVisible(true);
   };
 
+  const showChangePasswordModal = () => {
+    setIsChangePassword(true);
+  };
+
   const userMenu = (
     <Menu>
       <Menu.Item key="profile" onClick={showProfileModal}>
         Profile
       </Menu.Item>
-      <Menu.Item key="changepassword">Change Password</Menu.Item>
+      <Menu.Item key="changepassword" onClick={showChangePasswordModal}>
+        Change Password
+      </Menu.Item>
       <Menu.Item key="logout">Logout</Menu.Item>
     </Menu>
   );
@@ -84,7 +91,19 @@ const HeaderUser = () => {
         onCancel={() => setIsProfileModalVisible(false)}
         footer={null}
       >
+        <br />
         <UserProfile />
+      </Modal>
+
+      <Modal
+        style={{ top: 20 }}
+        title="Change Password"
+        open={isChangePassword}
+        onCancel={() => setIsChangePassword(false)}
+        footer={null}
+      >
+        <br />
+        <ChangePassword />
       </Modal>
     </div>
   );

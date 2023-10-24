@@ -4,7 +4,10 @@ import { publicRoutes } from "./routes/routes";
 import DefaultLayout from "./components/Layout/DefaultLayout/DefaulLayout";
 import HomeUser from "./pages/User/HomeUser/views/HomeUser";
 import Summary from "./pages/User/Overview/Summary/Summary";
-import ProjectDetails from "./pages/User/ProjectSettings/Components/ProjectDetails";
+import Dashboard from "./pages/Admin/Dashboard/Dashboard";
+import HomeAdmin from "./pages/Admin/HomeAdmin/views/HomeAdmin";
+import ListUser from "./pages/Admin/UserManage/ListUser/views/ListUser";
+import ListProject from "./pages/Admin/ProjectManage/ListProject";
 
 function App() {
   return (
@@ -39,9 +42,21 @@ function App() {
               </HomeUser>
             }
           />
-          {/* <Route path="/details">
-            <ProjectDetails></ProjectDetails>
-          </Route> */}
+
+          <Route
+            path="/admin/*" // This will match all subroutes of /user
+            element={
+              <HomeAdmin>
+                <Routes>
+                  {/* Define your user-specific routes here */}
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/user" element={<ListUser />} />
+                  <Route path="/dashboard" element={<ListProject />} />
+                  {/* <Route path="/profile" element={<UserProfile />} /> */}
+                </Routes>
+              </HomeAdmin>
+            }
+          />
         </Routes>
 
 

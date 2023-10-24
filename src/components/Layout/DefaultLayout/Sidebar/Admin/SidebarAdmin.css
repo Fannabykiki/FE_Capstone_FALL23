@@ -1,0 +1,19 @@
+.sidebar-admin {
+  background-color: #ffffff;
+  left: 0;
+  top: 0;
+  min-height: 100vh;
+  width: 300px;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.logout-button {
+  width: 100%;
+  margin-top: 20px;
+  background-color: #fff1f0;
+  color: #f5222d;
+  font-weight: 600;
+}

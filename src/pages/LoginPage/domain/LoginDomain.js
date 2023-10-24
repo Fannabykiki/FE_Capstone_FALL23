@@ -1,5 +1,5 @@
 // LoginDomain.js
-import { message, notification } from "antd";
+import { message } from "antd";
 import axios from "axios";
 
 const loginHandler = async (email, password) => {
@@ -11,40 +11,31 @@ const loginHandler = async (email, password) => {
         password,
       }
     );
-    console.log("abc" + response);
     if (response.status === 200) {
       const userData = response.data;
       const userId = response.data.userId;
       const isAdmin = response.data.isAdmin;
+      const email = response.data.email;
+      const token = response.data.token;
 
       localStorage.setItem("userData", JSON.stringify(userData));
+
       sessionStorage.setItem("userData", JSON.stringify(userData));
       sessionStorage.setItem("userId", JSON.stringify(userId));
       sessionStorage.setItem("isAdmin", JSON.stringify(isAdmin));
+      sessionStorage.setItem("email", JSON.stringify(email));
+      sessionStorage.setItem("token", JSON.stringify(token));
 
       getUserLogin();
-      console.log("Đăng nhập thành công");
-      message.success("Đăng nhập thành công");
+      message.success("Login successful");
       return userData;
     } else {
-      console.error("Đăng nhập thất bại");
-      // Hiển thị thông báo lỗi cụ thể từ API response
-      notification.error({
-        message: "Lỗi đăng nhập",
-        description: { response },
-      });
+      message.error(response.data);
 
-      return null;
+      return response;
     }
   } catch (error) {
-    // Xử lý lỗi nếu có lỗi trong quá trình gọi API
-    console.error("Lỗi trong quá trình đăng nhập:", error);
-
-    // Hiển thị thông báo lỗi chung
-    notification.error({
-      message: "Lỗi đăng nhập",
-      description: "Đã xảy ra lỗi trong quá trình đăng nhập",
-    });
+    message.error(error.response.data);
 
     return null;
   }
