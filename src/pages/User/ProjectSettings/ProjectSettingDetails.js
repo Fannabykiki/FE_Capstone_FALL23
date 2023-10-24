@@ -8,7 +8,6 @@ import "./ProjectSetting.css";
 import SidebarUser from "../../../components/Layout/DefaultLayout/Sidebar/User/SidebarHome";
 
 
-
 const ProjectSettingDetails = () => {
 
     return (
@@ -18,22 +17,17 @@ const ProjectSettingDetails = () => {
                     <SidebarHome />
                     <SidebarSettingProject></SidebarSettingProject>
                 </div>
-
             </div>
             <div>
                 <div>
                     <HeaderUser />
                     <Divider className="divider-custom" />
                 </div>
-
-
-
                 <div className="FooterUser">
                     <Divider className="divider-custom" />
                     <Footer />
                 </div>
             </div>
-
         </>
     );
 };
