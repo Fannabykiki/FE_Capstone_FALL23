@@ -26,14 +26,87 @@ const ChangePassword = () => {
   return (
     <>
       <Form form={form} layout="vertical">
-        <Form.Item name="oldpass" label={<b>Old Password</b>}>
-          <Input onChange={(e) => setCurrentPassword(e.target.value)} />
+        <Form.Item
+          name="oldpass"
+          label={<b>Old Password</b>}
+          rules={[
+            {
+              required: true,
+              message: "Old password is required",
+            },
+          ]}
+        >
+          <Input.Password
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
         </Form.Item>
-        <Form.Item name="newpass" label={<b>New Password</b>}>
-          <Input onChange={(e) => setNewPassword(e.target.value)} />
+        <Form.Item
+          name="newpass"
+          label={<b>New Password</b>}
+          rules={[
+            {
+              required: true,
+              message: "New password is required",
+            },
+            {
+              validator: (rule, value) => {
+                if (!value) {
+                  return Promise.resolve(); // Không kiểm tra nếu trường rỗng
+                }
+                if (value === currentPassword) {
+                  return Promise.reject(
+                    "New password must be different from the old password"
+                  );
+                }
+                if (value.length < 6) {
+                  return Promise.reject(
+                    "Password must be at least 6 characters"
+                  );
+                }
+                if (!/[A-Z]/.test(value)) {
+                  return Promise.reject(
+                    "Password must contain at least one uppercase letter"
+                  );
+                }
+                if (!/[a-z]/.test(value)) {
+                  return Promise.reject(
+                    "Password must contain at least one lowercase letter"
+                  );
+                }
+                if (!/[$&+,:;=?@#|'<>.^*()%!-]/.test(value)) {
+                  return Promise.reject(
+                    "Password must contain at least one special character"
+                  );
+                }
+                return Promise.resolve();
+              },
+            },
+          ]}
+        >
+          <Input.Password onChange={(e) => setNewPassword(e.target.value)} />
         </Form.Item>
-        <Form.Item name="confirmpass" label={<b>Confirm New Password</b>}>
-          <Input onChange={(e) => setConfirmPassword(e.target.value)} />
+        <Form.Item
+          name="confirmpass"
+          label={<b>Confirm New Password</b>}
+          rules={[
+            {
+              required: true,
+              message: "Confirm new password is required",
+            },
+            {
+              validator: (rule, value) => {
+                if (value === newPassword) {
+                  return Promise.resolve();
+                } else {
+                  return Promise.reject("Confim new password do not match");
+                }
+              },
+            },
+          ]}
+        >
+          <Input.Password
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
         </Form.Item>
         <div className="btnModal">
           <Button className="btn-close">Close</Button>

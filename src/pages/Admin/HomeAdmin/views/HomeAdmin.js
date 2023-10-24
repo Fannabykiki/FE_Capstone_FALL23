@@ -5,9 +5,10 @@ import HeaderUser from "../../../../components/Layout/DefaultLayout/Header/Heade
 import SidebarAdmin from "../../../../components/Layout/DefaultLayout/Sidebar/Admin/SidebarAdmin";
 import { Divider } from "antd";
 import { Route, Routes } from "react-router-dom";
-import Dashboard from "../../Dashboard/Dashboard";
+import Dashboard from "../../Dashboard/views/Dashboard";
 import ListUser from "../../UserManage/ListUser/views/ListUser";
 import ListProject from "../../ProjectManage/ListProject";
+import ViewUser from "../../UserManage/ViewUser/views/ViewUser";
 
 const HomeAdmin = () => {
   return (
@@ -19,8 +20,12 @@ const HomeAdmin = () => {
           <Divider className="divider-custom" />
         </div>
         <Routes>
+          {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
+          {/*User*/}
           <Route path="/user" element={<ListUser />} />
+          <Route path="/user/view/:id" element={<ViewUser />} />
+          {/*Project*/}
           <Route path="/project" element={<ListProject />} />
         </Routes>
         <div className="FooterAdmin">

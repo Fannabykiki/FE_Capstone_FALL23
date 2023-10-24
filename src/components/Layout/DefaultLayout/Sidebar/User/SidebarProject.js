@@ -1,15 +1,13 @@
 import React from "react";
 import "./Sidebar.css";
-import { Button, Menu, Typography } from "antd";
+import { Button, Menu } from "antd";
 import logoHeader from "../../../../../assets/images/LogoHeader.png";
 import {
-  AppstoreOutlined,
   CalendarOutlined,
   DashboardOutlined,
   FileDoneOutlined,
   InboxOutlined,
   LogoutOutlined,
-  MailOutlined,
   NodeExpandOutlined,
   ProjectOutlined,
   ReadOutlined,
@@ -19,17 +17,6 @@ import {
 import Overview from "../../../../../assets/images/Overview.png";
 import Board from "../../../../../assets/images/Board.png";
 import { useNavigate } from "react-router-dom";
-const { Link } = Typography;
-
-function getItem(label, key, icon, children, type) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  };
-}
 
 const items = [
   {
@@ -86,9 +73,14 @@ const items = [
       },
     ],
   },
+  {
+    label: <b>Project settings</b>,
+    key: "/user/project/settings",
+    icon: <SettingOutlined />,
+  },
 ];
 
-const SidebarUser = () => {
+const SidebarProject = () => {
   const navigate = useNavigate();
 
   const signOutHandler = () => {
@@ -125,4 +117,4 @@ const SidebarUser = () => {
   );
 };
 
-export default SidebarUser;
+export default SidebarProject;
