@@ -4,7 +4,7 @@ import HeaderUser from "../../../../components/Layout/DefaultLayout/Header/Heade
 import Footer from "../../../../components/Layout/DefaultLayout/Footer/Footer";
 import { Route, Routes } from "react-router-dom";
 import Summary from "../../Overview/Summary/Summary";
-import Dashboard from "../../Overview/Dashboard/Dashboard";
+import Dashboard from "../../Overview/Dashboard/view";
 
 const HomeProject = () => {
   return (
