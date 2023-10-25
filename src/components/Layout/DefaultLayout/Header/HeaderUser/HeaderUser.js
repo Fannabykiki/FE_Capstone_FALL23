@@ -7,6 +7,7 @@ import UserProfile from "../../../../../pages/User/UserProfile/views/UserProfile
 import ChangePassword from "../../../../../pages/User/ChangePassword/views/ChangePassword";
 import Avatar from "react-avatar";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../../../../../navigations/routes";
 
 const HeaderUser = () => {
   const navigate = useNavigate();
@@ -16,8 +17,7 @@ const HeaderUser = () => {
   const [isChangePassword, setIsChangePassword] = useState(false);
 
   const signOutHandler = () => {
-    sessionStorage.clear();
-    navigate("/logout");
+    navigate(routes.Logout.path);
   };
 
   useEffect(() => {

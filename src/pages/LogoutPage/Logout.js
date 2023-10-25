@@ -3,12 +3,18 @@ import logo from "../../assets/images/Devtask.png";
 import "./Logout.css";
 import { Button, Result } from "antd";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../../navigations/routes";
+import { useDispatch } from "react-redux";
+import { logout } from "../../containers/app/slice";
 
 const Logout = () => {
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
   const goToLogin = () => {
-    navigate("/login");
+    dispatch(logout());
+    navigate(routes.Login.path);
   };
   return (
     <div className="Logout">
