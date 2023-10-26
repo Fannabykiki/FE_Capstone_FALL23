@@ -18,6 +18,8 @@ import ListUser from "../pages/Admin/UserManage/ListUser/views/ListUser";
 import ViewUser from "../pages/Admin/UserManage/ViewUser/views/ViewUser";
 import ListProject from "../pages/Admin/ProjectManage/ListProject";
 import Summary from "../pages/User/Project/Overview/Summary/views/Summary";
+import ChangePasswordPage from "../pages/User/ChangePassword/views/ChangePassword";
+import UserProfilePage from "../pages/User/UserProfile/views/UserProfile";
 
 export const routes = {
   // User routes
@@ -65,6 +67,14 @@ export const routes = {
   UserProjectId: {
     path: "/user/project/:id",
     element: null,
+  },
+  UserProfile: {
+    path: "/user/profile",
+    element: <UserProfilePage />,
+  },
+  ChangePassword: {
+    path: "/user/password/change",
+    element: <ChangePasswordPage />,
   },
   // CreateNewPWD: {
   //   path: "/create-newpwd",

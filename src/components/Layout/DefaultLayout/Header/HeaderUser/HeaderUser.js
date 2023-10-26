@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./HeaderUser.css";
-import { Dropdown, Menu, Badge, Modal } from "antd";
+import { Dropdown, Menu, Badge } from "antd";
 import { BellOutlined } from "@ant-design/icons";
 import axios from "axios";
-import UserProfile from "../../../../../pages/User/UserProfile/views/UserProfile";
-import ChangePassword from "../../../../../pages/User/ChangePassword/views/ChangePassword";
 import Avatar from "react-avatar";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../../../../../navigations/routes";
@@ -13,8 +11,6 @@ const HeaderUser = () => {
   const navigate = useNavigate();
   const notificationCount = 3; // Số lượng thông báo (thay đổi tùy ý)
   const [userInfo, setUserInfo] = useState({ username: "" });
-  const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
-  const [isChangePassword, setIsChangePassword] = useState(false);
 
   const signOutHandler = () => {
     navigate(routes.Logout.path);
@@ -43,20 +39,18 @@ const HeaderUser = () => {
     }
   };
 
-  const showProfileModal = () => {
-    setIsProfileModalVisible(true);
-  };
-
-  const showChangePasswordModal = () => {
-    setIsChangePassword(true);
-  };
-
   const userMenu = (
     <Menu>
-      <Menu.Item key="profile" onClick={showProfileModal}>
+      <Menu.Item
+        key="profile"
+        onClick={() => navigate(routes.UserProfile.path)}
+      >
         Profile
       </Menu.Item>
-      <Menu.Item key="changepassword" onClick={showChangePasswordModal}>
+      <Menu.Item
+        key="changepassword"
+        onClick={() => navigate(routes.ChangePassword.path)}
+      >
         Change Password
       </Menu.Item>
       <Menu.Item key="logout" onClick={signOutHandler}>
@@ -91,29 +85,6 @@ const HeaderUser = () => {
           </Dropdown>
         </div>
       </div>
-
-      <Modal
-        style={{ top: 20 }}
-        width={700}
-        title="User Profile"
-        open={isProfileModalVisible}
-        onCancel={() => setIsProfileModalVisible(false)}
-        footer={null}
-      >
-        <br />
-        <UserProfile />
-      </Modal>
-
-      <Modal
-        style={{ top: 20 }}
-        title="Change Password"
-        open={isChangePassword}
-        onCancel={() => setIsChangePassword(false)}
-        footer={null}
-      >
-        <br />
-        <ChangePassword />
-      </Modal>
     </div>
   );
 };
