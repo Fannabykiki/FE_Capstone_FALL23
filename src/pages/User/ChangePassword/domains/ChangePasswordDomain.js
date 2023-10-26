@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const changePasswordHandler = async (
+export const changePassword = async (
   currentPassword,
   newPassword,
   confirmPassword
@@ -16,11 +16,11 @@ const changePasswordHandler = async (
 
   // Tạo một đối tượng chứa dữ liệu cần gửi lên server
   const data = {
-    email: email,
-    token: token,
-    currentPassword: currentPassword,
-    newPassword: newPassword,
-    confirmPassword: confirmPassword,
+    email,
+    token,
+    currentPassword,
+    newPassword,
+    confirmPassword,
   };
 
   try {
@@ -39,5 +39,3 @@ const changePasswordHandler = async (
     throw new Error("Lỗi khi thay đổi mật khẩu: " + error.message);
   }
 };
-
-export { changePasswordHandler };
