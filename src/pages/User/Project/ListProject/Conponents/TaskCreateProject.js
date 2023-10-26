@@ -12,7 +12,6 @@ import {
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-import moment from 'moment';
 import axios from "axios";
 
 const { TextArea } = Input;
@@ -64,7 +63,7 @@ const TaskCreateProject = ({ onProjectCreated }) => {
 
   return (
     <>
-      <Space>
+      <Space style={{ display: 'flex', flexDirection: 'row-reverse', margin: '10px' }}>
         <Button
           type="primary"
           onClick={showModal}

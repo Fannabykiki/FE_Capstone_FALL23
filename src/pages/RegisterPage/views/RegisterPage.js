@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import GoogleButton from "react-google-button";
 import { registerHandler } from "../domain/RegisterDomain";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../../../navigations/routes";
 
 const { Text, Link } = Typography;
 
@@ -37,7 +38,7 @@ const RegisterPage = () => {
         );
         localStorage.setItem("email", JSON.stringify(email));
 
-        navigate("/login");
+        navigate(routes.Login.path);
       } else {
         message.error("Đăng ký thất bại, vui lòng kiểm tra lại thông tin.");
       }

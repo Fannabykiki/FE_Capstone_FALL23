@@ -15,6 +15,7 @@ import "./ViewUser.css";
 import { getUserInfo } from "../domains/ViewUserDomain";
 import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
+import { routes } from "../../../../../navigations/routes";
 
 const options = [
   { label: "Male", value: 1 },
@@ -106,7 +107,10 @@ const ViewUser = () => {
           </Col>
         </Row>
         <div className="btnModal">
-          <Button onClick={() => navigate("/admin/user")} className="btn-close">
+          <Button
+            onClick={() => navigate(routes.AdminUser.path)}
+            className="btn-close"
+          >
             Close
           </Button>
           <Button type="primary" className="btn-save">

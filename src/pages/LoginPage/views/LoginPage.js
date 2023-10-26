@@ -7,6 +7,9 @@ import GoogleButton from "react-google-button";
 import ReCAPTCHA from "react-google-recaptcha";
 import { loginHandler, loginGoogle } from "../domain/LoginDomain";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../../../navigations/routes";
+import { useDispatch } from "react-redux";
+import { login } from "../../../containers/app/slice";
 
 const { Text, Link } = Typography;
 
@@ -17,6 +20,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  const dispatch = useDispatch();
 
   const validateEmail = (rule, value) => {
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
@@ -33,10 +38,11 @@ const LoginPage = () => {
       const { email, password } = values;
       const userData = await loginHandler(email, password);
       if (userData) {
+        dispatch(login(userData.isAdmin));
         if (userData.isAdmin) {
-          navigate("/admin");
+          navigate(routes.AdminDashboard.path);
         } else {
-          navigate("/user");
+          navigate(routes.User.path);
         }
         if (rememberMe) {
           localStorage.setItem("rememberedPassword", password);
@@ -55,13 +61,14 @@ const LoginPage = () => {
       // Không cần gọi form.validateFields() ở đây
       const userData = await loginGoogle();
       if (userData) {
+        dispatch(login(userData.isAdmin));
         // Kiểm tra giá trị isAdmin trong userData
         if (userData.isAdmin) {
           // Nếu là admin, chuyển hướng đến trang admin
-          navigate("/admin");
+          navigate(routes.AdminDashboard.path);
         } else {
           // Nếu không phải admin, chuyển hướng đến trang user
-          navigate("/user");
+          navigate(routes.User.path);
         }
 
         // Log thông tin tài khoản

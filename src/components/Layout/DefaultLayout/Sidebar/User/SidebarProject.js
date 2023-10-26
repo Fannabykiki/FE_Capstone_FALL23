@@ -17,6 +17,7 @@ import {
 import Overview from "../../../../../assets/images/Overview.png";
 import Board from "../../../../../assets/images/Board.png";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../../../../../navigations/routes";
 
 const items = [
   {
@@ -84,8 +85,7 @@ const SidebarProject = () => {
   const navigate = useNavigate();
 
   const signOutHandler = () => {
-    sessionStorage.clear();
-    navigate("/logout");
+    navigate(routes.Logout.path);
   };
 
   return (
