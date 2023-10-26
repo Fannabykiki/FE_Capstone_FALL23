@@ -5,21 +5,26 @@ import Footer from "../../../../components/Layout/DefaultLayout/Footer/Footer";
 import ProjectList from "../../Project/views/ProjectList";
 import "./Home.css";
 import { Divider } from "antd";
+import TaskCreateProject from "../../Project/views/Conponents/TaskCreateProject";
 
 const HomeUser = () => {
 
   return (
     <div className="Container">
+      <HeaderUser />
       <div className="HomeUser">
+
         <SidebarHome />
+        <div >
+          <ProjectList ></ProjectList>
+        </div>
       </div>
       <div>
 
         <div>
-          <HeaderUser />
           <Divider className="divider-custom" />
         </div>
-        <ProjectList />
+
 
         <div>
 

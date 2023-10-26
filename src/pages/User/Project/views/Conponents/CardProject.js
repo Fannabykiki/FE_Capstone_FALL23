@@ -29,7 +29,7 @@ const CardProject = () => {
   };
 
   return (
-    <Space direction="vertical" size={16}>
+    <Space direction="vertical" size={12} style={{ display: 'flex', flexDirection: 'row' }}>
       {projectCard.map((project) => (
         <Card
           key={project.projectId}

@@ -11,7 +11,6 @@ const style = {
 const data = [
   {
 
-
   }
 
 ];
@@ -19,25 +18,19 @@ const ProjectList = () => {
 
   return (
     <>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-        <TaskCreateProject></TaskCreateProject>
-      </div>
+      <TaskCreateProject></TaskCreateProject>
       <br></br>
-      <List
-        HEAD
-        grid={{
-          gutter: 10,
-          column: 4,
-        }}
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item>
-            {/* <Card title={item.title}>Card content</Card> */}
+      <div>
+        <List
+          dataSource={data}
+          renderItem={(item) => (
+
             <CardProject ></CardProject>
 
-          </List.Item>
-        )}
-      />
+
+          )}
+        />
+      </div>
 
 
 
