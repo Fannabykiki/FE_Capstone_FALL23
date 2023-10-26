@@ -6,6 +6,7 @@ import Avatar from "react-avatar";
 import { LogoutOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { routes } from "../../../../../navigations/routes";
 
 const { Text } = Typography;
 
@@ -14,8 +15,7 @@ const SidebarUser = () => {
   const [userInfo, setUserInfo] = useState({ username: "" });
 
   const signOutHandler = () => {
-    sessionStorage.clear();
-    navigate("/logout");
+    navigate(routes.Logout.path);
   };
 
   useEffect(() => {

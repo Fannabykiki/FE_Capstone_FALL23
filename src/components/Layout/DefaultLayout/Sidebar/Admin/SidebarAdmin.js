@@ -9,6 +9,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { routes } from "../../../../../navigations/routes";
 
 const { Text } = Typography;
 
@@ -38,8 +39,7 @@ const SidebarAdmin = () => {
   const navigate = useNavigate();
 
   const signOutHandler = () => {
-    sessionStorage.clear();
-    navigate("/logout");
+    navigate(routes.Logout.path);
   };
 
   return (
