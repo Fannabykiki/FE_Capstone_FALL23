@@ -3,6 +3,7 @@ import "./SidebarAdmin.css";
 import logoHeader from "../../../../../assets/images/LogoHeader.png";
 import { Button, Menu, Typography } from "antd";
 import {
+  FileProtectOutlined,
   LogoutOutlined,
   ProjectFilled,
   SignalFilled,
@@ -15,23 +16,24 @@ const { Text } = Typography;
 
 const items = [
   {
-    label: "Dashboard",
+    label: <Text className="txtSidebar">Dashboard</Text>,
     key: "/admin/dashboard",
     icon: <SignalFilled />,
   },
   {
-    label: "User",
+    label: <Text className="txtSidebar">User</Text>,
     key: "/admin/user",
     icon: <UserOutlined />,
   },
   {
-    label: "Project",
+    label: <Text className="txtSidebar">Project</Text>,
     key: "/admin/project",
     icon: <ProjectFilled />,
   },
   {
-    label: "Permission",
+    label: <Text className="txtSidebar">Permission</Text>,
     key: "/admin/permission",
+    icon: <FileProtectOutlined />,
   },
 ];
 

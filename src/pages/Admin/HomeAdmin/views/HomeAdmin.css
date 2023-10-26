@@ -4,16 +4,18 @@
 }
 
 .Container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    justify-content: safe;
-  }
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: safe;
+}
 
 .FooterAdmin {
   margin-top: auto;
 }
 
 .divider-custom {
-    margin: 0 !important;
-  }
+  height: 2px;
+  background-color: #e8e8e8;
+  margin: 0 !important;
+}

@@ -28,6 +28,7 @@ const columns = [
     title: "Name",
     dataIndex: "name",
     key: "name",
+    // sorter: (a, b) => a.name.length - b.name.length,
   },
   {
     title: "Email",
@@ -69,7 +70,6 @@ const ListUser = () => {
   const [dataSource, setDataSource] = useState([]);
   const [filterModalVisible, setFilterVisible] = useState(false);
   const [form] = Form.useForm();
-  const [value, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
   const closeHandleVisible = () => {
@@ -82,6 +82,7 @@ const ListUser = () => {
   const fetchData = async () => {
     try {
       const data = await getUserList();
+      console.log(data);
       setDataSource(data);
     } catch (error) {
       console.error("Error:", error);
@@ -150,7 +151,7 @@ const ListUser = () => {
         </Drawer>
 
         <div className="listHeader">
-          <Typography className="title">User Manager</Typography>
+          <Typography className="titleList">User Manager</Typography>
           <div>
             <Input
               style={{ width: "300px", marginRight: "10px" }}

@@ -1,0 +1,15 @@
+.list-permission {
+  background-color: #f6f7fb;
+  height: 100%;
+  width: 100%;
+}
+
+.form-list-permission {
+  padding: 30px;
+}
+
+.header-list {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}

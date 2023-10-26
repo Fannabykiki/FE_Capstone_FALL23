@@ -70,8 +70,10 @@ const GuardRoute = ({ children, isLogin, isPrivate, redirectPath }) => {
         [
           routes.AdminDashboard,
           routes.AdminUser,
-          routes.AdminView,
+          routes.AdminViewUser,
           routes.AdminProject,
+          routes.AdminPermission,
+          routes.AdminPermissionView,
         ],
         location
       )

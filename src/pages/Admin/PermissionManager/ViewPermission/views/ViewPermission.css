@@ -1,0 +1,15 @@
+.view-permission {
+  background-color: #f6f7fb;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.form-view-permission {
+  padding: 20px;
+  margin: 30px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  width: 100%;
+}

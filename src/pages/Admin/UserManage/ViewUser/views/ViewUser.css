@@ -1,8 +1,5 @@
 .viewUser {
-  background-image: url("../../../../../assets/images/BG.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
+  background-color: #ebedf5;
   display: flex;
   justify-content: center;
   height: 100%;

@@ -18,6 +18,8 @@ import ListUser from "../pages/Admin/UserManage/ListUser/views/ListUser";
 import ViewUser from "../pages/Admin/UserManage/ViewUser/views/ViewUser";
 import ListProject from "../pages/Admin/ProjectManage/ListProject";
 import Summary from "../pages/User/Project/Overview/Summary/views/Summary";
+import ListPermission from "../pages/Admin/PermissionManager/ListPermission/views/ListPermission";
+import ViewPermission from "../pages/Admin/PermissionManager/ViewPermission/views/ViewPermission";
 
 export const routes = {
   // User routes
@@ -88,13 +90,21 @@ export const routes = {
     path: "/admin/user",
     element: <ListUser />,
   },
-  AdminView: {
+  AdminViewUser: {
     path: "/admin/user/view/:id",
     element: <ViewUser />,
   },
   AdminProject: {
     path: "/admin/project",
     element: <ListProject />,
+  },
+  AdminPermission: {
+    path: "/admin/permission",
+    element: <ListPermission />,
+  },
+  AdminPermissionView: {
+    path: "/admin/permission/view/:id",
+    element: <ViewPermission />,
   },
 };
 
