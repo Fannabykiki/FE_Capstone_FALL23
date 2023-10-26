@@ -1,18 +1,11 @@
-import {
-  Button,
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Radio,
-  Row,
-  message,
-} from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { Button, Col, Form, Input, Radio, Row, message } from "antd";
 import Avatar from "react-avatar";
-import "./UserProfile.css";
+import moment from "moment";
+
 import { getUser, updateUser } from "../domains/UserProfileDomain";
-import moment from "moment/moment";
+import MyDatePicker from "../../../../components/DatePicker";
+import "./UserProfile.css";
 
 const options = [
   { label: "Male", value: 1 },
@@ -20,28 +13,15 @@ const options = [
 ];
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null);
+  const [form] = Form.useForm();
 
-  useEffect(() => {
-    const userId = JSON.parse(decodeURIComponent(sessionStorage.userId));
-
-    // Gọi API và cập nhật state userData
-    getUser(userId)
-      .then((data) => {
-        setUserData(data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy dữ liệu từ API:", error);
-      });
-  }, []);
-
-  const handleSave = () => {
-    updateUser(userData)
+  const handleSave = (value) => {
+    updateUser({ ...value, doB: value.doB?.toISOString() })
       .then((updatedData) => {
         // Cập nhật lại dữ liệu người dùng sau khi cập nhật thành công
         getUser(updatedData.userId)
           .then((data) => {
-            setUserData(data);
+            form.setFieldsValue({ ...data, doB: moment(data.doB) });
             message.success("Update successful");
           })
           .catch((error) => {
@@ -54,91 +34,96 @@ const UserProfile = () => {
       });
   };
 
-  const handleDobChange = (date, dateString) => {
-    setUserData({ ...userData, doB: dateString });
-  };
+  useEffect(() => {
+    const userId = JSON.parse(decodeURIComponent(sessionStorage.userId));
 
-  const handleGenderChange = (e) => {
-    setUserData({ ...userData, gender: e.target.value });
-  };
+    // Gọi API và cập nhật state userData
+    getUser(userId)
+      .then((data) => {
+        form.setFieldsValue({ ...data, doB: moment(data.doB) });
+      })
+      .catch((error) => {
+        console.error("Lỗi khi lấy dữ liệu từ API:", error);
+      });
+  }, [form]);
 
   return (
-    <>
-      <Row></Row>
-      <Row>
-        <Col span={6}>
-          <Avatar name={userData?.email} round size="150" textSizeRatio={2} />
-        </Col>
-        <Col span={1}></Col>
-        <Col span={17}>
-          <Form layout="vertical">
-            <Form.Item label={<b>Full Name</b>}>
-              <Input
-                value={userData?.fullname}
-                onChange={(e) =>
-                  setUserData({ ...userData, fullname: e.target.value })
-                }
-              />
+    <Form form={form} onFinish={handleSave} layout="vertical">
+      {({ email }) => (
+        <Row
+          style={{
+            padding: 20,
+          }}
+        >
+          <Col span={6}>
+            <Avatar name={email} round size="150" textSizeRatio={2} />
+          </Col>
+          <Col span={18}>
+            <Form.Item name="fullname" label={<b>Full Name</b>}>
+              <Input />
             </Form.Item>
 
-            <Form.Item label={<b>User Name</b>}>
-              <Input
-                value={userData?.userName}
-                onChange={(e) =>
-                  setUserData({ ...userData, userName: e.target.value })
-                }
-              />
+            <Form.Item name="userName" label={<b>User Name</b>}>
+              <Input />
             </Form.Item>
 
-            <Form.Item label={<b>Email</b>}>
-              <Input value={userData?.email} disabled />
+            <Form.Item name="email" label={<b>Email</b>}>
+              <Input disabled />
             </Form.Item>
 
-            <Form.Item label={<b>Phone Number</b>}>
-              <Input
-                value={userData?.phoneNumber}
-                onChange={(e) =>
-                  setUserData({ ...userData, phoneNumber: e.target.value })
-                }
-              />
+            <Form.Item
+              name="phoneNumber"
+              label={<b>Phone Number</b>}
+              rules={[
+                {
+                  validator: (rule, value) => {
+                    if (
+                      /^\(?0?([3|8|9]){1}\)?([0-9]{1})?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(
+                        value
+                      )
+                    ) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject("Phone number invalid");
+                  },
+                },
+              ]}
+            >
+              <Input />
             </Form.Item>
 
-            <Form.Item label={<b>Address</b>}>
-              <Input
-                value={userData?.address}
-                onChange={(e) =>
-                  setUserData({ ...userData, address: e.target.value })
-                }
-              />
+            <Form.Item name="address" label={<b>Address</b>}>
+              <Input />
             </Form.Item>
 
-            <Form.Item label={<b>Date of Birth</b>}>
-              <DatePicker
-                value={moment(userData?.doB)}
-                format={"DD/MM/YYYY"}
+            <Form.Item name="doB" label={<b>Date of Birth</b>}>
+              <MyDatePicker
+                format="DD/MM/YYYY"
                 allowClear={false}
-                onChange={handleDobChange}
+                disabledDate={(current) =>
+                  current && moment(current) > moment().endOf("day")
+                }
               />
             </Form.Item>
 
-            <Form.Item label={<b>Gender</b>}>
-              <Radio.Group
-                value={userData?.gender}
-                options={options}
-                onChange={handleGenderChange}
-              />
+            <Form.Item name="gender" label={<b>Gender</b>}>
+              <Radio.Group options={options} />
             </Form.Item>
 
             <div className="btnModal">
-              <Button className="btn-close">Close</Button>
-              <Button type="primary" className="btn-save" onClick={handleSave}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="btn-save"
+                onClick={handleSave}
+              >
                 Save
               </Button>
             </div>
-          </Form>
-        </Col>
-      </Row>
-    </>
+          </Col>
+        </Row>
+      )}
+    </Form>
   );
 };
 

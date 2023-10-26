@@ -1,19 +1,18 @@
-import { Button, Form, Input } from "antd";
-import React, { useState } from "react";
-import { changePasswordHandler } from "../domains/ChangePasswordDomain";
+import React from "react";
+import { Button, Form, Input, Typography } from "antd";
+
+import { changePassword } from "../domains/ChangePasswordDomain";
+import { ChangePasswordStyled, FormStyled } from "./styles";
 
 const ChangePassword = () => {
   const [form] = Form.useForm();
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handlePasswordChange = async () => {
+  const handleChangePassword = async (values) => {
     try {
-      const result = await changePasswordHandler(
-        currentPassword,
-        newPassword,
-        confirmPassword
+      const result = await changePassword(
+        values.currentPassword,
+        values.newPassword,
+        values.confirmPassword
       );
       // Xử lý kết quả thành công ở đây, có thể hiển thị thông báo thành công
       console.log("Mật khẩu đã được thay đổi thành công!", result);
@@ -24,24 +23,27 @@ const ChangePassword = () => {
   };
 
   return (
-    <>
-      <Form form={form} layout="vertical">
+    <ChangePasswordStyled>
+      <Typography.Title level={2}>Change your password</Typography.Title>
+      <Typography style={{ margin: "20px 0" }}>
+        A strong password helps prevent unauthorized access to your email
+        account.
+      </Typography>
+      <FormStyled form={form} onFinish={handleChangePassword} layout="vertical">
         <Form.Item
-          name="oldpass"
-          label={<b>Old Password</b>}
+          name="currentPassword"
+          label="Current password"
           rules={[
             {
               required: true,
-              message: "Old password is required",
+              message: "Current password is required",
             },
           ]}
         >
-          <Input.Password
-            onChange={(e) => setCurrentPassword(e.target.value)}
-          />
+          <Input.Password />
         </Form.Item>
         <Form.Item
-          name="newpass"
+          name="newPassword"
           label={<b>New Password</b>}
           rules={[
             {
@@ -53,7 +55,7 @@ const ChangePassword = () => {
                 if (!value) {
                   return Promise.resolve(); // Không kiểm tra nếu trường rỗng
                 }
-                if (value === currentPassword) {
+                if (value === form.getFieldValue("currentPassword")) {
                   return Promise.reject(
                     "New password must be different from the old password"
                   );
@@ -83,19 +85,19 @@ const ChangePassword = () => {
             },
           ]}
         >
-          <Input.Password onChange={(e) => setNewPassword(e.target.value)} />
+          <Input.Password />
         </Form.Item>
         <Form.Item
-          name="confirmpass"
-          label={<b>Confirm New Password</b>}
+          name="confirmPassword"
+          label={<b>Reenter password</b>}
           rules={[
             {
               required: true,
-              message: "Confirm new password is required",
+              message: "Reenter password is required",
             },
             {
               validator: (rule, value) => {
-                if (value === newPassword) {
+                if (value === form.getFieldValue("newPassword")) {
                   return Promise.resolve();
                 } else {
                   return Promise.reject("Confim new password do not match");
@@ -104,22 +106,15 @@ const ChangePassword = () => {
             },
           ]}
         >
-          <Input.Password
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          <Input.Password />
         </Form.Item>
         <div className="btnModal">
-          <Button className="btn-close">Close</Button>
-          <Button
-            onClick={handlePasswordChange}
-            type="primary"
-            className="btn-save"
-          >
+          <Button htmlType="submit" type="primary" className="btn-save">
             Save
           </Button>
         </div>
-      </Form>
-    </>
+      </FormStyled>
+    </ChangePasswordStyled>
   );
 };
 

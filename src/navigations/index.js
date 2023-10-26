@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { authSelector } from "../containers/app/selectors";
 import UserLayout from "../pages/User/HomeUser/views/UserLayout";
 import HomeAdminLayout from "../pages/Admin/HomeAdmin/views/HomeAdmin";
+import ProfileLayout from "../components/Layout/ProfileLayout";
 
 const Navigations = () => {
   const { isLogin, isAdmin } = useSelector(authSelector);
@@ -23,27 +24,30 @@ const Navigations = () => {
       if (!route || !values(route)) {
         return undefined;
       }
-      return values(route)?.map(({ element, ...props }, index) => (
-        <Route
-          key={index}
-          {...props}
-          element={
-            <GuardRoute
-              isLogin={!!isLogin}
-              isPrivate={!!isPrivate}
-              redirectPath={
-                isPrivate
-                  ? routes.Login.path
-                  : isAdmin
-                  ? routes.AdminDashboard.path
-                  : routes.User.path
-              }
-            >
-              {element}
-            </GuardRoute>
-          }
-        />
-      ));
+      return values(route).map(
+        ({ route: subRoute, element, ...props }, index) => (
+          <Route
+            key={index}
+            {...props}
+            element={
+              <GuardRoute
+                isLogin={!!isLogin}
+                isPrivate={!!isPrivate}
+                redirectPath={
+                  isPrivate
+                    ? routes.Login.path
+                    : isAdmin
+                    ? routes.AdminDashboard.path
+                    : routes.User.path
+                }
+              >
+                {element}
+              </GuardRoute>
+            }
+            children={subRoute}
+          />
+        )
+      );
     },
     [isLogin, isAdmin]
   );
@@ -79,8 +83,7 @@ const GuardRoute = ({ children, isLogin, isPrivate, redirectPath }) => {
       )
     ) {
       return <HomeAdminLayout>{children}</HomeAdminLayout>;
-    }
-    if (
+    } else if (
       matchRoutes(
         [
           routes.UserOverViewSummary,
@@ -91,6 +94,10 @@ const GuardRoute = ({ children, isLogin, isPrivate, redirectPath }) => {
       )
     ) {
       return <UserLayout>{children}</UserLayout>;
+    } else if (
+      matchRoutes([routes.ChangePassword, routes.UserProfile], location)
+    ) {
+      return <ProfileLayout>{children}</ProfileLayout>;
     }
 
     return children;
