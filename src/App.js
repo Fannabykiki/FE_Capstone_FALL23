@@ -1,5 +1,10 @@
 import { Fragment } from "react";
-import { BrowserRouter as Router, Routes, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Switch,
+} from "react-router-dom";
 import { publicRoutes } from "./routes/routes";
 import DefaultLayout from "./components/Layout/DefaultLayout/DefaulLayout";
 import HomeUser from "./pages/User/HomeUser/views/HomeProject";
@@ -9,6 +14,7 @@ import HomeAdmin from "./pages/Admin/HomeAdmin/views/HomeAdmin";
 import ListUser from "./pages/Admin/UserManage/ListUser/views/ListUser";
 import ListProject from "./pages/Admin/ProjectManage/ListProject";
 import ViewUser from "./pages/Admin/UserManage/ViewUser/views/ViewUser";
+import Board from "./pages/User/Project/Board/Board/views/Board";
 
 function App() {
   return (
@@ -37,6 +43,7 @@ function App() {
               <HomeUser>
                 <Routes>
                   <Route path="/project/:id/summary" element={<Summary />} />
+                  <Route path="/project/boards" element={<Board />} />
                 </Routes>
               </HomeUser>
             }
@@ -59,11 +66,6 @@ function App() {
             }
           />
         </Routes>
-
-
-
-
-
       </div>
     </Router>
   );

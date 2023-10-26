@@ -1,18 +1,18 @@
-.HomeAdmin {
+.HomeProject {
   display: flex;
   flex-direction: row;
 }
 
-.Container {
+.container-homeproject {
   display: flex;
   flex-direction: column;
   width: 100%;
   justify-content: safe;
 }
 
-.FooterAdmin {
-  margin-top: auto;
-}
+.FooterHomeProject {
+    margin-top: auto;
+  }
 
 .divider-custom {
   margin: 0 !important;

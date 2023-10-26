@@ -12,3 +12,13 @@
   align-items: center;
   margin-left: 30px;
 }
+
+.btnModal {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.btn-close {
+  margin-right: 10px;
+}

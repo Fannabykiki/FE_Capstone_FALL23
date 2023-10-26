@@ -1,0 +1,23 @@
+.headerBoard {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30px;
+}
+
+.header-title {
+  display: flex;
+  font-size: 35px;
+  align-items: center;
+}
+
+.txtTitle{
+    font-size: 25px;
+    margin-left: 10px;
+    font-weight: 500;
+}
+
+.divider-custom {
+    margin: 0 !important;
+  }

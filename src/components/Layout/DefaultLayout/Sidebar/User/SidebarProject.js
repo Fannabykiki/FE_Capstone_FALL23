@@ -43,7 +43,7 @@ const items = [
   },
   {
     label: <b>Board</b>,
-    key: "user/board",
+    key: "/user/board",
     icon: <img className="iconSidebar" src={Board} alt="board" />,
     children: [
       {
@@ -53,7 +53,7 @@ const items = [
       },
       {
         label: "Board",
-        key: "user/board/boards",
+        key: "/user/board/boards",
         icon: <TableOutlined />,
       },
       {
