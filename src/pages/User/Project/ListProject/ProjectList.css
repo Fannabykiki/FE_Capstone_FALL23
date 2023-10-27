@@ -1,0 +1,55 @@
+.custom-card {
+  height: 200px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.custom-card .ant-card-actions {
+  border-top: none;
+}
+
+.avatar-card {
+  border-radius: 4px;
+}
+
+.icon-card {
+  width: 30px;
+  height: 30px;
+  float: right;
+  margin: 50px 20px 0 0;
+}
+
+.icon-list {
+  width: 30px;
+  height: 30px;
+  float: right;
+  margin: 0 auto;
+}
+
+.project-list {
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-top: 25px;
+}
+
+.txt-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.project-list .ant-list-item {
+  padding: 19px;
+}
+
+.loading-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.8); /* Một lớp phủ định cho màn hình nền */
+  }

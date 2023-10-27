@@ -9,6 +9,12 @@
   width: 100%;
 }
 
+.list-project {
+  width: 100%;
+  background-color: #f6f7fb;
+  padding: 20px;
+}
+
 .FooterUser {
   margin-top: auto;
 }
