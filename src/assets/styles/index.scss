@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "antd/dist/reset.css";
+
+.login,
+.register {
+  background-image: url("../../assets/images/login-bg.jpg");
+  background-size: cover;
+}
