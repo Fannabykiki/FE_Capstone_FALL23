@@ -1,6 +1,6 @@
-import { AuthContext } from "@/context/Auth";
+import { useAuthContext } from "@/context/Auth";
 import { checkTokenValid } from "@/utils/common";
-import React, { useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface Props {
@@ -18,7 +18,7 @@ export default function PageContainer({
   useEffect(() => {
     document.title = `Dev Tasker - ${title}`;
   }, [title]);
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
 

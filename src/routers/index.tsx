@@ -6,6 +6,7 @@ import { paths } from "./paths";
 import { DashboardLayout, PageContainer } from "@/components";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ForgotPassword from "@/features/ForgotPassword";
 
 export default function Routers() {
   return (
@@ -34,6 +35,16 @@ export default function Routers() {
               requireAuth={false}
               Component={Register}
               title="Register"
+            />
+          }
+        />
+        <Route
+          path={paths.forgotPassword}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={ForgotPassword}
+              title="Forgot Password"
             />
           }
         />

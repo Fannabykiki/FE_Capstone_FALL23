@@ -1,6 +1,5 @@
 import { Dropdown } from "antd";
-import { AuthContext } from "@/context/Auth";
-import { useContext } from "react";
+import { useAuthContext } from "@/context/Auth";
 import { useNavigate } from "react-router-dom";
 import { MenuInfo } from "rc-menu/lib/interface";
 
@@ -13,7 +12,7 @@ interface Props {
 }
 
 export default function UserMenu({ children }: Props) {
-  const { setAuthenticate } = useContext(AuthContext);
+  const { setAuthenticate } = useAuthContext();
   const navigate = useNavigate();
 
   const onSignOut = () => {

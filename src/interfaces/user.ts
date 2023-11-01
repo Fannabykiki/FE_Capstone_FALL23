@@ -13,6 +13,7 @@ export interface UserInfo {
   phoneNumber: string;
   statusId: string;
   userName: string;
+  isFirstTime: boolean;
 }
 
 export interface JwtTokenInfo {

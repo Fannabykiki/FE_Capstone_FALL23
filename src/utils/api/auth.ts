@@ -16,9 +16,28 @@ const register = (data: IRegisterPayload) =>
     data,
   }).then((resp) => resp.data);
 
+const forgotPassword = (email: string) =>
+  axiosClient({
+    url: `/api/authentication/forgot-password?email=${email}`,
+    method: HTTP_METHODS.POST,
+  }).then((resp) => resp.data);
+
+const sendMail = (email: string) =>
+  axiosClient({
+    url: `/api/authentication/send-mail`,
+    method: HTTP_METHODS.POST,
+    data: {
+      email,
+    },
+  }).then((resp) => resp.data);
+
 export const authApi = {
   login,
   register,
+  forgotPassword,
+  sendMail,
   loginKey: "authLogin",
   registerKey: "authRegister",
+  forgotPasswordKey: "authForgotPassword",
+  sendMailKey: "authSendMail",
 };

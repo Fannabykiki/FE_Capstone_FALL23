@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { Button, Form, Image, Input } from "antd";
-import { AuthContext } from "@/context/Auth";
-import { useContext } from "react";
+import { useAuthContext } from "@/context/Auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authApi } from "@/utils/api/auth";
@@ -12,7 +11,7 @@ import BrandFull from "@/assets/images/BrandFull.png";
 export default function Login() {
   const navigate = useNavigate();
 
-  const { setAuthenticate } = useContext(AuthContext);
+  const { setAuthenticate } = useAuthContext();
 
   const { mutate: login, isLoading } = useMutation({
     mutationFn: authApi.login,
@@ -34,7 +33,7 @@ export default function Login() {
   };
 
   return (
-    <div className="login min-h-screen">
+    <div className="auth min-h-screen">
       <div
         className={classNames(
           "w-96 rounded-md bg-neutral-50/75 flex flex-col items-center p-4",
@@ -58,7 +57,11 @@ export default function Login() {
           <Form.Item
             label="Password"
             extra={
-              <Button className="float-right font-semibold" type="link">
+              <Button
+                className="float-right font-semibold"
+                type="link"
+                onClick={() => navigate(paths.forgotPassword)}
+              >
                 Forgot password
               </Button>
             }

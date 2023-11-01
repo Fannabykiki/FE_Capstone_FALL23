@@ -6,8 +6,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Button, Divider, Layout, Menu, Typography } from "antd";
-import { AuthContext } from "@/context/Auth";
-import { useContext, useEffect, useState } from "react";
+import { useAuthContext } from "@/context/Auth";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
 import UserMenu from "./UserMenu";
@@ -41,7 +41,7 @@ export default function DashboardSider() {
   const navigate = useNavigate();
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo } = useAuthContext();
 
   useEffect(() => {
     const keys = location.pathname.split("/").slice(1);

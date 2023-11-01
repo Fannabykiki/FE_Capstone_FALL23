@@ -25,7 +25,7 @@ export default function Register() {
     confirmPassword: "",
   };
 
-  const handleValidatePassword = (
+  const handleValidatePassword = async (
     _: RuleObject,
     password: string,
     callback: (error?: string | undefined) => void
@@ -72,7 +72,7 @@ export default function Register() {
   };
 
   return (
-    <div className="register min-h-screen">
+    <div className="auth min-h-screen">
       <div
         className={classNames(
           "w-96 rounded-md bg-neutral-50/75 flex flex-col items-center p-4",
@@ -105,7 +105,7 @@ export default function Register() {
             rules={[
               {
                 required: true,
-                // validator: handleValidatePassword,
+                validator: handleValidatePassword,
               },
             ]}
           >
