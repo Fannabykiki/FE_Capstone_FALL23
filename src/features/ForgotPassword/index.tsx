@@ -6,7 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 import { classNames } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { AxiosError } from "axios";
-import { IFormError } from "@/interfaces/shared/common";
 import { toast } from "react-toastify";
 
 export default function ForgotPassword() {
@@ -20,8 +19,10 @@ export default function ForgotPassword() {
   const { mutate: forgotPassword, isLoading } = useMutation({
     mutationFn: authApi.forgotPassword,
     mutationKey: [authApi.forgotPasswordKey],
-    onSuccess: (data) => {
-      toast.success(data);
+    onSuccess: (_, email) => {
+      toast.success(
+        `A verification email has been sent to '${email}', please follow to change your password`
+      );
       navigate(paths.login);
     },
     onError: (err: AxiosError<string>) => {

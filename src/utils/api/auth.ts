@@ -1,4 +1,8 @@
-import { ILoginPayload, IRegisterPayload } from "@/interfaces/auth";
+import {
+  ILoginPayload,
+  IRegisterPayload,
+  IVerifyAccountPayload,
+} from "@/interfaces/auth";
 import { HTTP_METHODS } from "@/utils/constants";
 import axiosClient from "./axios-client";
 
@@ -11,7 +15,7 @@ const login = (data: ILoginPayload) =>
 
 const register = (data: IRegisterPayload) =>
   axiosClient({
-    url: "/api/user-management/users",
+    url: "/api/authentication/register",
     method: HTTP_METHODS.POST,
     data,
   }).then((resp) => resp.data);
@@ -22,22 +26,20 @@ const forgotPassword = (email: string) =>
     method: HTTP_METHODS.POST,
   }).then((resp) => resp.data);
 
-const sendMail = (email: string) =>
+const verifyAccount = (params: IVerifyAccountPayload) =>
   axiosClient({
-    url: `/api/authentication/send-mail`,
+    url: `/api/authentication/verify-user`,
     method: HTTP_METHODS.POST,
-    data: {
-      email,
-    },
+    params,
   }).then((resp) => resp.data);
 
 export const authApi = {
   login,
   register,
   forgotPassword,
-  sendMail,
+  verifyAccount,
   loginKey: "authLogin",
   registerKey: "authRegister",
   forgotPasswordKey: "authForgotPassword",
-  sendMailKey: "authSendMail",
+  verifyAccountKey: "authVerifyAccount",
 };

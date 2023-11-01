@@ -8,3 +8,8 @@ export interface IRegisterPayload {
   password: string;
   confirmPassword: string;
 }
+
+export interface IVerifyAccountPayload {
+  email: string;
+  verifyToken: string;
+}

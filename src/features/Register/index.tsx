@@ -53,9 +53,9 @@ export default function Register() {
   const { mutate: register, isLoading } = useMutation({
     mutationFn: authApi.register,
     mutationKey: [authApi.registerKey],
-    onSuccess: (data) => {
+    onSuccess: (_, variables) => {
       toast.success(
-        "Create new account succeed! Now you can login into our system"
+        `An email has been sent to '${variables.email}', please follow to verify your account`
       );
       navigate(paths.login);
     },

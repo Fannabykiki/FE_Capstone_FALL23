@@ -7,6 +7,7 @@ import { DashboardLayout, PageContainer } from "@/components";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
+import VerifyAccount from "@/features/VerifyAccount";
 
 export default function Routers() {
   return (
@@ -45,6 +46,16 @@ export default function Routers() {
               requireAuth={false}
               Component={ForgotPassword}
               title="Forgot Password"
+            />
+          }
+        />
+        <Route
+          path={paths.verifyAccount}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={VerifyAccount}
+              title="Verify Account"
             />
           }
         />
