@@ -35,3 +35,9 @@ export const DEFAULT_PER_PAGE = 20;
 export const DATE_FORMAT = "DD/MM/YYYY";
 
 export const DATETIME_FORMAT = "DD/MM/YYYY HH:mm";
+
+export const REGEX_NUMBER = /\d/;
+
+export const REGEX_SPECIAL_CHARACTER = /[~`!@#$%^&*()\-_+={}\[\]|\/:;"'<>,.?]/;
+
+export const REGEX_CHARACTER = /(?=.*[a-z])(?=.*[A-Z])/;

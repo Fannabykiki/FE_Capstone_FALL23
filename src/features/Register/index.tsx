@@ -1,10 +1,19 @@
-import { Button, Col, Form, Image, Input, Row } from "antd";
+import { Button, Form, Image, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@/utils/api/auth";
 import { paths } from "@/routers/paths";
 import { useMutation } from "@tanstack/react-query";
 import { classNames } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
+import { IFormError } from "@/interfaces/shared/common";
+import {
+  REGEX_CHARACTER,
+  REGEX_NUMBER,
+  REGEX_SPECIAL_CHARACTER,
+} from "@/utils/constants";
+import { RuleObject } from "antd/es/form";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -16,27 +25,50 @@ export default function Register() {
     confirmPassword: "",
   };
 
+  const handleValidatePassword = (
+    _: RuleObject,
+    password: string,
+    callback: (error?: string | undefined) => void
+  ) => {
+    switch (true) {
+      case password.length < 8:
+        callback("Password must be equal or longer than 8 characters");
+        break;
+      case !REGEX_NUMBER.test(password):
+        callback("Password must have atleast one number");
+        break;
+      case !REGEX_SPECIAL_CHARACTER.test(password):
+        callback("Password must have atleast one special character");
+        break;
+      case !REGEX_CHARACTER.test(password):
+        callback(
+          "Password must have atleast one upper and lower case character"
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
   const { mutate: register, isLoading } = useMutation({
     mutationFn: authApi.register,
     mutationKey: [authApi.registerKey],
-    onSuccess: (resp) => {
+    onSuccess: (data) => {
+      toast.success(
+        "Create new account succeed! Now you can login into our system"
+      );
       navigate(paths.login);
     },
-    onError: (err) => {
+    onError: (err: AxiosError<IFormError>) => {
       console.error(err);
+      if (err.response?.data?.errors) {
+      }
     },
   });
 
   const onSubmit = async () => {
     const formValues = await form.validateFields();
-
-    const params = {
-      ...initialValues,
-      ...formValues,
-    };
-
-    delete params.confirmPassword;
-    register(params);
+    register(formValues);
   };
 
   return (
@@ -73,6 +105,7 @@ export default function Register() {
             rules={[
               {
                 required: true,
+                // validator: handleValidatePassword,
               },
             ]}
           >
