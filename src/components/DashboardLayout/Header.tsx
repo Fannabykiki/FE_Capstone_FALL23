@@ -29,7 +29,7 @@ export default function DashboardHeader() {
   );
 
   return (
-    <Layout.Header className="h-[84px] flex items-center justify-between">
+    <Layout.Header className="flex items-center justify-between">
       <Breadcrumb
         className="whitespace-nowrap font-semibold"
         items={breadcrumbItems}

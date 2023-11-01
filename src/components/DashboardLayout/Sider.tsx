@@ -5,13 +5,13 @@ import {
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Divider, Layout, Menu, Typography } from "antd";
+import { Button, Divider, Layout, Menu, Typography } from "antd";
 import { AuthContext } from "@/context/Auth";
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
 import UserMenu from "./UserMenu";
-import BrandHeader from "@/assets/images/BrandHeader.png";
+import BrandHeaderLight from "@/assets/images/BrandHeaderLight.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
 import { paths } from "@/routers/paths";
 
@@ -72,42 +72,38 @@ export default function DashboardSider() {
 
   const Logo = () =>
     collapsed ? (
-      <img
-        className="h-[29px]"
-        src={BrandIcon}
-        alt={`Dev Tasker collapsed logo`}
-      />
+      <img className="h-16" src={BrandIcon} alt={`Dev Tasker collapsed logo`} />
     ) : (
       <img
         className="h-16"
-        src={BrandHeader}
+        src={BrandHeaderLight}
         alt={`Dev Tasker full sized logo`}
       />
     );
 
   const UserSetting = () => (
     <div>
-      <Divider className="border-neutral-200 dark:border-neutral-800" />
+      <Divider className="border-neutral-200" />
       <div className="flex flex-col gap-5">
         {collapsed ? (
           <UserMenu>
-            <UserOutlined className="!h-10 !w-10 m-1 bg-neutral-200 dark:bg-neutral-800 text-neutral-950 dark:text-neutral-200" />
+            <UserIcon />
           </UserMenu>
         ) : (
-          <div className="flex justify-between items-center text-neutral-950 dark:text-neutral-200">
+          <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <UserOutlined className="!h-10 !w-10 m-1 bg-neutral-200 dark:bg-neutral-800" />
+              <UserIcon />
               <div className="flex flex-col">
-                <Typography.Text className="font-semibold text-base break-keep">
-                  {userInfo?.name || "User"}
+                <Typography.Text className="font-semibold text-neutral-200 text-base break-keep">
+                  {userInfo?.fullname || "User"}
                 </Typography.Text>
-                <Typography.Text className="break-keep">
+                <Typography.Text className="break-keep text-neutral-200">
                   {userInfo?.email || "Email"}
                 </Typography.Text>
               </div>
             </div>
             <UserMenu>
-              <SettingOutlined className="dark:text-neutral-500" />
+              <SettingOutlined className="text-neutral-200 cursor-pointer" />
             </UserMenu>
           </div>
         )}
@@ -125,34 +121,30 @@ export default function DashboardSider() {
         width={300}
         collapsedWidth={96}
         breakpoint="xl"
-        className="relative p-lg"
+        className="relative p-2"
       >
         <div className="flex flex-col h-full justify-between">
-          <div className="flex flex-col gap-lg flex-1 h-0">
-            <div className="h-xl mb-lg">
-              <div className="flex flex-rol justify-center items-center">
-                <Logo />
-              </div>
-              <div
-                onClick={() => setCollapsed((value) => !value)}
-                className="absolute top-[28px] -right-sm"
-              >
-                {collapsed ? (
-                  <DoubleRightOutlined className="text-neutral-500" />
-                ) : (
-                  <DoubleLeftOutlined className="text-neutral-500" />
-                )}
-              </div>
+          <div className="flex flex-col gap-5 flex-1 h-0">
+            <div className="flex justify-center items-center">
+              <Logo />
             </div>
             <Menu
               mode="inline"
+              theme="dark"
               items={items}
               onClick={onClickMenuItem}
               openKeys={openKeys}
               selectedKeys={selectedKeys}
               onOpenChange={onOpenSubMenu}
-              className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
+              className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden flex-grow"
             />
+            <Button type="text" onClick={() => setCollapsed((value) => !value)}>
+              {collapsed ? (
+                <DoubleRightOutlined className="text-neutral-200" />
+              ) : (
+                <DoubleLeftOutlined className="text-neutral-200" />
+              )}
+            </Button>
           </div>
           <UserSetting />
         </div>
@@ -160,3 +152,7 @@ export default function DashboardSider() {
     </>
   );
 }
+
+const UserIcon = () => (
+  <UserOutlined className="h-10 w-10 bg-neutral-200 rounded-full flex justify-center" />
+);

@@ -10,7 +10,7 @@ export default function DashboardLayout() {
       <Layout>
         <DashboardHeader />
         <Layout.Content className="flex-1 flex flex-col">
-          <div className="bg-neutral-50 dark:bg-neutral-950 rounded-tl-md p-xl flex-1 overflow-y-auto">
+          <div className="bg-neutral-50 p-8 flex-1 overflow-y-auto">
             <Outlet />
           </div>
         </Layout.Content>

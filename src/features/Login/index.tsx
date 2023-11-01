@@ -17,14 +17,15 @@ export default function Login() {
   const { mutate: login, isLoading } = useMutation({
     mutationFn: authApi.login,
     mutationKey: [authApi.loginKey],
-    onSuccess: (resp) => {
-      const { accessToken } = resp.data.data;
-      localStorage.setItem("token", accessToken);
+    onSuccess: (data) => {
+      const { token } = data;
+      localStorage.setItem("token", token);
       setAuthenticate({ isAuthenticated: true, userInfo: null });
       navigate("/");
     },
     onError: (err) => {
-      toast.error("Login failed");
+      console.error(err);
+      toast.error("Login failed! Please try again later");
     },
   });
 
@@ -44,13 +45,13 @@ export default function Login() {
         <Form
           className="w-full"
           layout="vertical"
-          initialValues={{ username: "", password: "" }}
+          initialValues={{ email: "", password: "" }}
           onFinish={onFinish}
         >
           <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true }]}
+            label="Email"
+            name="email"
+            rules={[{ required: true, type: "email" }]}
           >
             <Input />
           </Form.Item>

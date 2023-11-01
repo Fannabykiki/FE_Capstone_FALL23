@@ -11,7 +11,7 @@ export default function Register() {
   const [form] = Form.useForm();
 
   const initialValues = {
-    username: "",
+    email: "",
     password: "",
     confirmPassword: "",
   };
@@ -55,59 +55,48 @@ export default function Register() {
           initialValues={initialValues}
           onFinish={onSubmit}
         >
-          <Row>
-            <Col>
-              <Form.Item
-                label="Username"
-                name="username"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input type="password" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Form.Item
-                label="Confirm password"
-                name="confirmPassword"
-                rules={[
-                  {
-                    required: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue("password") === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error("Password mismatch"));
-                    },
-                  }),
-                ]}
-              >
-                <Input type="password" />
-              </Form.Item>
-            </Col>
-          </Row>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+              },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <Input type="password" />
+          </Form.Item>
+          <Form.Item
+            label="Confirm password"
+            name="confirmPassword"
+            rules={[
+              {
+                required: true,
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Password mismatch"));
+                },
+              }),
+            ]}
+          >
+            <Input type="password" />
+          </Form.Item>
           <Button
             type="primary"
             className="w-full"
