@@ -29,12 +29,13 @@ jobs:
           npm run build --if-present
           npm run test --if-present
           echo "Build folder path: $(pwd)/dist"
+          run: echo "BUILD_FOLDER=$(pwd)/dist" >> $GITHUB_ENV
           
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: node-app
-          path: D:\a\FE_DevTasker\FE_DevTasker/dist
+          path: ${{ env.BUILD_FOLDER }}
 
   deploy:
     runs-on: ubuntu-latest
