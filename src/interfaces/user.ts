@@ -14,6 +14,7 @@ export interface UserInfo {
   statusId: string;
   userName: string;
   isFirstTime: boolean;
+  id: string;
 }
 
 export interface JwtTokenInfo {
@@ -21,4 +22,15 @@ export interface JwtTokenInfo {
   exp: number;
   iss: string;
   aud: string;
+}
+
+export interface IUpdateProfile
+  extends Pick<
+    UserInfo,
+    "fullname" | "address" | "doB" | "gender" | "phoneNumber" | "userName"
+  > {}
+
+export interface IUpdateUserPayload {
+  id: string;
+  data: IUpdateProfile;
 }

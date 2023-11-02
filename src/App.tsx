@@ -51,7 +51,9 @@ function App() {
 
   return (
     <div>
-      <AuthContext.Provider value={{ ...authenticate, setAuthenticate }}>
+      <AuthContext.Provider
+        value={{ ...authenticate, setAuthenticate, refetchProfile: getProfile }}
+      >
         <Routers />
       </AuthContext.Provider>
     </div>

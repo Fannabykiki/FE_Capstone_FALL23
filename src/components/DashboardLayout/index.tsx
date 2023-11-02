@@ -6,8 +6,6 @@ import DashboardHeader from "./Header";
 import DashboardSider from "./Sider";
 
 export default function DashboardLayout() {
-  const { userInfo } = useAuthContext();
-
   return (
     <>
       <Layout style={{ height: "100vh" }}>
@@ -22,7 +20,6 @@ export default function DashboardLayout() {
           {/* <DashboardFooter /> */}
         </Layout>
       </Layout>
-      {userInfo?.isFirstTime && <UpdateProfile />}
     </>
   );
 }

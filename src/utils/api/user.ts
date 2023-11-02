@@ -1,4 +1,4 @@
-import { JwtTokenInfo } from "@/interfaces/user";
+import { IUpdateUserPayload, JwtTokenInfo } from "@/interfaces/user";
 import { HTTP_METHODS } from "@/utils/constants";
 import jwtDecode from "jwt-decode";
 import axiosClient from "./axios-client";
@@ -12,10 +12,19 @@ const getProfile = () => {
   return axiosClient({
     url: `/users/profile/${tokenInfo.UserId}`,
     method: HTTP_METHODS.GET,
-  }).then((resp) => resp.data);
+  }).then((resp) => ({ ...resp.data, id: tokenInfo.UserId }));
 };
+
+const update = ({ id, data }: IUpdateUserPayload) =>
+  axiosClient({
+    url: `/api/user-management/users/${id}`,
+    method: HTTP_METHODS.PUT,
+    data,
+  });
 
 export const userApi = {
   getProfile,
+  update,
   getProfileKey: "userGetProfile",
+  updateKey: "userUpdate",
 };
