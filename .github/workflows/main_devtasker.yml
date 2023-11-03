@@ -50,4 +50,4 @@ jobs:
           app-name: 'devtasker'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CE4811BD43794572B829227D7E2F2779 }}
-          package: node-app/
+          package: .
