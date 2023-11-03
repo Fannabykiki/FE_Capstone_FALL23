@@ -51,7 +51,7 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
         open={true}
         title="Update User Profile"
         cancelButtonProps={{
-          className: classNames(userInfo?.isFirstTime && "hidden"),
+          className: classNames(userInfo?.isFirstTime ? "hidden" : undefined),
           onClick: onCancel,
         }}
         closeIcon={false}
