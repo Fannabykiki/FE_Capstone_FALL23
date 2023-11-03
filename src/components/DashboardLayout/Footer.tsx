@@ -1,9 +1,7 @@
 import React from "react";
 import { Layout } from "antd";
-import { useTranslation } from "react-i18next";
 
 export default function DashboardFooter() {
-  const { t } = useTranslation();
   return (
     <>
       <Layout.Footer
@@ -11,7 +9,7 @@ export default function DashboardFooter() {
           textAlign: "center",
         }}
       >
-        {t("layout.footer.copyright")}
+        Copyright
       </Layout.Footer>
     </>
   );
