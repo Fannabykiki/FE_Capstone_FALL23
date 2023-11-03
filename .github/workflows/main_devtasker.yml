@@ -22,21 +22,16 @@ jobs:
           node-version: '18.x'
 
       - name: npm install, build, and test
-        id : build-path
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
-          
-      - name: Get build folder path
-        id: get_build_path
-        run: echo "::set-output name=build_folder::$(pwd)" 
-        
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: node-app
-          path: ${{ steps.get_build_path.outputs.build_folder }}
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -57,5 +52,5 @@ jobs:
         with:
           app-name: 'devtasker'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_652534E84BEF4C3F97B2889E9845B46F }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B00BDFED7DCC4603B370885292574DFD }}
           package: .
