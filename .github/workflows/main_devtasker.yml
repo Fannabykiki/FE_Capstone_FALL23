@@ -30,7 +30,7 @@ jobs:
           
       - name: Get build folder path
         id: get_build_path
-        run: echo "::set-output name=build_folder::$(pwd)" 
+        run: echo "::set-output name=build_folder::$(pwd)/build" 
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
