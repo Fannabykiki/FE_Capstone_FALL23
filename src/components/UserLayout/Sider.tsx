@@ -2,6 +2,7 @@ import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
   HomeOutlined,
+  PlusOutlined,
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -25,14 +26,14 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-export default function DashboardSider() {
+export default function UserSider() {
   const [collapsed, setCollapsed] = useState(window.innerWidth < 1200);
   const iconSize = collapsed ? 16 : 20;
 
   const items: MenuItem[] = [
     {
       label: "Dashboard",
-      key: paths.dashboard,
+      key: paths.userPages.dashboard,
       icon: <HomeOutlined width={iconSize} height={iconSize} />,
     },
   ];
@@ -128,16 +129,24 @@ export default function DashboardSider() {
             <div className="flex justify-center items-center">
               <Logo />
             </div>
-            <Menu
-              mode="inline"
-              theme="dark"
-              items={items as any}
-              onClick={onClickMenuItem}
-              openKeys={openKeys}
-              selectedKeys={selectedKeys}
-              onOpenChange={onOpenSubMenu}
-              className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden flex-grow"
-            />
+            <div className="flex-grow">
+              <Menu
+                mode="inline"
+                theme="dark"
+                items={items as any}
+                onClick={onClickMenuItem}
+                openKeys={openKeys}
+                selectedKeys={selectedKeys}
+                onOpenChange={onOpenSubMenu}
+                className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
+              />
+              <Divider />
+              <div className="px-2">
+                <Button icon={<PlusOutlined />} type="primary" block>
+                  Add Project
+                </Button>
+              </div>
+            </div>
             <Button type="text" onClick={() => setCollapsed((value) => !value)}>
               {collapsed ? (
                 <DoubleRightOutlined className="text-neutral-200" />

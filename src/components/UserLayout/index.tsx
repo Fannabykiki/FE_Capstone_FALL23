@@ -1,19 +1,9 @@
-import { useAuthContext } from "@/context/Auth";
-import { paths } from "@/routers/paths";
 import { Layout } from "antd";
-import { useLayoutEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import DashboardHeader from "./Header";
 import DashboardSider from "./Sider";
 
-export default function DashboardLayout() {
-  const { userInfo } = useAuthContext();
-  const navigate = useNavigate();
-  useLayoutEffect(() => {
-    if (userInfo?.isAdmin === false) {
-      navigate(paths.userPages.index);
-    }
-  }, [userInfo, navigate]);
+export default function UserLayout() {
   return (
     <>
       <Layout style={{ height: "100vh" }}>

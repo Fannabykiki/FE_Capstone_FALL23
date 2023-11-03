@@ -1,12 +1,13 @@
+import { JwtTokenInfo } from "@/interfaces/user";
 import dayjs from "dayjs";
 import jwtDecode from "jwt-decode";
 import { DATETIME_FORMAT, DATE_FORMAT } from "./constants";
 
-function classNames(...className) {
+function classNames(...className: (string | undefined)[]) {
   return className.filter((name) => Boolean(name)).join(" ");
 }
 
-function makePath(keys) {
+function makePath(keys: string[]) {
   return ["", ...keys].join("/");
 }
 
@@ -15,7 +16,7 @@ const checkTokenValid = () => {
   if (!token) {
     return false;
   }
-  const tokenInfo = jwtDecode(token);
+  const tokenInfo: JwtTokenInfo = jwtDecode(token);
   if (new Date() >= new Date(tokenInfo.exp * 1000)) {
     localStorage.removeItem("token");
     return false;

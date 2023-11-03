@@ -3,11 +3,13 @@ import Login from "@/features/Login";
 import Register from "@/features/Register";
 
 import { paths } from "./paths";
-import { DashboardLayout, PageContainer } from "@/components";
+import { DashboardLayout, PageContainer, UserLayout } from "@/components";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
 import VerifyAccount from "@/features/VerifyAccount";
+import UserMainPage from "@/features/User";
+import Project from "@/features/User/Project";
 
 export default function Routers() {
   return (
@@ -17,6 +19,17 @@ export default function Routers() {
           <Route
             index
             element={<PageContainer Component={Dashboard} title="Dashboard" />}
+          />
+        </Route>
+        <Route path={paths.userPages.index} element={<UserLayout />}>
+          <Route
+            index
+            element={
+              <PageContainer Component={UserMainPage} title="User Dashboard" />
+            }
+          />
+          <Route
+            element={<PageContainer Component={Project} title="Project" />}
           />
         </Route>
         <Route
