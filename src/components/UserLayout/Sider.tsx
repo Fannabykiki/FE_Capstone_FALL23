@@ -16,6 +16,8 @@ import BrandHeader from "@/assets/images/BrandHeader.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
 import { paths } from "@/routers/paths";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
+import useDetailView from "@/hooks/useDetailView";
+import { CreateProject } from "../Modal";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -31,6 +33,11 @@ export default function UserSider() {
   const { menuCollapse, onToggleMenu } = useMenuCollapse(
     window.innerWidth < 1200
   );
+  const {
+    openView: openCreateProjectModal,
+    onOpenView: onOpenCreateProjectModal,
+    onCloseView: onCloseCreateProjectModal,
+  } = useDetailView();
   const iconSize = menuCollapse ? 16 : 20;
 
   const items: MenuItem[] = [
@@ -154,7 +161,7 @@ export default function UserSider() {
                   icon={<PlusOutlined />}
                   type="primary"
                   block
-                  onClick={() => navigate(paths.userPages.project.add)}
+                  onClick={() => onOpenCreateProjectModal()}
                 >
                   {!menuCollapse && "Add Project"}
                 </Button>
@@ -171,6 +178,12 @@ export default function UserSider() {
           <UserSetting />
         </div>
       </Layout.Sider>
+      {openCreateProjectModal && (
+        <CreateProject
+          open={openCreateProjectModal}
+          onClose={onCloseCreateProjectModal}
+        />
+      )}
     </>
   );
 }

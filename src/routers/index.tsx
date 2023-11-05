@@ -10,7 +10,6 @@ import ForgotPassword from "@/features/ForgotPassword";
 import VerifyAccount from "@/features/VerifyAccount";
 import UserMainPage from "@/features/User";
 import Project from "@/features/User/Project";
-import AddProject from "@/features/User/Project/add";
 
 export default function Routers() {
   return (
@@ -32,12 +31,6 @@ export default function Routers() {
           <Route
             path={paths.userPages.project.index}
             element={<PageContainer Component={Project} title="Project" />}
-          />
-          <Route
-            path={paths.userPages.project.add}
-            element={
-              <PageContainer Component={AddProject} title="New Project" />
-            }
           />
         </Route>
         <Route

@@ -9,7 +9,6 @@ export const paths = {
     dashboard: "/user",
     project: {
       index: "/user/project",
-      add: "/user/project/new",
     },
   },
 };
