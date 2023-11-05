@@ -22,6 +22,11 @@ export interface IUpdatePrivacyProjectPayload {
   privacyStatus: boolean;
 }
 
+export interface IUpdateInfoProjectPayload {
+  id: string;
+  data: Partial<ICreateProjectPayload>;
+}
+
 export interface IProject {
   projectId: string;
   projectName: string;
