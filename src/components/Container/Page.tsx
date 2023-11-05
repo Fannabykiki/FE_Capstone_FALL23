@@ -53,7 +53,7 @@ export default function PageContainer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, requireAuth, isAuthenticated, userInfo?.isAdmin]);
 
-  if (isAuthenticated || !requireAuth) {
+  if ((isAuthenticated && userInfo) || !requireAuth) {
     return <Component {...props} />;
   }
   return null;

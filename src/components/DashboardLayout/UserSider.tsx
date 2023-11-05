@@ -10,7 +10,7 @@ import { useAuthContext } from "@/context/Auth";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
-import UserMenu from "./UserMenu";
+import UserMenu from "../UserMenu";
 import BrandHeaderLight from "@/assets/images/BrandHeaderLight.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
 import { paths } from "@/routers/paths";
@@ -131,7 +131,7 @@ export default function DashboardSider() {
             <Menu
               mode="inline"
               theme="dark"
-              items={items}
+              items={items as any}
               onClick={onClickMenuItem}
               openKeys={openKeys}
               selectedKeys={selectedKeys}

@@ -17,10 +17,14 @@ export default function Login() {
     mutationFn: authApi.login,
     mutationKey: [authApi.loginKey],
     onSuccess: (data) => {
-      const { token } = data;
+      const { token, isAdmin } = data;
       localStorage.setItem("token", token);
       setAuthenticate({ isAuthenticated: true, userInfo: null });
-      navigate("/");
+      if (isAdmin) {
+        navigate(paths.dashboard);
+      } else {
+        navigate(paths.userPages.index);
+      }
     },
     onError: (err) => {
       console.error(err);

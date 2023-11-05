@@ -2,7 +2,7 @@ import { Dropdown } from "antd";
 import { useAuthContext } from "@/context/Auth";
 import { useNavigate } from "react-router-dom";
 import { MenuInfo } from "rc-menu/lib/interface";
-import { UpdateProfile } from "../Modal";
+import { UpdateProfile } from "./Modal";
 import { useState } from "react";
 
 enum KeyActions {
