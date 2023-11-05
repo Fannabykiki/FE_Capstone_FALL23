@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import BrandHeader from "@/assets/images/BrandHeader.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
 import { paths } from "@/routers/paths";
-import UserMenu from "./UserMenu";
+import UserMenu from "../UserMenu";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -84,7 +84,7 @@ const AdminDashboardSider = () => {
           </div>
           <Menu
             mode="inline"
-            items={items}
+            items={items as any}
             onClick={onClickMenuItem}
             selectedKeys={[selectedKeys]}
             className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden flex-grow"

@@ -14,7 +14,7 @@ const create = async (data: ICreateProjectPayload) =>
     data,
   }).then((resp) => resp.data);
 
-const getListByUser = (signal: AbortSignal | undefined): Promise<IwProject[]> =>
+const getListByUser = (signal: AbortSignal | undefined): Promise<IProject[]> =>
   axiosClient({
     url: `/api/project-management/projects`,
     method: HTTP_METHODS.GET,
