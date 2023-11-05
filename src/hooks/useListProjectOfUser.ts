@@ -6,7 +6,7 @@ export default function useListProjectOfUser() {
   const { userInfo } = useAuthContext();
   const { data: projects, isLoading } = useQuery({
     queryKey: [projectApi.getListByUserKey, userInfo?.id],
-    queryFn: ({ signal }) => projectApi.getListByUser(signal, userInfo!.id),
+    queryFn: ({ signal }) => projectApi.getListByUser(signal),
     enabled: Boolean(userInfo),
   });
 
