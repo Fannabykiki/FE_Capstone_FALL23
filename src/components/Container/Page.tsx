@@ -1,7 +1,8 @@
 import { useAuthContext } from "@/context/Auth";
+import { adminPaths, paths } from "@/routers/paths";
 import { checkTokenValid } from "@/utils/common";
 import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
 
 interface Props {
   Component: React.FunctionComponent;
@@ -28,8 +29,29 @@ export default function PageContainer({
       if (!isTokenValid && requireAuth) {
         navigate("/login");
       }
+    } else {
+      if (userInfo?.isAdmin) {
+        navigate(
+          matchRoutes(
+            Object.values(adminPaths).map((path) => ({ path })),
+            location
+          )
+            ? location.pathname
+            : paths.adminDashboard
+        );
+      } else {
+        navigate(
+          matchRoutes(
+            Object.values(adminPaths).map((path) => ({ path })),
+            location
+          )
+            ? paths.dashboard
+            : location.pathname
+        );
+      }
     }
-  }, [location, navigate, requireAuth, isAuthenticated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, requireAuth, isAuthenticated, userInfo?.isAdmin]);
 
   if ((isAuthenticated && userInfo) || !requireAuth) {
     return <Component {...props} />;

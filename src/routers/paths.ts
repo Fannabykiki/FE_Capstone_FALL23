@@ -1,3 +1,5 @@
+import pick from "lodash/pick";
+
 export const paths = {
   dashboard: "/",
   login: "/login",
@@ -12,4 +14,13 @@ export const paths = {
       detail: (projectId = ":projectId") => `/user/project/${projectId}`,
     },
   },
+  adminDashboard: "/admin",
+  adminUserManagement: "/admin/user",
+  adminRoleManagement: "/admin/role",
 };
+
+export const adminPaths = pick(paths, [
+  "adminDashboard",
+  "adminUserManagement",
+  "adminRoleManagement",
+]);

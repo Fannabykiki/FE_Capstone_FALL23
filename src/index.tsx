@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
+import { ConfigProvider } from "antd";
 
 dayjs.extend(weekday);
 
@@ -19,7 +20,18 @@ const queryClient = new QueryClient();
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <App />
+    <ConfigProvider
+      theme={{
+        components: {
+          Switch: {
+            colorPrimary: "#22C55E",
+            colorPrimaryHover: "#22C55E",
+          },
+        },
+      }}
+    >
+      <App />
+    </ConfigProvider>
     <ToastContainer />
   </QueryClientProvider>
 );

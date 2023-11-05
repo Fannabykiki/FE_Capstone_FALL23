@@ -1,4 +1,7 @@
 import Dashboard from "@/features/Dashboard";
+import AdminDashboard from "@/features/Admin/Dashboard";
+import UserManagement from "@/features/Admin/UserManagement";
+import RoleManagement from "@/features/Admin/RoleManagement";
 import Login from "@/features/Login";
 import Register from "@/features/Register";
 
@@ -11,8 +14,20 @@ import VerifyAccount from "@/features/VerifyAccount";
 import UserMainPage from "@/features/User";
 import Project from "@/features/User/Project";
 import ProjectDetail from "@/features/User/Project/detail";
+import { useAuthContext } from "@/context/Auth";
+import { Spin } from "antd";
 
 export default function Routers() {
+  const { isAuthenticated, userInfo } = useAuthContext();
+
+  if (isAuthenticated && !userInfo) {
+    return (
+      <div className="w-screen h-screen flex justify-center items-center">
+        <Spin />
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -37,6 +52,38 @@ export default function Routers() {
             path={paths.userPages.project.detail()}
             element={
               <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+        </Route>
+        <Route
+          path={paths.adminDashboard}
+          element={<DashboardLayout isAdmin />}
+        >
+          <Route
+            index
+            element={
+              <PageContainer
+                Component={AdminDashboard}
+                title="Admin Dashboard"
+              />
+            }
+          />
+          <Route
+            path={paths.adminUserManagement}
+            element={
+              <PageContainer
+                Component={UserManagement}
+                title="User Management"
+              />
+            }
+          />
+          <Route
+            path={paths.adminRoleManagement}
+            element={
+              <PageContainer
+                Component={RoleManagement}
+                title="Role Management"
+              />
             }
           />
         </Route>
