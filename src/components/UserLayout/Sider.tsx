@@ -12,9 +12,10 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
 import UserMenu from "../UserMenu";
-import BrandHeaderLight from "@/assets/images/BrandHeaderLight.png";
+import BrandHeader from "@/assets/images/BrandHeader.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
 import { paths } from "@/routers/paths";
+import useMenuCollapse from "@/hooks/useMenuCollapse";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -27,8 +28,10 @@ interface MenuItem {
 }
 
 export default function UserSider() {
-  const [collapsed, setCollapsed] = useState(window.innerWidth < 1200);
-  const iconSize = collapsed ? 16 : 20;
+  const { menuCollapse, onToggleMenu } = useMenuCollapse(
+    window.innerWidth < 1200
+  );
+  const iconSize = menuCollapse ? 16 : 20;
 
   const items: MenuItem[] = [
     {
@@ -72,12 +75,16 @@ export default function UserSider() {
   };
 
   const Logo = () =>
-    collapsed ? (
-      <img className="h-16" src={BrandIcon} alt={`Dev Tasker collapsed logo`} />
+    menuCollapse ? (
+      <img
+        className="h-16"
+        src={BrandIcon}
+        alt={`Dev Tasker menuCollapse logo`}
+      />
     ) : (
       <img
         className="h-16"
-        src={BrandHeaderLight}
+        src={BrandHeader}
         alt={`Dev Tasker full sized logo`}
       />
     );
@@ -86,7 +93,7 @@ export default function UserSider() {
     <div>
       <Divider className="border-neutral-200" />
       <div className="flex flex-col gap-5">
-        {collapsed ? (
+        {menuCollapse ? (
           <UserMenu>
             <UserIcon />
           </UserMenu>
@@ -95,10 +102,10 @@ export default function UserSider() {
             <div className="flex items-center gap-2">
               <UserIcon />
               <div className="flex flex-col">
-                <Typography.Text className="font-semibold text-neutral-200 text-base break-keep">
+                <Typography.Text className="font-semibold text-base break-keep">
                   {userInfo?.fullname || "User"}
                 </Typography.Text>
-                <Typography.Text className="break-keep text-neutral-200">
+                <Typography.Text className="break-keep">
                   {userInfo?.email || "Email"}
                 </Typography.Text>
               </div>
@@ -116,13 +123,14 @@ export default function UserSider() {
     <>
       <Layout.Sider
         collapsible
-        collapsed={collapsed}
-        onCollapse={(value) => setCollapsed(value)}
+        collapsed={menuCollapse}
+        onCollapse={onToggleMenu}
         trigger={null}
         width={300}
         collapsedWidth={96}
         breakpoint="xl"
         className="relative p-2"
+        theme="light"
       >
         <div className="flex flex-col h-full justify-between">
           <div className="flex flex-col gap-5 flex-1 h-0">
@@ -132,7 +140,6 @@ export default function UserSider() {
             <div className="flex-grow">
               <Menu
                 mode="inline"
-                theme="dark"
                 items={items as any}
                 onClick={onClickMenuItem}
                 openKeys={openKeys}
@@ -142,13 +149,19 @@ export default function UserSider() {
               />
               <Divider />
               <div className="px-2">
-                <Button icon={<PlusOutlined />} type="primary" block>
-                  Add Project
+                <Button
+                  title="Add Project"
+                  icon={<PlusOutlined />}
+                  type="primary"
+                  block
+                  onClick={() => navigate(paths.userPages.project.add)}
+                >
+                  {!menuCollapse && "Add Project"}
                 </Button>
               </div>
             </div>
-            <Button type="text" onClick={() => setCollapsed((value) => !value)}>
-              {collapsed ? (
+            <Button type="text" onClick={onToggleMenu}>
+              {menuCollapse ? (
                 <DoubleRightOutlined className="text-neutral-200" />
               ) : (
                 <DoubleLeftOutlined className="text-neutral-200" />
@@ -163,5 +176,5 @@ export default function UserSider() {
 }
 
 const UserIcon = () => (
-  <UserOutlined className="h-10 w-10 bg-neutral-200 rounded-full flex justify-center" />
+  <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
 );

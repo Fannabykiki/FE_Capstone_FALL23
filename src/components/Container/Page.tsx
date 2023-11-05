@@ -18,7 +18,7 @@ export default function PageContainer({
   useEffect(() => {
     document.title = `Dev Tasker - ${title}`;
   }, [title]);
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, userInfo } = useAuthContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,7 +31,7 @@ export default function PageContainer({
     }
   }, [location, navigate, requireAuth, isAuthenticated]);
 
-  if (isAuthenticated || !requireAuth) {
+  if ((isAuthenticated && userInfo) || !requireAuth) {
     return <Component {...props} />;
   }
   return null;

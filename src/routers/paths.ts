@@ -6,7 +6,10 @@ export const paths = {
   verifyAccount: "/verify-account",
   userPages: {
     index: "/user",
-    dashboard: "/",
-    project: "/project",
+    dashboard: "/user",
+    project: {
+      index: "/user/project",
+      add: "/user/project/new",
+    },
   },
 };
