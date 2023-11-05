@@ -209,6 +209,7 @@ const data = [
     role: "Admin",
     status: "active",
     contact: "0123456789",
+    email: "abcd@gmail.com",
   },
   {
     id: 2,
