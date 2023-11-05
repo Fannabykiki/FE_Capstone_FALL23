@@ -1,4 +1,7 @@
-import { ICreateProjectPayload } from "@/interfaces/project";
+import {
+  EProjectPrivacyStatusLabel,
+  ICreateProjectPayload,
+} from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -83,7 +86,10 @@ export default function CreateProject({ open, onClose }: Props) {
               label="Privacy"
               valuePropName="checked"
             >
-              <Switch checkedChildren="Public" unCheckedChildren="Private" />
+              <Switch
+                checkedChildren={EProjectPrivacyStatusLabel.Public}
+                unCheckedChildren={EProjectPrivacyStatusLabel.Private}
+              />
             </Form.Item>
           </Col>
         </Row>

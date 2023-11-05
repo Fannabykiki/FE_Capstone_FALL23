@@ -6,18 +6,18 @@ import {
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu, Typography } from "antd";
+import { Button, Divider, Layout, Menu, Skeleton, Typography } from "antd";
 import { useAuthContext } from "@/context/Auth";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
 import UserMenu from "../UserMenu";
-import BrandHeader from "@/assets/images/BrandHeader.png";
-import BrandIcon from "@/assets/images/BrandIcon.png";
 import { paths } from "@/routers/paths";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateProject } from "../Modal";
+import Brand from "./Brand";
+import useListProjectOfUser from "@/hooks/useListProjectOfUser";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -38,6 +38,8 @@ export default function UserSider() {
     onOpenView: onOpenCreateProjectModal,
     onCloseView: onCloseCreateProjectModal,
   } = useDetailView();
+  const { projects, isLoading: isGettingProjects } = useListProjectOfUser();
+
   const iconSize = menuCollapse ? 16 : 20;
 
   const items: MenuItem[] = [
@@ -81,51 +83,6 @@ export default function UserSider() {
     }
   };
 
-  const Logo = () =>
-    menuCollapse ? (
-      <img
-        className="h-16"
-        src={BrandIcon}
-        alt={`Dev Tasker menuCollapse logo`}
-      />
-    ) : (
-      <img
-        className="h-16"
-        src={BrandHeader}
-        alt={`Dev Tasker full sized logo`}
-      />
-    );
-
-  const UserSetting = () => (
-    <div>
-      <Divider className="border-neutral-200" />
-      <div className="flex flex-col gap-5">
-        {menuCollapse ? (
-          <UserMenu>
-            <UserIcon />
-          </UserMenu>
-        ) : (
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <UserIcon />
-              <div className="flex flex-col">
-                <Typography.Text className="font-semibold text-base break-keep">
-                  {userInfo?.fullname || "User"}
-                </Typography.Text>
-                <Typography.Text className="break-keep">
-                  {userInfo?.email || "Email"}
-                </Typography.Text>
-              </div>
-            </div>
-            <UserMenu>
-              <SettingOutlined className="text-neutral-200 cursor-pointer" />
-            </UserMenu>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <>
       <Layout.Sider
@@ -142,7 +99,7 @@ export default function UserSider() {
         <div className="flex flex-col h-full justify-between">
           <div className="flex flex-col gap-5 flex-1 h-0">
             <div className="flex justify-center items-center">
-              <Logo />
+              <Brand menuCollapse={menuCollapse} />
             </div>
             <div className="flex-grow">
               <Menu
@@ -155,6 +112,27 @@ export default function UserSider() {
                 className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
               />
               <Divider />
+              {isGettingProjects ? (
+                <div className="px-2 py-4">
+                  <Skeleton.Button active block />
+                </div>
+              ) : (
+                <Menu
+                  mode="inline"
+                  items={(projects || []).map((project) => ({
+                    label: project.projectName,
+                    key: project.projectId,
+                    icon: <DoubleRightOutlined />,
+                    onClick: () =>
+                      navigate(
+                        paths.userPages.project.detail(project.projectId)
+                      ),
+                  }))}
+                  openKeys={openKeys}
+                  selectedKeys={selectedKeys}
+                  className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
+                />
+              )}
               <div className="px-2">
                 <Button
                   title="Add Project"
@@ -168,14 +146,39 @@ export default function UserSider() {
               </div>
             </div>
             <Button type="text" onClick={onToggleMenu}>
-              {menuCollapse ? (
-                <DoubleRightOutlined className="text-neutral-200" />
-              ) : (
-                <DoubleLeftOutlined className="text-neutral-200" />
-              )}
+              {menuCollapse ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
             </Button>
           </div>
-          <UserSetting />
+          {/* User settings */}
+          <>
+            <div>
+              <Divider className="border-neutral-200" />
+              <div className="flex flex-col gap-5">
+                {menuCollapse ? (
+                  <UserMenu>
+                    <UserIcon />
+                  </UserMenu>
+                ) : (
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <UserIcon />
+                      <div className="flex flex-col">
+                        <Typography.Text className="font-semibold text-base break-keep">
+                          {userInfo?.fullname || "User"}
+                        </Typography.Text>
+                        <Typography.Text className="break-keep">
+                          {userInfo?.email || "Email"}
+                        </Typography.Text>
+                      </div>
+                    </div>
+                    <UserMenu>
+                      <SettingOutlined className="cursor-pointer" />
+                    </UserMenu>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
         </div>
       </Layout.Sider>
       {openCreateProjectModal && (

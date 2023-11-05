@@ -9,6 +9,7 @@ export const paths = {
     dashboard: "/user",
     project: {
       index: "/user/project",
+      detail: (projectId = ":projectId") => `/user/project/${projectId}`,
     },
   },
 };
