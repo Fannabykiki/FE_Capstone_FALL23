@@ -35,8 +35,8 @@ const UserManagement = () => {
   };
 
   return (
-    <>
-      <Space direction="vertical" className="!gap-0">
+    <Space direction="vertical" className="w-full">
+      <Space className="!gap-0">
         <Typography.Title level={1}>User List</Typography.Title>
       </Space>
       <Row gutter={48}>
@@ -126,7 +126,7 @@ const UserManagement = () => {
           }}
         />
       </Space>
-    </>
+    </Space>
   );
 };
 
