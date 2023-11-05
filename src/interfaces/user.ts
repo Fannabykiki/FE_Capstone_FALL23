@@ -9,7 +9,7 @@ export interface UserInfo {
   email: string;
   fullname: string;
   gender: Gender;
-  isAdmin: true;
+  isAdmin: boolean;
   phoneNumber: string;
   statusId: string;
   userName: string;
