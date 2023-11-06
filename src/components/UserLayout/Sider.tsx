@@ -3,15 +3,11 @@ import {
   DoubleRightOutlined,
   HomeOutlined,
   PlusOutlined,
-  SettingOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu, Skeleton, Typography } from "antd";
-import { useAuthContext } from "@/context/Auth";
+import { Button, Divider, Layout, Menu, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
-import UserMenu from "../UserMenu";
 import { paths } from "@/routers/paths";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
 import useDetailView from "@/hooks/useDetailView";
@@ -54,7 +50,6 @@ export default function UserSider() {
   const navigate = useNavigate();
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-  const { userInfo } = useAuthContext();
 
   useEffect(() => {
     const keys = location.pathname.split("/").slice(1);
@@ -122,7 +117,7 @@ export default function UserSider() {
                   items={(projects || []).map((project) => ({
                     label: project.projectName,
                     key: project.projectId,
-                    icon: <DoubleRightOutlined />,
+                    icon: menuCollapse ? false : <DoubleRightOutlined />,
                     onClick: () =>
                       navigate(
                         paths.userPages.project.detail(project.projectId)
@@ -149,36 +144,6 @@ export default function UserSider() {
               {menuCollapse ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
             </Button>
           </div>
-          {/* User settings */}
-          <>
-            <div>
-              <Divider className="border-neutral-200" />
-              <div className="flex flex-col gap-5">
-                {menuCollapse ? (
-                  <UserMenu>
-                    <UserIcon />
-                  </UserMenu>
-                ) : (
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <UserIcon />
-                      <div className="flex flex-col">
-                        <Typography.Text className="font-semibold text-base break-keep">
-                          {userInfo?.fullname || "User"}
-                        </Typography.Text>
-                        <Typography.Text className="break-keep">
-                          {userInfo?.email || "Email"}
-                        </Typography.Text>
-                      </div>
-                    </div>
-                    <UserMenu>
-                      <SettingOutlined className="cursor-pointer" />
-                    </UserMenu>
-                  </div>
-                )}
-              </div>
-            </div>
-          </>
         </div>
       </Layout.Sider>
       {openCreateProjectModal && (
@@ -190,7 +155,3 @@ export default function UserSider() {
     </>
   );
 }
-
-const UserIcon = () => (
-  <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
-);
