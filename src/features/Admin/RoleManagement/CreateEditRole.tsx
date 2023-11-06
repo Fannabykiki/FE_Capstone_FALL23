@@ -35,7 +35,7 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
 
   return (
     <Modal
-      title="Create role"
+      title={roleEdit ? "Edit role" : "Create role"}
       open={isOpen}
       onCancel={onCancel}
       onOk={form.submit}

@@ -1,8 +1,9 @@
-import { useAuthContext } from "@/context/Auth";
-import { adminPaths, paths } from "@/routers/paths";
-import { checkTokenValid } from "@/utils/common";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
+
+import { adminPaths, paths } from "@/routers/paths";
+import { checkTokenValid } from "@/utils/common";
+import { useAuthContext } from "@/context/Auth";
 
 interface Props {
   Component: React.FunctionComponent;
@@ -31,23 +32,25 @@ export default function PageContainer({
       }
     } else {
       if (userInfo?.isAdmin) {
-        navigate(
-          matchRoutes(
+        navigate({
+          pathname: matchRoutes(
             Object.values(adminPaths).map((path) => ({ path })),
             location
           )
             ? location.pathname
-            : paths.adminDashboard
-        );
+            : paths.adminDashboard,
+          search: location.search,
+        });
       } else {
-        navigate(
-          matchRoutes(
+        navigate({
+          pathname: matchRoutes(
             Object.values(adminPaths).map((path) => ({ path })),
             location
           )
             ? paths.dashboard
-            : location.pathname
-        );
+            : location.pathname,
+          search: location.search,
+        });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

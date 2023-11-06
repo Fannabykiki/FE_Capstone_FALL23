@@ -1,6 +1,12 @@
-import { EyeOutlined, MoreOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  MoreOutlined,
+  SearchOutlined,
+  TeamOutlined,
+} from "@ant-design/icons";
 import { useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import debounce from "lodash/debounce";
 import {
   Avatar,
   Col,
@@ -13,26 +19,139 @@ import {
   Switch,
 } from "antd";
 
+import useAdminUserManagement from "@/hooks/useAdminUserManagement";
+import { convertToODataParams } from "@/utils/convertToODataParams";
 import deactiveUser from "@/assets/images/deactive-user.png";
 import activeUser from "@/assets/images/active-user.png";
+import { IAdminUsers } from "@/interfaces/user";
+import { useState } from "react";
+import UserDetailModal from "./UserDetailModal";
 
 const UserManagement = () => {
+  const [isOpenViewDetailModal, setOpenViewDetailModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
+    page: "0",
     limit: "10",
-    offset: "0",
+  });
+
+  const { users, isLoading } = useAdminUserManagement({
+    // $skip: (
+    //   +(searchParams.get("page") || "0") * +(searchParams.get("limit") || "10")
+    // ).toString(),
+    // $top: searchParams.get("limit") || "10",
+    // $search: searchParams.get("search") || undefined,
+    // $filter: convertToODataParams({
+    //   statusName: searchParams.get("status"),
+    //   isAdmin: searchParams.get("role") === "admin" ? 1 : 0,
+    // }),
   });
 
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
+      prev.set("page", page.toString());
       prev.set("limit", pageSize.toString());
-      prev.set("offset", ((page - 1) * pageSize).toString());
       return prev;
     });
   };
 
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+  const handleChange = (fieldName: string) => (value: string) => {
+    setSearchParams((prev) => {
+      prev.set(fieldName, value);
+      return prev;
+    });
   };
+
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (!e.target.value) {
+        prev.delete("search");
+      } else {
+        prev.set("search", e.target.value);
+      }
+      return prev;
+    });
+  }, 1000);
+
+  const handleViewDetail = () => {
+    setOpenViewDetailModal(true);
+  };
+
+  const columns: ColumnsType<IAdminUsers["users"][number]> = [
+    {
+      title: "USER",
+      dataIndex: "name",
+      width: "35%",
+      render: (name, record) => (
+        <Row gutter={16}>
+          <Col span={4} className="flex justify-center items-center">
+            <Avatar>{name?.charAt(0).toUpperCase()}</Avatar>
+          </Col>
+          <Col span={20}>
+            <Typography.Title level={5} className="!m-0">
+              {name}
+            </Typography.Title>
+            <Typography.Text>{record.email}</Typography.Text>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      title: "ROLE",
+      dataIndex: "isAdmin",
+      width: "15%",
+      render: (isAdmin, record) => (
+        <Row align="middle">
+          <img
+            src={record.statusName === "Active" ? activeUser : deactiveUser}
+            className={`w-10 h-10 bg-[${
+              record.statusName === "Active" ? "#43ff641a" : "#ef44441a"
+            }] rounded-full`}
+            alt={isAdmin ? "Admin" : "Member"}
+          />
+          <Typography.Text className="ml-5">
+            {isAdmin ? "Admin" : "Member"}
+          </Typography.Text>
+        </Row>
+      ),
+    },
+    {
+      title: "CONTACT",
+      dataIndex: "phoneNumber",
+      width: "25%",
+    },
+    {
+      title: "STATUS",
+      dataIndex: "statusName",
+      width: "10%",
+      render: (statusName) => (
+        <Row align="middle" justify="space-between">
+          <Switch defaultChecked={statusName === "Active"} />
+          <Typography.Text
+            className={`px-2 py-1 rounded font-medium ${
+              statusName === "Active"
+                ? "text-green-500 bg-[#43ff641a]"
+                : "text-red-500 bg-[#ef44441a]"
+            }`}
+          >
+            {statusName}
+          </Typography.Text>
+        </Row>
+      ),
+    },
+    {
+      title: "ACTIONS",
+      width: "10%",
+      render: () => (
+        <Space size="large">
+          <EyeOutlined
+            className="text-xl cursor-pointer"
+            onClick={handleViewDetail}
+          />
+          <MoreOutlined className="text-xl cursor-pointer" />
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <Space direction="vertical" className="w-full">
@@ -40,12 +159,29 @@ const UserManagement = () => {
         <Typography.Title level={1}>User List</Typography.Title>
       </Space>
       <Row gutter={48}>
-        <Col span={12}>
+        <Col span={8}>
+          <Row className="p-4 rounded-md shadow-custom">
+            <Col span={20}>
+              <Typography.Title level={4}>Total Users</Typography.Title>
+              <Typography.Title level={4} className="!mt-4">
+                {users?.totalUser}
+                <small className="text-green-500 ml-2">(100%)</small>
+              </Typography.Title>
+            </Col>
+            <Col span={4} className="flex justify-center items-center">
+              <TeamOutlined className="text-3xl" />
+            </Col>
+          </Row>
+        </Col>
+        <Col span={8}>
           <Row className="p-4 rounded-md shadow-custom">
             <Col span={20}>
               <Typography.Title level={4}>Active Users</Typography.Title>
               <Typography.Title level={4} className="!mt-4">
-                80 <small className="text-green-500">(80%)</small>
+                {users?.activeUsers}
+                <small className="text-green-500 ml-2">
+                  ({users?.percentActive}%)
+                </small>
               </Typography.Title>
             </Col>
             <Col span={4} className="flex justify-center items-center">
@@ -57,12 +193,15 @@ const UserManagement = () => {
             </Col>
           </Row>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           <Row className="p-4 rounded-md shadow-custom">
             <Col span={20}>
               <Typography.Title level={4}>Inactive Users</Typography.Title>
               <Typography.Title level={4} className="!mt-4">
-                20 <small className="text-red-500">(20%)</small>
+                {users?.inActiveUser}
+                <small className="text-red-500 ml-2">
+                  ({users?.percentInActive}%)
+                </small>
               </Typography.Title>
             </Col>
             <Col span={4} className="flex justify-center items-center">
@@ -81,19 +220,20 @@ const UserManagement = () => {
             <Input
               className="w-full"
               placeholder="Search"
+              defaultValue={searchParams.get("search") || ""}
               prefix={<SearchOutlined />}
+              onChange={handleSearch}
             />
           </Col>
           <Col span={7}>
             <Select
               className="w-full"
               placeholder="Select Role"
-              onChange={handleChange}
+              defaultValue={searchParams.get("role")}
+              onChange={handleChange("role")}
               options={[
-                { value: "jack", label: "Jack" },
-                { value: "lucy", label: "Lucy" },
-                { value: "Yiminghe", label: "yiminghe" },
-                { value: "disabled", label: "Disabled", disabled: true },
+                { value: "admin", label: "Admin" },
+                { value: "member", label: "Member" },
               ]}
             />
           </Col>
@@ -101,12 +241,11 @@ const UserManagement = () => {
             <Select
               className="w-full"
               placeholder="Select Status"
-              onChange={handleChange}
+              defaultValue={searchParams.get("status")}
+              onChange={handleChange("status")}
               options={[
-                { value: "jack", label: "Jack" },
-                { value: "lucy", label: "Lucy" },
-                { value: "Yiminghe", label: "yiminghe" },
-                { value: "disabled", label: "Disabled", disabled: true },
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
               ]}
             />
           </Col>
@@ -115,137 +254,25 @@ const UserManagement = () => {
           rowKey="id"
           className="mt-5"
           columns={columns}
-          dataSource={data}
+          loading={isLoading}
+          dataSource={users?.users}
           pagination={{
             showSizeChanger: true,
+            current: parseInt(searchParams.get("page") || "0") + 1,
             pageSize: parseInt(searchParams.get("limit") || "10"),
             pageSizeOptions: [10, 20, 50, 100],
-            total: 6,
+            total: 100,
             onChange: onChangePage,
             className: "px-5 !mb-0",
           }}
         />
       </Space>
+      <UserDetailModal
+        isOpen={isOpenViewDetailModal}
+        handleClose={() => setOpenViewDetailModal(false)}
+      />
     </Space>
   );
 };
-
-const columns: ColumnsType<(typeof data)[number]> = [
-  {
-    title: "USER",
-    dataIndex: "username",
-    width: "35%",
-    render: (username, record) => (
-      <Row gutter={16}>
-        <Col span={4} className="flex justify-center items-center">
-          <Avatar>{username.charAt(0).toUpperCase()}</Avatar>
-        </Col>
-        <Col span={20}>
-          <Typography.Title level={5} className="!m-0">
-            {record.username}
-          </Typography.Title>
-          <Typography.Text>{record.email || "1"}</Typography.Text>
-        </Col>
-      </Row>
-    ),
-  },
-  {
-    title: "ROLE",
-    dataIndex: "role",
-    width: "15%",
-    render: (role, record) => (
-      <Row align="middle">
-        <img
-          src={record.status === "active" ? activeUser : deactiveUser}
-          className={`w-10 h-10 bg-[${
-            record.status === "active" ? "#43ff641a" : "#ef44441a"
-          }] rounded-full`}
-          alt={record.status}
-        />
-        <Typography.Text className="ml-5">{role}</Typography.Text>
-      </Row>
-    ),
-  },
-  {
-    title: "CONTACT",
-    dataIndex: "contact",
-    width: "20%",
-  },
-  {
-    title: "STATUS",
-    dataIndex: "status",
-    width: "15%",
-    render: (status: string) => (
-      <Row align="middle">
-        <Switch defaultChecked={status === "active"} />
-        <Typography.Text
-          className={`px-2 py-1 ml-5 rounded font-medium ${
-            status === "active"
-              ? "text-green-500 bg-[#43ff641a]"
-              : "text-red-500 bg-[#ef44441a]"
-          }`}
-        >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </Typography.Text>
-      </Row>
-    ),
-  },
-  {
-    title: "ACTIONS",
-    width: "10%",
-    render: () => (
-      <Space size="large">
-        <EyeOutlined className="text-xl cursor-pointer" />
-        <MoreOutlined className="text-xl cursor-pointer" />
-      </Space>
-    ),
-  },
-];
-
-const data = [
-  {
-    id: 1,
-    username: "Mechanism 1",
-    role: "Admin",
-    status: "active",
-    contact: "0123456789",
-    email: "abcd@gmail.com",
-  },
-  {
-    id: 2,
-    username: "Screening 4",
-    role: "Member",
-    status: "active",
-    contact: "0123456789",
-  },
-  {
-    id: 3,
-    username: "Recruit 3",
-    role: "Member",
-    status: "active",
-    contact: "0123456789",
-  },
-  {
-    id: 4,
-    username: "Mechanism 1",
-    role: "Admin",
-    status: "inactive",
-    contact: "0123456789",
-  },
-  {
-    id: 5,
-    username: "Mechanism 1",
-    role: "Member",
-    status: "active",
-    contact: "0123456789",
-  },
-  {
-    id: 6,
-    username: "Mechanism 1",
-    role: "Member",
-    status: "active",
-    contact: "0123456789",
-  },
-];
 
 export default UserManagement;

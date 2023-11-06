@@ -22,9 +22,26 @@ const update = ({ id, data }: IUpdateUserPayload) =>
     data,
   });
 
+// ======================================= Admin =======================================
+
+const getAdminUsers = async (
+  signal: AbortSignal | undefined,
+  params: { [key: string]: string | undefined }
+) =>
+  axiosClient({
+    url: "/api/user-management/users",
+    method: HTTP_METHODS.GET,
+    signal,
+    params,
+  }).then((resp) => resp.data);
+
 export const userApi = {
   getProfile,
   update,
   getProfileKey: "userGetProfile",
   updateKey: "userUpdate",
+
+  //Admin
+  getAdminUsers,
+  getAdminUsersKey: "adminUsersGet",
 };
