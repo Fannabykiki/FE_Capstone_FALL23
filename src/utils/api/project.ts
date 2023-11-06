@@ -86,6 +86,19 @@ const updatePrivacy = async ({
     data: { privacyStatus },
   }).then((resp) => resp.data);
 
+// ======================================= Admin =======================================
+
+const getAdminProjects = async (
+  signal: AbortSignal | undefined,
+  params: { [key: string]: string | undefined }
+) =>
+  axiosClient({
+    url: "/api/project-management/admin/projects",
+    method: HTTP_METHODS.GET,
+    signal,
+    params,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -99,4 +112,8 @@ export const projectApi = {
   removeKey: "projectRemove",
   updatePrivacy,
   updatePrivacyKey: "projectUpdatePrivacy",
+
+  //Admin
+  getAdminProjects,
+  getAdminProjectsKey: "adminProjectsGet",
 };

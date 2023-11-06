@@ -1,5 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import debounce from "lodash/debounce";
 import {
   Avatar,
   Col,
@@ -18,23 +19,52 @@ import {
   WarningOutlined,
 } from "@ant-design/icons";
 
+import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
+// import { convertToODataParams } from "@/utils/convertToODataParams";
+import { IAdminProject } from "@/interfaces/project";
+
 const AdminDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams({
+    page: "0",
     limit: "10",
-    offset: "0",
+  });
+
+  const { project, isLoading } = useAdminProjectManagement({
+    // $skip: (
+    //   +(searchParams.get("page") || "0") * +(searchParams.get("limit") || "10")
+    // ).toString(),
+    // $top: searchParams.get("limit") || "10",
+    // $search: searchParams.get("search") || undefined,
+    // $filter: convertToODataParams({
+    //   projectStatus: searchParams.get("status"),
+    // }),
   });
 
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
+      prev.set("page", page.toString());
       prev.set("limit", pageSize.toString());
-      prev.set("offset", ((page - 1) * pageSize).toString());
       return prev;
     });
   };
 
   const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+    setSearchParams((prev) => {
+      prev.set("status", value);
+      return prev;
+    });
   };
+
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (!e.target.value) {
+        prev.delete("search");
+      } else {
+        prev.set("search", e.target.value);
+      }
+      return prev;
+    });
+  }, 1000);
 
   return (
     <Space direction="vertical" className="w-full">
@@ -43,7 +73,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                1
+                {project?.totalProject}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Total Projects
@@ -58,7 +88,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                3
+                {project?.activeProject}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Doing Projects
@@ -73,7 +103,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                0
+                {project?.closeProject}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Done Projects
@@ -88,7 +118,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                1
+                {project?.otherProject}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Rejected Projects
@@ -106,33 +136,37 @@ const AdminDashboard = () => {
             <Input
               className="w-full"
               placeholder="Search"
+              defaultValue={searchParams.get("search") || ""}
               prefix={<SearchOutlined />}
+              onChange={handleSearch}
             />
           </Col>
           <Col span={3}>
             <Select
               className="w-full"
               placeholder="Select Status"
+              defaultValue={searchParams.get("status")}
               onChange={handleChange}
               options={[
-                { value: "jack", label: "Jack" },
-                { value: "lucy", label: "Lucy" },
-                { value: "Yiminghe", label: "yiminghe" },
-                { value: "disabled", label: "Disabled", disabled: true },
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+                { value: "deleted", label: "Deleted" },
               ]}
             />
           </Col>
         </Row>
         <Table
-          rowKey="id"
+          rowKey="projectId"
           className="mt-5"
           columns={columns}
-          dataSource={data}
+          loading={isLoading}
+          dataSource={project?.getAllProjectViewModels}
           pagination={{
             showSizeChanger: true,
+            current: parseInt(searchParams.get("page") || "0") + 1,
             pageSize: parseInt(searchParams.get("limit") || "10"),
             pageSizeOptions: [10, 20, 50, 100],
-            total: 6,
+            total: 100,
             onChange: onChangePage,
             className: "px-5 !mb-0",
           }}
@@ -142,7 +176,7 @@ const AdminDashboard = () => {
   );
 };
 
-const columns: ColumnsType<(typeof data)[number]> = [
+const columns: ColumnsType<IAdminProject["getAllProjectViewModels"][number]> = [
   {
     dataIndex: "index",
     width: "5%",
@@ -150,13 +184,13 @@ const columns: ColumnsType<(typeof data)[number]> = [
   },
   {
     title: "PROJECT",
-    dataIndex: "project",
+    dataIndex: "projectName",
     width: "35%",
-    sorter: (a, b) => a.project.localeCompare(b.project),
-    render: (project, record) => (
+    sorter: (a, b) => a.projectName.localeCompare(b.projectName),
+    render: (projectName, record) => (
       <Col span={20}>
         <Typography.Title level={5} className="!m-0 !text-[#ADA6F5]">
-          {project}
+          {projectName}
         </Typography.Title>
         <Typography.Text>{record.description}</Typography.Text>
       </Col>
@@ -164,28 +198,28 @@ const columns: ColumnsType<(typeof data)[number]> = [
   },
   {
     title: "STATUS",
-    dataIndex: "status",
+    dataIndex: "projectStatus",
     width: "15%",
     align: "center",
-    sorter: (a, b) => a.status.localeCompare(b.status),
+    sorter: (a, b) => a.projectStatus.localeCompare(b.projectStatus),
     render: (status: string) => {
       let color = "";
       let bg = "";
 
       switch (status) {
-        case "todo":
-          color = "#E0F9FC";
-          bg = "#4AD8EC";
-          break;
-        case "doing":
-          color = "#968EF3";
-          bg = "#EEEDFD";
-          break;
-        case "done":
+        case "Active":
           color = "#6ED99F";
           bg = "#E5F8ED";
           break;
-        case "fail":
+        case "Close":
+          color = "#4AD8EC";
+          bg = "#E0F9FC";
+          break;
+        case "Inactive":
+          color = "#968EF3";
+          bg = "#EEEDFD";
+          break;
+        case "Deleted":
           color = "#EE8181";
           bg = "#FCEAEA";
           break;
@@ -198,9 +232,13 @@ const columns: ColumnsType<(typeof data)[number]> = [
       return (
         <Row align="middle" justify="center">
           <Typography.Text
-            className={`px-4 py-1 ml-5 rounded-2xl font-medium !text-[${color}] bg-[${bg}]`}
+            style={{
+              color,
+              backgroundColor: bg,
+            }}
+            className="px-4 py-1 ml-5 rounded-2xl font-medium"
           >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {status}
           </Typography.Text>
         </Row>
       );
@@ -210,15 +248,15 @@ const columns: ColumnsType<(typeof data)[number]> = [
     title: "MANAGER",
     dataIndex: "manager",
     width: "25%",
-    sorter: (a, b) => a.manager.localeCompare(b.manager),
-    render: (manager) => (
+    sorter: (a, b) => a.manager?.name.localeCompare(b.manager?.name),
+    render: (_, record) => (
       <Row gutter={16} align="middle">
         <Col span={4} className="flex justify-center items-center">
-          <Avatar>{manager.charAt(0).toUpperCase()}</Avatar>
+          <Avatar>{record.manager?.name?.charAt(0).toUpperCase()}</Avatar>
         </Col>
         <Col span={20}>
           <Typography.Title level={5} className="!m-0">
-            {manager}
+            {record.manager?.name}
           </Typography.Title>
         </Col>
       </Row>
@@ -228,62 +266,16 @@ const columns: ColumnsType<(typeof data)[number]> = [
     title: "MEMBERS",
     dataIndex: "members",
     width: "20%",
-    render: () => (
+    render: (_, record) => (
       <Avatar.Group
         maxCount={4}
         maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
       >
-        <Avatar style={{ backgroundColor: "#f56a00" }}>A</Avatar>
-        <Avatar style={{ backgroundColor: "#f56a00" }}>B</Avatar>
-        <Avatar style={{ backgroundColor: "#f56a00" }}>C</Avatar>
-        <Avatar style={{ backgroundColor: "#f56a00" }}>D</Avatar>
+        {record.member?.map((mem, index) => (
+          <Avatar key={index}>{mem.name?.charAt(0).toUpperCase()}</Avatar>
+        ))}
       </Avatar.Group>
     ),
-  },
-];
-
-const data = [
-  {
-    id: 1,
-    project: "Mechanism 1",
-    description: "description",
-    status: "todo",
-    manager: "0123456789",
-  },
-  {
-    id: 2,
-    project: "Screening 4",
-    description: "description",
-    status: "doing",
-    manager: "0123456789",
-  },
-  {
-    id: 3,
-    project: "Recruit 3",
-    description: "description",
-    status: "done",
-    manager: "0123456789",
-  },
-  {
-    id: 4,
-    project: "Mechanism 1",
-    description: "description",
-    status: "doing",
-    manager: "0123456789",
-  },
-  {
-    id: 5,
-    project: "Mechanism 1",
-    description: "description",
-    status: "fail",
-    manager: "0123456789",
-  },
-  {
-    id: 6,
-    project: "Mechanism 1",
-    description: "description",
-    status: "todo",
-    manager: "0123456789",
   },
 ];
 

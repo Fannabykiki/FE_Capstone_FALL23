@@ -34,3 +34,19 @@ export interface IUpdateUserPayload {
   id: string;
   data: IUpdateProfile;
 }
+
+export interface IAdminUsers {
+  totalUser: number;
+  activeUsers: number;
+  percentActive: number;
+  inActiveUser: number;
+  percentInActive: number;
+  users: {
+    id: string;
+    name: string;
+    email: string;
+    statusName: string;
+    isAdmin: boolean;
+    phoneNumber: string;
+  }[];
+}
