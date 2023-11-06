@@ -4,4 +4,6 @@ export const paths = {
   register: "/register",
   forgotPassword: "/forgot-password",
   verifyAccount: "/verify-account",
+  notFound: "/not-found",
+  accessDenied: "/access-denied"
 };

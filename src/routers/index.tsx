@@ -1,6 +1,8 @@
 import Dashboard from "@/features/Dashboard";
 import Login from "@/features/Login";
 import Register from "@/features/Register";
+import NotFound from "@/features/404/404";
+import AccessDenied from "@/features/403/403";
 
 import { paths } from "./paths";
 import { DashboardLayout, PageContainer } from "@/components";
@@ -19,6 +21,26 @@ export default function Routers() {
             element={<PageContainer Component={Dashboard} title="Dashboard" />}
           />
         </Route>
+        <Route
+          path={paths.notFound}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={NotFound}
+              title="Not Found"
+            />
+          }
+        />
+        <Route
+          path={paths.accessDenied}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={AccessDenied}
+              title="Access Denied"
+            />
+          }
+        />
         <Route
           path={paths.login}
           element={
