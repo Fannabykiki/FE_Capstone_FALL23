@@ -4,7 +4,7 @@ import {
   HomeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu, Skeleton } from "antd";
+import { Button, Divider, Layout, Menu } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
@@ -13,7 +13,6 @@ import useMenuCollapse from "@/hooks/useMenuCollapse";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateProject } from "../Modal";
 import Brand from "./Brand";
-import useListProjectOfUser from "@/hooks/useListProjectOfUser";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -34,7 +33,6 @@ export default function UserSider() {
     onOpenView: onOpenCreateProjectModal,
     onCloseView: onCloseCreateProjectModal,
   } = useDetailView();
-  const { projects, isLoading: isGettingProjects } = useListProjectOfUser();
 
   const iconSize = menuCollapse ? 16 : 20;
 
@@ -107,27 +105,6 @@ export default function UserSider() {
                 className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
               />
               <Divider />
-              {isGettingProjects ? (
-                <div className="px-2 py-4">
-                  <Skeleton.Button active block />
-                </div>
-              ) : (
-                <Menu
-                  mode="inline"
-                  items={(projects || []).map((project) => ({
-                    label: project.projectName,
-                    key: project.projectId,
-                    icon: menuCollapse ? false : <DoubleRightOutlined />,
-                    onClick: () =>
-                      navigate(
-                        paths.userPages.project.detail(project.projectId)
-                      ),
-                  }))}
-                  openKeys={openKeys}
-                  selectedKeys={selectedKeys}
-                  className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
-                />
-              )}
               <div className="px-2">
                 <Button
                   title="Add Project"
