@@ -2,6 +2,8 @@ import Dashboard from "@/features/Dashboard";
 import AdminDashboard from "@/features/Admin/Dashboard";
 import UserManagement from "@/features/Admin/UserManagement";
 import RoleManagement from "@/features/Admin/RoleManagement";
+import PermissionSchemes from "@/features/Admin/PermissionSchemes";
+import ProjectPermission from "@/features/Admin/PermissionSchemes/ProjectPermission";
 import Login from "@/features/Login";
 import Register from "@/features/Register";
 
@@ -57,6 +59,7 @@ export default function Routers() {
             }
           />
         </Route>
+        {/* Admin */}
         <Route
           path={paths.adminDashboard}
           element={<DashboardLayout isAdmin />}
@@ -85,6 +88,24 @@ export default function Routers() {
               <PageContainer
                 Component={RoleManagement}
                 title="Role Management"
+              />
+            }
+          />
+          <Route
+            path={paths.adminPermissionManagement}
+            element={
+              <PageContainer
+                Component={PermissionSchemes}
+                title="Permission Schemes"
+              />
+            }
+          />
+          <Route
+            path={paths.adminProjectPermission}
+            element={
+              <PageContainer
+                Component={ProjectPermission}
+                title="Project Permission"
               />
             }
           />

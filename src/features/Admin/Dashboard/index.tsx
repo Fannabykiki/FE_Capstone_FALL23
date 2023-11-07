@@ -22,6 +22,7 @@ import {
 import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
 // import { convertToODataParams } from "@/utils/convertToODataParams";
 import { IAdminProject } from "@/interfaces/project";
+import { randomBgColor } from "@/utils/random";
 
 const AdminDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams({
@@ -29,15 +30,19 @@ const AdminDashboard = () => {
     limit: "10",
   });
 
-  const { project, isLoading } = useAdminProjectManagement({
+  const { project, analyzation, isLoading } = useAdminProjectManagement({
     // $skip: (
     //   +(searchParams.get("page") || "0") * +(searchParams.get("limit") || "10")
     // ).toString(),
     // $top: searchParams.get("limit") || "10",
-    // $search: searchParams.get("search") || undefined,
-    // $filter: convertToODataParams({
-    //   projectStatus: searchParams.get("status"),
-    // }),
+    // $filter: convertToODataParams(
+    //   {
+    //     projectStatus: searchParams.get("status"),
+    //   },
+    //   {
+    //     projectName: searchParams.get("search"),
+    //   }
+    // ),
   });
 
   const onChangePage = (page: number, pageSize: number) => {
@@ -50,7 +55,11 @@ const AdminDashboard = () => {
 
   const handleChange = (value: string) => {
     setSearchParams((prev) => {
-      prev.set("status", value);
+      if (!value) {
+        prev.delete("status");
+      } else {
+        prev.set("status", value);
+      }
       return prev;
     });
   };
@@ -73,7 +82,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                {project?.totalProject}
+                {analyzation?.totalProject}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Total Projects
@@ -88,7 +97,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                {project?.activeProject}
+                {analyzation?.projectActive}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Doing Projects
@@ -103,7 +112,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                {project?.closeProject}
+                {analyzation?.projectInActive}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Done Projects
@@ -118,10 +127,10 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                {project?.otherProject}
+                {analyzation?.projectDelete}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
-                Rejected Projects
+                Deleted Projects
               </Typography.Title>
             </Col>
             <Col span={4} className="flex items-center justify-center">
@@ -139,6 +148,7 @@ const AdminDashboard = () => {
               defaultValue={searchParams.get("search") || ""}
               prefix={<SearchOutlined />}
               onChange={handleSearch}
+              allowClear
             />
           </Col>
           <Col span={3}>
@@ -147,10 +157,11 @@ const AdminDashboard = () => {
               placeholder="Select Status"
               defaultValue={searchParams.get("status")}
               onChange={handleChange}
+              allowClear
               options={[
-                { value: "active", label: "Active" },
-                { value: "inactive", label: "Inactive" },
-                { value: "deleted", label: "Deleted" },
+                { value: "Active", label: "Doing" },
+                { value: "InActive", label: "Done" },
+                { value: "Deleted", label: "Deleted" },
               ]}
             />
           </Col>
@@ -160,7 +171,7 @@ const AdminDashboard = () => {
           className="mt-5"
           columns={columns}
           loading={isLoading}
-          dataSource={project?.getAllProjectViewModels}
+          dataSource={project?.data}
           pagination={{
             showSizeChanger: true,
             current: parseInt(searchParams.get("page") || "0") + 1,
@@ -176,7 +187,7 @@ const AdminDashboard = () => {
   );
 };
 
-const columns: ColumnsType<IAdminProject["getAllProjectViewModels"][number]> = [
+const columns: ColumnsType<IAdminProject["data"][number]> = [
   {
     dataIndex: "index",
     width: "5%",
@@ -189,10 +200,15 @@ const columns: ColumnsType<IAdminProject["getAllProjectViewModels"][number]> = [
     sorter: (a, b) => a.projectName.localeCompare(b.projectName),
     render: (projectName, record) => (
       <Col span={20}>
-        <Typography.Title level={5} className="!m-0 !text-[#ADA6F5]">
+        <Typography.Title
+          level={5}
+          className="!m-0 !text-[#ADA6F5] min-h-[24px]"
+        >
           {projectName}
         </Typography.Title>
-        <Typography.Text>{record.description}</Typography.Text>
+        <Typography.Text className="min-h-[19px]">
+          {record.description}
+        </Typography.Text>
       </Col>
     ),
   },
@@ -249,18 +265,21 @@ const columns: ColumnsType<IAdminProject["getAllProjectViewModels"][number]> = [
     dataIndex: "manager",
     width: "25%",
     sorter: (a, b) => a.manager?.name.localeCompare(b.manager?.name),
-    render: (_, record) => (
-      <Row gutter={16} align="middle">
-        <Col span={4} className="flex justify-center items-center">
-          <Avatar>{record.manager?.name?.charAt(0).toUpperCase()}</Avatar>
-        </Col>
-        <Col span={20}>
-          <Typography.Title level={5} className="!m-0">
-            {record.manager?.name}
-          </Typography.Title>
-        </Col>
-      </Row>
-    ),
+    render: (_, record) =>
+      record.manager?.name ? (
+        <Row align="middle">
+          <Col span={5} className="flex items-center">
+            <Avatar style={{ backgroundColor: randomBgColor() }}>
+              {record.manager?.name?.charAt(0).toUpperCase()}
+            </Avatar>
+          </Col>
+          <Col span={19}>
+            <Typography.Title level={5} className="!m-0">
+              {record.manager?.name}
+            </Typography.Title>
+          </Col>
+        </Row>
+      ) : null,
   },
   {
     title: "MEMBERS",
@@ -271,8 +290,10 @@ const columns: ColumnsType<IAdminProject["getAllProjectViewModels"][number]> = [
         maxCount={4}
         maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
       >
-        {record.member?.map((mem, index) => (
-          <Avatar key={index}>{mem.name?.charAt(0).toUpperCase()}</Avatar>
+        {record.member?.map((member, index) => (
+          <Avatar key={index} style={{ backgroundColor: randomBgColor() }}>
+            {member.name?.charAt(0).toUpperCase()}
+          </Avatar>
         ))}
       </Avatar.Group>
     ),

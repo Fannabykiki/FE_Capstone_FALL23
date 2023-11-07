@@ -14,10 +14,14 @@ export const paths = {
   adminDashboard: "/admin",
   adminUserManagement: "/admin/user",
   adminRoleManagement: "/admin/role",
+  adminPermissionManagement: "/admin/permission",
+  adminProjectPermission: "/admin/permission/:projectId",
 };
 
 export const adminPaths = pick(paths, [
   "adminDashboard",
   "adminUserManagement",
   "adminRoleManagement",
+  "adminPermissionManagement",
+  "adminProjectPermission",
 ]);

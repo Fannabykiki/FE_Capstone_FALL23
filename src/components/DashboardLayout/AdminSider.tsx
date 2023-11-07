@@ -1,16 +1,18 @@
+import { useContext, useEffect, useState } from "react";
+import { Button, Divider, Layout, Menu, Typography } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
   HomeOutlined,
+  LockOutlined,
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu, Typography } from "antd";
-import { AuthContext } from "@/context/Auth";
-import { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+
 import BrandHeader from "@/assets/images/BrandHeader.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
+import { AuthContext } from "@/context/Auth";
 import { paths } from "@/routers/paths";
 import UserMenu from "../UserMenu";
 
@@ -51,6 +53,11 @@ const AdminDashboardSider = () => {
       label: "Role Management",
       key: paths.adminRoleManagement,
       icon: <SettingOutlined width={iconSize} height={iconSize} />,
+    },
+    {
+      label: "Permission Schemes",
+      key: paths.adminPermissionManagement,
+      icon: <LockOutlined width={iconSize} height={iconSize} />,
     },
   ];
 

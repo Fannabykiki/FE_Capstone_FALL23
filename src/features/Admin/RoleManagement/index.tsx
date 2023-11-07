@@ -3,6 +3,7 @@ import { Avatar, Button, Col, Row, Space, Typography } from "antd";
 import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
 
 import CreateEditRole, { RoleInputType } from "./CreateEditRole";
+import { randomBgColor } from "@/utils/random";
 
 const RoleManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,10 +57,18 @@ const RoleManagement = () => {
                   maxCount={4}
                   maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
                 >
-                  <Avatar style={{ backgroundColor: "#f56a00" }}>A</Avatar>
-                  <Avatar style={{ backgroundColor: "#f56a00" }}>B</Avatar>
-                  <Avatar style={{ backgroundColor: "#f56a00" }}>C</Avatar>
-                  <Avatar style={{ backgroundColor: "#f56a00" }}>D</Avatar>
+                  <Avatar style={{ backgroundColor: randomBgColor() }}>
+                    A
+                  </Avatar>
+                  <Avatar style={{ backgroundColor: randomBgColor() }}>
+                    B
+                  </Avatar>
+                  <Avatar style={{ backgroundColor: randomBgColor() }}>
+                    C
+                  </Avatar>
+                  <Avatar style={{ backgroundColor: randomBgColor() }}>
+                    D
+                  </Avatar>
                 </Avatar.Group>
               </Row>
               <Row>

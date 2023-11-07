@@ -64,14 +64,7 @@ export interface IProjectMember {
 }
 
 export interface IAdminProject {
-  totalProject: number;
-  activeProject: number;
-  percentActive: number;
-  closeProject: number;
-  percentClose: number;
-  otherProject: number;
-  percentOther: number;
-  getAllProjectViewModels: {
+  data: {
     projectId: string;
     projectName: string;
     description: string;
@@ -99,4 +92,32 @@ export interface IAdminProject {
     expireAt: Date | null;
     privacyStatus: boolean;
   }[];
+}
+
+export interface IAdminProjectAnalyzation {
+  projectActive: number;
+  projectActivePercent: number;
+  projectDelete: number;
+  projectDeletePercent: number;
+  projectInActive: number;
+  projectInActivePercent: number;
+  totalProject: number;
+}
+
+export interface IAdminUserProjectList {
+  projectId: string;
+  projectName: string;
+  description: string;
+  projectStatus: string;
+  manager: {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: false;
+    address: string;
+    dob: Date;
+  };
+  startDate: Date;
 }
