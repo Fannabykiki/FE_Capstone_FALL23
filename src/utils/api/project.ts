@@ -1,7 +1,9 @@
 import {
+  ICreateMemberRolePayload,
   ICreateProjectPayload,
   IProject,
   IUpdateInfoProjectPayload,
+  IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
 } from "@/interfaces/project";
 import { HTTP_METHODS } from "../constants";
@@ -69,11 +71,18 @@ const updateInfo = async ({ id, data }: IUpdateInfoProjectPayload) =>
     data: data,
   }).then((resp) => resp.data);
 
-const createRole = async ({ id, data }: IUpdateInfoProjectPayload) =>
+const createRole = async (data: ICreateMemberRolePayload) =>
   axiosClient({
-    url: `/api/project-management/projects/roles`,
+    url: `/api/project-management/roles`,
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
+const updateMemberRole = async ({ id, data }: IUpdateMemberRolePayload) =>
+  axiosClient({
+    url: `/api/project-management/roles/${id}`,
     method: HTTP_METHODS.PUT,
-    data: data,
+    data,
   }).then((resp) => resp.data);
 
 const updatePrivacy = async ({
@@ -84,6 +93,12 @@ const updatePrivacy = async ({
     url: `/api/project-management/projects/privacy/${id}`,
     method: HTTP_METHODS.PUT,
     data: { privacyStatus },
+  }).then((resp) => resp.data);
+
+const restore = async (id: string) =>
+  axiosClient({
+    url: `/api/project-management/project/restoration/${id}`,
+    method: HTTP_METHODS.PUT,
   }).then((resp) => resp.data);
 
 // ======================================= Admin =======================================
@@ -110,9 +125,18 @@ export const projectApi = {
   getDetailKey: "projectGetDetail",
   remove,
   removeKey: "projectRemove",
+  getInfo,
+  getInfoKey: "projectGetInfo",
+  updateInfo,
+  updateInfoKey: "projectUpdateInfo",
+  createRole,
+  createRoleKey: "projectCreateRole",
+  updateMemberRole,
+  updateMemberRoleKey: "projectUpdateMemberRole",
   updatePrivacy,
   updatePrivacyKey: "projectUpdatePrivacy",
-
+  restore,
+  restoreKey: "projectRestore",
   //Admin
   getAdminProjects,
   getAdminProjectsKey: "adminProjectsGet",

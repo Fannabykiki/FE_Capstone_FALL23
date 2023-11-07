@@ -1,10 +1,17 @@
 import {
+  ApartmentOutlined,
+  CalendarOutlined,
+  DeleteOutlined,
   DoubleLeftOutlined,
   DoubleRightOutlined,
-  HomeOutlined,
+  InboxOutlined,
+  LineChartOutlined,
   PlusOutlined,
+  SnippetsOutlined,
+  SolutionOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu } from "antd";
+import { Avatar, Button, Divider, Layout, Menu } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { makePath } from "@/utils/common";
@@ -20,11 +27,11 @@ type PathValues = (typeof paths)[PathKeys];
 interface MenuItem {
   label: string;
   key: PathValues;
-  icon: React.ReactElement;
+  icon?: React.ReactElement;
   children?: MenuItem[];
 }
 
-export default function UserSider() {
+export default function ProjectSider() {
   const { menuCollapse, onToggleMenu } = useMenuCollapse(
     window.innerWidth < 1200
   );
@@ -38,9 +45,54 @@ export default function UserSider() {
 
   const items: MenuItem[] = [
     {
-      label: "Dashboard",
-      key: paths.user,
-      icon: <HomeOutlined width={iconSize} height={iconSize} />,
+      label: "Overview",
+      key: "overview",
+      icon: <SolutionOutlined width={iconSize} height={iconSize} />,
+      children: [
+        {
+          label: "Summary",
+          key: "summary",
+          icon: <InboxOutlined width={iconSize} height={iconSize} />,
+        },
+      ],
+    },
+    {
+      label: "Boards",
+      key: "boards",
+      icon: <TableOutlined width={iconSize} height={iconSize} />,
+      children: [
+        {
+          label: "Work Items",
+          key: "tasks",
+          icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
+        },
+        {
+          label: "Sprints",
+          key: "sprints",
+          icon: (
+            <ApartmentOutlined
+              className="-rotate-90"
+              width={iconSize}
+              height={iconSize}
+            />
+          ),
+        },
+        {
+          label: "Calendar",
+          key: "calendar",
+          icon: <CalendarOutlined width={iconSize} height={iconSize} />,
+        },
+        {
+          label: "Trash Bin",
+          key: "trash-bin",
+          icon: <DeleteOutlined width={iconSize} height={iconSize} />,
+        },
+      ],
+    },
+    {
+      label: "Report",
+      key: "report",
+      icon: <LineChartOutlined width={iconSize} height={iconSize} />,
     },
   ];
 
@@ -93,6 +145,12 @@ export default function UserSider() {
           <div className="flex flex-col gap-5 flex-1 h-0">
             <div className="flex justify-center items-center">
               <Brand menuCollapse={menuCollapse} />
+            </div>
+            <div className="px-2 flex gap-x-4 items-center">
+              <Avatar shape="square">T</Avatar>
+              {!menuCollapse && (
+                <span className="font-semibold text-lg">Project name</span>
+              )}
             </div>
             <div className="flex-grow">
               <Menu

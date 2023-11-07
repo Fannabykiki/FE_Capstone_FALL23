@@ -8,7 +8,7 @@ function classNames(...className: (string | undefined)[]) {
 }
 
 function makePath(keys: string[]) {
-  return ["", ...keys].join("/");
+  return [...keys].join("/");
 }
 
 const checkTokenValid = () => {

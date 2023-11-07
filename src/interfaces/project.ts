@@ -27,6 +27,18 @@ export interface IUpdateInfoProjectPayload {
   data: Partial<ICreateProjectPayload>;
 }
 
+export interface ICreateMemberRolePayload {
+  roleName: string;
+  description: string;
+}
+
+export interface IUpdateMemberRolePayload {
+  id: string;
+  data: {
+    roleId: string;
+  };
+}
+
 export interface IProject {
   projectId: string;
   projectName: string;

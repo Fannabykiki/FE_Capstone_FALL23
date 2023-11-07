@@ -6,7 +6,12 @@ import Login from "@/features/Login";
 import Register from "@/features/Register";
 
 import { paths } from "./paths";
-import { DashboardLayout, PageContainer, UserLayout } from "@/components";
+import {
+  DashboardLayout,
+  PageContainer,
+  ProjectLayout,
+  UserLayout,
+} from "@/components";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
@@ -37,21 +42,19 @@ export default function Routers() {
             element={<PageContainer Component={Dashboard} title="Dashboard" />}
           />
         </Route>
-        <Route path={paths.userPages.index} element={<UserLayout />}>
+        <Route path={paths.project.index} element={<ProjectLayout />}>
+          <Route
+            path={paths.project.detail()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+        </Route>
+        <Route path={paths.user} element={<UserLayout />}>
           <Route
             index
             element={
               <PageContainer Component={UserMainPage} title="User Dashboard" />
-            }
-          />
-          <Route
-            path={paths.userPages.project.index}
-            element={<PageContainer Component={Project} title="Project" />}
-          />
-          <Route
-            path={paths.userPages.project.detail()}
-            element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
             }
           />
         </Route>

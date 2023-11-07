@@ -1,6 +1,9 @@
 import BoardTabPane from "@/components/Project/Detail/BoardTabPane";
 import ReportTabPane from "@/components/Project/Detail/ReportTabPane";
 import SettingsTabPane from "@/components/Project/Detail/SettingsTabPane";
+import { useAuthContext } from "@/context/Auth";
+import useProjectDetail from "@/hooks/useProjectDetail";
+import { IProject } from "@/interfaces/project";
 import { paths } from "@/routers/paths";
 import {
   AlignCenterOutlined,
@@ -9,7 +12,7 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { Tabs, Typography } from "antd";
-import { useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const TABS = {
@@ -20,12 +23,38 @@ const TABS = {
 
 export default function ProjectDetail() {
   const { projectId } = useParams();
+  const { userInfo } = useAuthContext();
   const navigate = useNavigate();
   useLayoutEffect(() => {
     if (!projectId) {
-      navigate(paths.userPages.dashboard);
+      navigate(paths.user);
     }
   }, [projectId, navigate]);
+
+  const { detail } = useProjectDetail(projectId);
+
+  useEffect(() => {
+    if (detail && userInfo) {
+      let projects: Partial<IProject>[] = [];
+      const savedProjectsString = localStorage.getItem(
+        `${userInfo?.id}-projects`
+      );
+      if (savedProjectsString) {
+        projects = JSON.parse(savedProjectsString) as Partial<IProject>[];
+      }
+      projects
+        .filter((project) => project.projectId !== detail.projectId)
+        .unshift({
+          projectId: detail.projectId,
+          projectName: detail.projectName,
+          description: detail.description,
+        });
+      localStorage.setItem(
+        `${userInfo?.id}-projects`,
+        JSON.stringify(projects.slice(0, 4))
+      );
+    }
+  }, [detail, userInfo]);
 
   const tabItems = [
     {
