@@ -51,6 +51,16 @@ export interface IProject {
   deleteAt: string | null;
   expireAt: string | null;
   privacyStatus: boolean;
+  projectMembers: IProjectMember[];
+}
+
+export interface IProjectMember {
+  memberId: string;
+  userId: string;
+  roleId: string;
+  projectId: string;
+  roleName: string | null;
+  isOwner: boolean;
 }
 
 export interface IAdminProject {

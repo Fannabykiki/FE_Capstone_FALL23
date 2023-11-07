@@ -41,7 +41,7 @@ export default function UserMainPage() {
                   style={{ backgroundColor: faker.color.rgb() }}
                 >
                   <span className="text-white select-none font-semibold uppercase">
-                    {project.projectName.slice(0, 1)}
+                    {project.projectName?.slice(0, 1)}
                   </span>
                 </Avatar>
                 <div>
@@ -69,7 +69,7 @@ export default function UserMainPage() {
               style={{ backgroundColor: faker.color.rgb() }}
             >
               <span className="text-white select-none font-semibold uppercase">
-                {project.projectName.slice(0, 1)}
+                {project.projectName?.slice(0, 1)}
               </span>
             </Avatar>
             <div>

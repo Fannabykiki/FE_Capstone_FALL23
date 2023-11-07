@@ -6,20 +6,18 @@ import {
   DoubleRightOutlined,
   InboxOutlined,
   LineChartOutlined,
-  PlusOutlined,
   SnippetsOutlined,
   SolutionOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Divider, Layout, Menu } from "antd";
+import { Avatar, Button, Layout, Menu } from "antd";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { makePath } from "@/utils/common";
 import { paths } from "@/routers/paths";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
-import useDetailView from "@/hooks/useDetailView";
-import { CreateProject } from "../Modal";
 import Brand from "./Brand";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -35,11 +33,6 @@ export default function ProjectSider() {
   const { menuCollapse, onToggleMenu } = useMenuCollapse(
     window.innerWidth < 1200
   );
-  const {
-    openView: openCreateProjectModal,
-    onOpenView: onOpenCreateProjectModal,
-    onCloseView: onCloseCreateProjectModal,
-  } = useDetailView();
 
   const iconSize = menuCollapse ? 16 : 20;
 
@@ -128,6 +121,9 @@ export default function ProjectSider() {
     }
   };
 
+  const { projectId } = useParams();
+  const { detail } = useProjectDetail(projectId);
+
   return (
     <>
       <Layout.Sider
@@ -149,7 +145,9 @@ export default function ProjectSider() {
             <div className="px-2 flex gap-x-4 items-center">
               <Avatar shape="square">T</Avatar>
               {!menuCollapse && (
-                <span className="font-semibold text-lg">Project name</span>
+                <span className="font-semibold text-lg">
+                  {detail?.projectName}
+                </span>
               )}
             </div>
             <div className="flex-grow">
@@ -162,18 +160,6 @@ export default function ProjectSider() {
                 onOpenChange={onOpenSubMenu}
                 className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
               />
-              <Divider />
-              <div className="px-2">
-                <Button
-                  title="Add Project"
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  block
-                  onClick={() => onOpenCreateProjectModal()}
-                >
-                  {!menuCollapse && "Add Project"}
-                </Button>
-              </div>
             </div>
             <Button type="text" onClick={onToggleMenu}>
               {menuCollapse ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
@@ -181,12 +167,6 @@ export default function ProjectSider() {
           </div>
         </div>
       </Layout.Sider>
-      {openCreateProjectModal && (
-        <CreateProject
-          open={openCreateProjectModal}
-          onClose={onCloseCreateProjectModal}
-        />
-      )}
     </>
   );
 }

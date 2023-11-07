@@ -2,6 +2,7 @@ import {
   ICreateMemberRolePayload,
   ICreateProjectPayload,
   IProject,
+  IProjectMember,
   IUpdateInfoProjectPayload,
   IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
@@ -41,7 +42,7 @@ const getPermission = (
 const getDetail = (
   signal: AbortSignal | undefined,
   projectId: string
-): Promise<IProject> =>
+): Promise<IProjectMember[]> =>
   axiosClient({
     url: `/api/project-management/projects/${projectId}`,
     method: HTTP_METHODS.GET,

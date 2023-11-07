@@ -17,8 +17,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
 import VerifyAccount from "@/features/VerifyAccount";
 import UserMainPage from "@/features/User";
-import Project from "@/features/User/Project";
-import ProjectDetail from "@/features/User/Project/detail";
+import ProjectDetail from "@/features/Project/detail";
 import { useAuthContext } from "@/context/Auth";
 import { Spin } from "antd";
 
