@@ -5,5 +5,6 @@ export const paths = {
   forgotPassword: "/forgot-password",
   verifyAccount: "/verify-account",
   notFound: "/not-found",
-  accessDenied: "/access-denied"
+  accessDenied: "/access-denied",
+  homePage: "/home"
 };

@@ -3,6 +3,7 @@ import Login from "@/features/Login";
 import Register from "@/features/Register";
 import NotFound from "@/features/404/404";
 import AccessDenied from "@/features/403/403";
+import HomePage from "@/features/HomePage";
 
 import { paths } from "./paths";
 import { DashboardLayout, PageContainer } from "@/components";
@@ -38,6 +39,16 @@ export default function Routers() {
               requireAuth={false}
               Component={AccessDenied}
               title="Access Denied"
+            />
+          }
+        />
+        <Route
+          path={paths.homePage}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={HomePage}
+              title="Home Page"
             />
           }
         />
