@@ -1,6 +1,6 @@
 import { useAuthContext } from "@/context/Auth";
 import { paths } from "@/routers/paths";
-import { SettingOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Typography } from "antd";
 import { useMemo } from "react";
 import { useLocation } from "react-router-dom";
@@ -10,7 +10,7 @@ interface RouteObj {
   [key: string]: string;
 }
 
-export default function UserHeader() {
+export default function ProjectHeader() {
   const routes = useMemo<RouteObj>(
     () => ({
       [paths.dashboard]: "Dashboard",

@@ -1,18 +1,23 @@
 import {
+  ApartmentOutlined,
+  CalendarOutlined,
+  DeleteOutlined,
   DoubleLeftOutlined,
   DoubleRightOutlined,
-  HomeOutlined,
-  PlusOutlined,
+  InboxOutlined,
+  LineChartOutlined,
+  SnippetsOutlined,
+  SolutionOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu } from "antd";
+import { Avatar, Button, Layout, Menu } from "antd";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { makePath } from "@/utils/common";
 import { paths } from "@/routers/paths";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
-import useDetailView from "@/hooks/useDetailView";
-import { CreateProject } from "../Modal";
 import Brand from "./Brand";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -20,27 +25,67 @@ type PathValues = (typeof paths)[PathKeys];
 interface MenuItem {
   label: string;
   key: PathValues;
-  icon: React.ReactElement;
+  icon?: React.ReactElement;
   children?: MenuItem[];
 }
 
-export default function UserSider() {
+export default function ProjectSider() {
   const { menuCollapse, onToggleMenu } = useMenuCollapse(
     window.innerWidth < 1200
   );
-  const {
-    openView: openCreateProjectModal,
-    onOpenView: onOpenCreateProjectModal,
-    onCloseView: onCloseCreateProjectModal,
-  } = useDetailView();
 
   const iconSize = menuCollapse ? 16 : 20;
 
   const items: MenuItem[] = [
     {
-      label: "Dashboard",
-      key: paths.user,
-      icon: <HomeOutlined width={iconSize} height={iconSize} />,
+      label: "Overview",
+      key: "overview",
+      icon: <SolutionOutlined width={iconSize} height={iconSize} />,
+      children: [
+        {
+          label: "Summary",
+          key: "summary",
+          icon: <InboxOutlined width={iconSize} height={iconSize} />,
+        },
+      ],
+    },
+    {
+      label: "Boards",
+      key: "boards",
+      icon: <TableOutlined width={iconSize} height={iconSize} />,
+      children: [
+        {
+          label: "Work Items",
+          key: "tasks",
+          icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
+        },
+        {
+          label: "Sprints",
+          key: "sprints",
+          icon: (
+            <ApartmentOutlined
+              className="-rotate-90"
+              width={iconSize}
+              height={iconSize}
+            />
+          ),
+        },
+        {
+          label: "Calendar",
+          key: "calendar",
+          icon: <CalendarOutlined width={iconSize} height={iconSize} />,
+        },
+        {
+          label: "Trash Bin",
+          key: "trash-bin",
+          icon: <DeleteOutlined width={iconSize} height={iconSize} />,
+        },
+      ],
+    },
+    {
+      label: "Report",
+      key: "report",
+      icon: <LineChartOutlined width={iconSize} height={iconSize} />,
     },
   ];
 
@@ -76,6 +121,9 @@ export default function UserSider() {
     }
   };
 
+  const { projectId } = useParams();
+  const { detail } = useProjectDetail(projectId);
+
   return (
     <>
       <Layout.Sider
@@ -94,6 +142,14 @@ export default function UserSider() {
             <div className="flex justify-center items-center">
               <Brand menuCollapse={menuCollapse} />
             </div>
+            <div className="px-2 flex gap-x-4 items-center">
+              <Avatar shape="square">T</Avatar>
+              {!menuCollapse && (
+                <span className="font-semibold text-lg">
+                  {detail?.projectName}
+                </span>
+              )}
+            </div>
             <div className="flex-grow">
               <Menu
                 mode="inline"
@@ -104,18 +160,6 @@ export default function UserSider() {
                 onOpenChange={onOpenSubMenu}
                 className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
               />
-              <Divider />
-              <div className="px-2">
-                <Button
-                  title="Add Project"
-                  icon={<PlusOutlined />}
-                  type="primary"
-                  block
-                  onClick={() => onOpenCreateProjectModal()}
-                >
-                  {!menuCollapse && "Add Project"}
-                </Button>
-              </div>
             </div>
             <Button type="text" onClick={onToggleMenu}>
               {menuCollapse ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
@@ -123,12 +167,6 @@ export default function UserSider() {
           </div>
         </div>
       </Layout.Sider>
-      {openCreateProjectModal && (
-        <CreateProject
-          open={openCreateProjectModal}
-          onClose={onCloseCreateProjectModal}
-        />
-      )}
     </>
   );
 }

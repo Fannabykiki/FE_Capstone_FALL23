@@ -27,6 +27,18 @@ export interface IUpdateInfoProjectPayload {
   data: Partial<ICreateProjectPayload>;
 }
 
+export interface ICreateMemberRolePayload {
+  roleName: string;
+  description: string;
+}
+
+export interface IUpdateMemberRolePayload {
+  id: string;
+  data: {
+    roleId: string;
+  };
+}
+
 export interface IProject {
   projectId: string;
   projectName: string;
@@ -39,6 +51,16 @@ export interface IProject {
   deleteAt: string | null;
   expireAt: string | null;
   privacyStatus: boolean;
+  projectMembers: IProjectMember[];
+}
+
+export interface IProjectMember {
+  memberId: string;
+  userId: string;
+  roleId: string;
+  projectId: string;
+  roleName: string | null;
+  isOwner: boolean;
 }
 
 export interface IAdminProject {

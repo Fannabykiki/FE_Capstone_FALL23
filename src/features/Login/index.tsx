@@ -23,7 +23,7 @@ export default function Login() {
       if (isAdmin) {
         navigate(paths.dashboard);
       } else {
-        navigate(paths.userPages.index);
+        navigate(paths.user);
       }
     },
     onError: (err) => {
