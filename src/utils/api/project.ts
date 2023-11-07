@@ -99,6 +99,23 @@ const getAdminProjects = async (
     params,
   }).then((resp) => resp.data);
 
+const getAdminProjectsAnalyzation = async (signal: AbortSignal | undefined) =>
+  axiosClient({
+    url: "/api/project-management/admin/projects/analyzation",
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
+const getAdminUsersAnalyzationByUserId = async (
+  signal: AbortSignal | undefined,
+  userId: string | undefined
+) =>
+  axiosClient({
+    url: `/api/project-management/projects/${userId}/analyzation`,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -115,5 +132,9 @@ export const projectApi = {
 
   //Admin
   getAdminProjects,
-  getAdminProjectsKey: "adminProjectsGet",
+  getAdminProjectsKey: "getAdminProjectsKey",
+  getAdminProjectsAnalyzation,
+  getAdminProjectsAnalyzationKey: "getAdminProjectsAnalyzation",
+  getAdminUsersAnalyzationByUserId,
+  getAdminUsersAnalyzationByUserIdKey: "getAdminUsersAnalyzationByUserId",
 };
