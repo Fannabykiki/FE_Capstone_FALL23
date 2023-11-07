@@ -10,6 +10,9 @@ module.exports = {
       lineHeight: {
         custom: "72px",
       },
+      fontFamily: {
+        batangas: ["Batangas", "sans"],
+      },
     },
   },
   plugins: [],
