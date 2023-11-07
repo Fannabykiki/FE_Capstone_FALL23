@@ -7,6 +7,15 @@ module.exports = {
       boxShadow: {
         custom: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
       },
+      fontSize: {
+        custom: "56px",
+      },
+      lineHeight: {
+        custom: "72px",
+      },
+      fontFamily: {
+        batangas: ["Batangas", "sans"],
+      },
     },
   },
   plugins: [],
