@@ -1,47 +1,29 @@
-import { useAuthContext } from "@/context/Auth";
-import { paths } from "@/routers/paths";
-import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Typography } from "antd";
-import { useMemo } from "react";
+import { UserOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
+
+import { useAuthContext } from "@/context/Auth";
 import UserMenu from "../UserMenu";
 
-interface RouteObj {
-  [key: string]: string;
-}
-
-export default function UserHeader() {
-  const routes = useMemo<RouteObj>(
-    () => ({
-      [paths.dashboard]: "Dashboard",
-    }),
-    []
-  );
-
+export default function Header() {
   const { userInfo } = useAuthContext();
 
   const location = useLocation();
 
-  const breadcrumbItems = useMemo(
-    () =>
-      location.pathname
-        .slice(1)
-        .split("/")
-        .map((item) => ({
-          title: routes[item],
-        })),
-    [location.pathname, routes]
-  );
-
   return (
-    <Layout.Header className="flex items-center justify-between bg-white">
+    <Layout.Header className="flex items-center justify-between bg-white shadow-custom">
       <Breadcrumb
         className="whitespace-nowrap font-semibold"
-        items={breadcrumbItems}
+        items={location.pathname
+          .split("/")
+          .filter(Boolean)
+          .map((item) => ({
+            title: item.charAt(0).toUpperCase() + item.slice(1),
+          }))}
       />
       <UserMenu>
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer">
             <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
             <div className="flex flex-col">
               <Typography.Text className="font-semibold text-base break-keep">

@@ -20,29 +20,26 @@ import {
 } from "@ant-design/icons";
 
 import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
-// import { convertToODataParams } from "@/utils/convertToODataParams";
+import { convertToODataParams } from "@/utils/convertToODataParams";
 import { IAdminProject } from "@/interfaces/project";
+import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
 
 const AdminDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams({
-    page: "0",
+    page: "1",
     limit: "10",
   });
 
   const { project, analyzation, isLoading } = useAdminProjectManagement({
-    // $skip: (
-    //   +(searchParams.get("page") || "0") * +(searchParams.get("limit") || "10")
-    // ).toString(),
-    // $top: searchParams.get("limit") || "10",
-    // $filter: convertToODataParams(
-    //   {
-    //     projectStatus: searchParams.get("status"),
-    //   },
-    //   {
-    //     projectName: searchParams.get("search"),
-    //   }
-    // ),
+    $filter: convertToODataParams(
+      {
+        projectStatus: searchParams.get("status"),
+      },
+      {
+        projectName: searchParams.get("search"),
+      }
+    ),
   });
 
   const onChangePage = (page: number, pageSize: number) => {
@@ -141,7 +138,7 @@ const AdminDashboard = () => {
       </Row>
       <Space direction="vertical" className="w-full shadow-custom mt-5 py-5">
         <Row className="px-3" gutter={16} justify="end">
-          <Col span={5}>
+          <Col span={6}>
             <Input
               className="w-full"
               placeholder="Search"
@@ -151,7 +148,7 @@ const AdminDashboard = () => {
               allowClear
             />
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <Select
               className="w-full"
               placeholder="Select Status"
@@ -171,13 +168,17 @@ const AdminDashboard = () => {
           className="mt-5"
           columns={columns}
           loading={isLoading}
-          dataSource={project?.data}
+          dataSource={pagination(
+            project,
+            parseInt(searchParams.get("page") || "1"),
+            parseInt(searchParams.get("limit") || "10")
+          )}
           pagination={{
             showSizeChanger: true,
-            current: parseInt(searchParams.get("page") || "0") + 1,
+            current: parseInt(searchParams.get("page") || "1"),
             pageSize: parseInt(searchParams.get("limit") || "10"),
             pageSizeOptions: [10, 20, 50, 100],
-            total: 100,
+            total: project?.length,
             onChange: onChangePage,
             className: "px-5 !mb-0",
           }}
@@ -187,7 +188,7 @@ const AdminDashboard = () => {
   );
 };
 
-const columns: ColumnsType<IAdminProject["data"][number]> = [
+const columns: ColumnsType<IAdminProject> = [
   {
     dataIndex: "index",
     width: "5%",
@@ -218,7 +219,7 @@ const columns: ColumnsType<IAdminProject["data"][number]> = [
     width: "15%",
     align: "center",
     sorter: (a, b) => a.projectStatus.localeCompare(b.projectStatus),
-    render: (status: string) => {
+    render: (status) => {
       let color = "";
       let bg = "";
 
@@ -264,18 +265,18 @@ const columns: ColumnsType<IAdminProject["data"][number]> = [
     title: "MANAGER",
     dataIndex: "manager",
     width: "25%",
-    sorter: (a, b) => a.manager?.name.localeCompare(b.manager?.name),
+    sorter: (a, b) => a.manager?.userName.localeCompare(b.manager?.userName),
     render: (_, record) =>
-      record.manager?.name ? (
+      record.manager?.userName ? (
         <Row align="middle">
           <Col span={5} className="flex items-center">
             <Avatar style={{ backgroundColor: randomBgColor() }}>
-              {record.manager?.name?.charAt(0).toUpperCase()}
+              {record.manager?.userName?.charAt(0).toUpperCase()}
             </Avatar>
           </Col>
           <Col span={19}>
             <Typography.Title level={5} className="!m-0">
-              {record.manager?.name}
+              {record.manager?.userName}
             </Typography.Title>
           </Col>
         </Row>
@@ -292,7 +293,7 @@ const columns: ColumnsType<IAdminProject["data"][number]> = [
       >
         {record.member?.map((member, index) => (
           <Avatar key={index} style={{ backgroundColor: randomBgColor() }}>
-            {member.name?.charAt(0).toUpperCase()}
+            {member.userName?.charAt(0).toUpperCase()}
           </Avatar>
         ))}
       </Avatar.Group>

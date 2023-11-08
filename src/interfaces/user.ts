@@ -36,14 +36,14 @@ export interface IUpdateUserPayload {
 }
 
 export interface IAdminUsers {
-  id: string;
-  name: string;
+  userId: string;
+  userName: string;
   email: string;
+  phoneNumber: string;
   statusName: string;
   isAdmin: boolean;
-  phoneNumber: string;
   address: string;
-  dob: Date;
+  dob: Date | null;
 }
 
 export interface IAdminUsersAnalyzation {

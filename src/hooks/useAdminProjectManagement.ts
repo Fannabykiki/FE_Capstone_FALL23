@@ -11,12 +11,13 @@ interface Params {
 export default function useAdminProjectManagement(params: Params) {
   const { userInfo } = useAuthContext();
 
-  const { data: project, isLoading: isLoadingGetAdminProjects } =
-    useQuery<IAdminProject>({
-      queryKey: [projectApi.getAdminProjectsKey, userInfo?.id, params],
-      queryFn: ({ signal }) => projectApi.getAdminProjects(signal, params),
-      enabled: Boolean(userInfo),
-    });
+  const { data: project, isLoading: isLoadingGetAdminProjects } = useQuery<
+    IAdminProject[]
+  >({
+    queryKey: [projectApi.getAdminProjectsKey, userInfo?.id, params],
+    queryFn: ({ signal }) => projectApi.getAdminProjects(signal, params),
+    enabled: Boolean(userInfo),
+  });
 
   const { data: analyzation, isLoading: isLoadingGetAdminProjectsAnalyzation } =
     useQuery<IAdminProjectAnalyzation>({

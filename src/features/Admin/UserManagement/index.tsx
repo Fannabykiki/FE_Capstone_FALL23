@@ -26,20 +26,17 @@ import deactiveUser from "@/assets/images/deactive-user.png";
 import activeUser from "@/assets/images/active-user.png";
 import { IAdminUsers } from "@/interfaces/user";
 import UserDetailModal from "./UserDetailModal";
+import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
 
 const UserManagement = () => {
   const [userDetail, setUserDetail] = useState<IAdminUsers>();
   const [searchParams, setSearchParams] = useSearchParams({
-    page: "0",
+    page: "1",
     limit: "10",
   });
 
   const { users, analyzation, isLoading } = useAdminUserManagement({
-    $skip: (
-      +(searchParams.get("page") || "0") * +(searchParams.get("limit") || "10")
-    ).toString(),
-    $top: searchParams.get("limit") || "10",
     $filter: convertToODataParams(
       {
         statusName: searchParams.get("status"),
@@ -90,7 +87,7 @@ const UserManagement = () => {
   const columns: ColumnsType<IAdminUsers> = [
     {
       title: "USER",
-      dataIndex: "name",
+      dataIndex: "userName",
       width: "40%",
       render: (name, record) => (
         <Row>
@@ -273,13 +270,17 @@ const UserManagement = () => {
           className="mt-5"
           columns={columns}
           loading={isLoading}
-          dataSource={users}
+          dataSource={pagination(
+            users,
+            parseInt(searchParams.get("page") || "1"),
+            parseInt(searchParams.get("limit") || "10")
+          )}
           pagination={{
             showSizeChanger: true,
-            current: parseInt(searchParams.get("page") || "0") + 1,
+            current: parseInt(searchParams.get("page") || "1"),
             pageSize: parseInt(searchParams.get("limit") || "10"),
             pageSizeOptions: [10, 20, 50, 100],
-            total: 100,
+            total: users?.length,
             onChange: onChangePage,
             className: "px-5 !mb-0",
           }}

@@ -9,7 +9,9 @@ export const paths = {
   user: "/user",
   project: {
     index: "/project",
-    detail: (projectId = ":projectId") => `/project/${projectId}`,
+    detail: "/project/:projectId",
+    trash: "/project/:projectId/trash",
+    report: "/project/:projectId/report",
   },
   adminDashboard: "/admin",
   adminUserManagement: "/admin/user",

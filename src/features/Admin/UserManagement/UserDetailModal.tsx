@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -13,9 +14,10 @@ import {
 } from "antd";
 
 import { IAdminUserProjectList } from "@/interfaces/project";
-import { IAdminUsers } from "@/interfaces/user";
 import { projectApi } from "@/utils/api/project";
+import { IAdminUsers } from "@/interfaces/user";
 import { useAuthContext } from "@/context/Auth";
+import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
 
 interface Props {
@@ -29,6 +31,13 @@ export interface RoleInputType {
 }
 
 const UserDetailModal = ({ userDetail, handleClose }: Props) => {
+  const [conditions, setConditions] = useState<{
+    page: number;
+    limit: number;
+  }>({
+    page: 1,
+    limit: 10,
+  });
   const { userInfo } = useAuthContext();
 
   const { data, isLoading } = useQuery<IAdminUserProjectList[]>({
@@ -40,6 +49,10 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
 
   const onCancel = () => {
     handleClose();
+  };
+
+  const onChangePage = (page: number, limit: number) => {
+    setConditions({ page, limit });
   };
 
   const columns: ColumnsType<IAdminUserProjectList> = [
@@ -123,12 +136,12 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
         <Row align="middle">
           <Col span={6} className="flex items-center">
             <Avatar style={{ backgroundColor: randomBgColor() }}>
-              {record.manager?.name?.charAt(0).toUpperCase()}
+              {record.manager?.userName?.charAt(0).toUpperCase()}
             </Avatar>
           </Col>
           <Col span={18}>
             <Typography.Title level={5} className="!m-0">
-              {record.manager?.name}
+              {record.manager?.userName}
             </Typography.Title>
           </Col>
         </Row>
@@ -170,10 +183,10 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
                 className="w-[80px] h-[80px] flex justify-center items-center text-3xl"
                 style={{ backgroundColor: randomBgColor() }}
               >
-                {userDetail?.name?.charAt(0).toUpperCase()}
+                {userDetail?.userName?.charAt(0).toUpperCase()}
               </Avatar>
               <Typography.Text className="font-medium">
-                {userDetail?.name}
+                {userDetail?.userName}
               </Typography.Text>
             </Space>
             <Typography.Title level={5} className="!m-0 text-bold">
@@ -218,14 +231,14 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
               rowKey="projectId"
               columns={columns}
               loading={isLoading}
-              dataSource={data || []}
+              dataSource={pagination(data, conditions.page, conditions.limit)}
               pagination={{
                 showSizeChanger: true,
-                // current: parseInt(searchParams.get("page") || "0") + 1,
-                // pageSize: parseInt(searchParams.get("limit") || "10"),
+                current: conditions.page,
+                pageSize: conditions.limit,
                 pageSizeOptions: [10, 20, 50, 100],
-                total: 100,
-                // onChange: onChangePage,
+                total: data?.length,
+                onChange: onChangePage,
                 className: "px-5 !mb-0",
               }}
             />

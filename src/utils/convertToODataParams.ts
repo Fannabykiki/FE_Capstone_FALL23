@@ -26,11 +26,7 @@ export const convertToODataParams = (
       const value = contains[key];
       if (value !== "" && value !== undefined && value !== null) {
         if (contains.hasOwnProperty(key)) {
-          if (typeof value === "boolean" || typeof value === "number") {
-            odataParams.push(`contains(${key}, ${value})`);
-          } else {
-            odataParams.push(`contains(${key}, '${value}')`);
-          }
+          odataParams.push(`contains(tolower(${key}), '${value}')`);
         }
       }
     }
