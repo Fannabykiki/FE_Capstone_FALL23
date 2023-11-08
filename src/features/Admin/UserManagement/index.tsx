@@ -45,7 +45,7 @@ const UserManagement = () => {
           : undefined,
       },
       {
-        name: searchParams.get("search"),
+        userName: searchParams.get("search"),
       }
     ),
   });
