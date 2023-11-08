@@ -1,9 +1,10 @@
 import { useAuthContext } from "@/context/Auth";
+import useProjectDetail from "@/hooks/useProjectDetail";
 import { paths } from "@/routers/paths";
 import { UserOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Typography } from "antd";
 import { useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import UserMenu from "../UserMenu";
 
 interface RouteObj {
@@ -11,27 +12,40 @@ interface RouteObj {
 }
 
 export default function ProjectHeader() {
-  const routes = useMemo<RouteObj>(
-    () => ({
-      [paths.dashboard]: "Dashboard",
-    }),
-    []
-  );
+  const { projectId } = useParams();
+  const { detail } = useProjectDetail(projectId);
+  const routes = useMemo<RouteObj>(() => {
+    const routeObject = {
+      [paths.user]: "Projects",
+    };
+    if (detail) {
+      routeObject[paths.project.detail(detail.projectId)] = detail.projectName;
+    }
+    return routeObject;
+  }, [detail]);
 
   const { userInfo } = useAuthContext();
 
   const location = useLocation();
 
-  const breadcrumbItems = useMemo(
-    () =>
-      location.pathname
-        .slice(1)
-        .split("/")
-        .map((item) => ({
-          title: routes[item],
-        })),
-    [location.pathname, routes]
-  );
+  const breadcrumbItems = useMemo(() => {
+    const breadcrumbs = [
+      {
+        title: "Projects",
+        url: paths.user,
+      },
+      // ...location.pathname
+      //   .slice(1)
+      //   .split("/")
+      //   .map((item) => ({
+      //     title: routes[item],
+      //     url: item,
+      //   })),
+    ];
+    return breadcrumbs;
+  }, [location.pathname, routes]);
+
+  console.log(breadcrumbItems);
 
   return (
     <Layout.Header className="flex items-center justify-between bg-white">
