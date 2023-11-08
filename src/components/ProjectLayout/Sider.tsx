@@ -12,9 +12,8 @@ import {
   TableOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Layout, Menu } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { makePath } from "@/utils/common";
 import { paths } from "@/routers/paths";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
 import Brand from "./Brand";
@@ -35,65 +34,71 @@ export default function ProjectSider() {
     window.innerWidth < 1200
   );
 
+  const { projectId } = useParams();
+  const { detail } = useProjectDetail(projectId);
+
   const iconSize = menuCollapse ? 16 : 20;
 
-  const items: MenuItem[] = [
-    {
-      label: "Overview",
-      key: "overview",
-      icon: <SolutionOutlined width={iconSize} height={iconSize} />,
-      children: [
-        {
-          label: "Summary",
-          key: "summary",
-          icon: <InboxOutlined width={iconSize} height={iconSize} />,
-        },
-      ],
-    },
-    {
-      label: "Boards",
-      key: "boards",
-      icon: <TableOutlined width={iconSize} height={iconSize} />,
-      children: [
-        {
-          label: "Work Items",
-          key: "tasks",
-          icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
-        },
-        {
-          label: "Sprints",
-          key: "sprints",
-          icon: (
-            <ApartmentOutlined
-              className="-rotate-90"
-              width={iconSize}
-              height={iconSize}
-            />
-          ),
-        },
-        {
-          label: "Calendar",
-          key: "calendar",
-          icon: <CalendarOutlined width={iconSize} height={iconSize} />,
-        },
-        {
-          label: "Trash Bin",
-          key: "trash-bin",
-          icon: <DeleteOutlined width={iconSize} height={iconSize} />,
-        },
-      ],
-    },
-    {
-      label: "Report",
-      key: "report",
-      icon: <LineChartOutlined width={iconSize} height={iconSize} />,
-    },
-    {
-      label: "Settings",
-      key: "settings",
-      icon: <SettingOutlined width={iconSize} height={iconSize} />,
-    },
-  ];
+  const items: MenuItem[] = useMemo(
+    () => [
+      {
+        label: "Overview",
+        key: "overview",
+        icon: <SolutionOutlined width={iconSize} height={iconSize} />,
+        children: [
+          {
+            label: "Summary",
+            key: paths.project.detail(projectId),
+            icon: <InboxOutlined width={iconSize} height={iconSize} />,
+          },
+        ],
+      },
+      {
+        label: "Boards",
+        key: "boards",
+        icon: <TableOutlined width={iconSize} height={iconSize} />,
+        children: [
+          {
+            label: "Work Items",
+            key: paths.project.tasks(projectId),
+            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
+          },
+          {
+            label: "Sprints",
+            key: paths.project.sprint(projectId),
+            icon: (
+              <ApartmentOutlined
+                className="-rotate-90"
+                width={iconSize}
+                height={iconSize}
+              />
+            ),
+          },
+          {
+            label: "Calendar",
+            key: paths.project.calendar(projectId),
+            icon: <CalendarOutlined width={iconSize} height={iconSize} />,
+          },
+          {
+            label: "Trash Bin",
+            key: paths.project.trash(projectId),
+            icon: <DeleteOutlined width={iconSize} height={iconSize} />,
+          },
+        ],
+      },
+      {
+        label: "Report",
+        key: paths.project.report(projectId),
+        icon: <LineChartOutlined width={iconSize} height={iconSize} />,
+      },
+      {
+        label: "Settings",
+        key: paths.project.settings(projectId),
+        icon: <SettingOutlined width={iconSize} height={iconSize} />,
+      },
+    ],
+    [projectId, iconSize]
+  );
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -101,13 +106,18 @@ export default function ProjectSider() {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
   useEffect(() => {
-    const keys = location.pathname.split("/").slice(1);
-    setOpenKeys(keys);
-    setSelectedKeys(keys);
-  }, [location.pathname]);
+    const keys = location.pathname;
+    const openItem = items.find(
+      (item) => item.children?.find((child) => child.key === keys)
+    );
+    if (openItem) {
+      setOpenKeys([openItem.key as string]);
+    }
+    setSelectedKeys([keys]);
+  }, [location.pathname, items]);
 
   const onClickMenuItem = ({ keyPath }: { keyPath: string[] }) => {
-    navigate(makePath([...keyPath].reverse()));
+    navigate(keyPath[0]);
   };
 
   const onOpenSubMenu = (keys: string[]) => {
@@ -126,9 +136,6 @@ export default function ProjectSider() {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
-
-  const { projectId } = useParams();
-  const { detail } = useProjectDetail(projectId);
 
   return (
     <>

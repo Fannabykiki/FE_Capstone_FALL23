@@ -48,6 +48,42 @@ export default function Routers() {
               <PageContainer Component={ProjectDetail} title="Project Detail" />
             }
           />
+          <Route
+            path={paths.project.tasks()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.sprint()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.calendar()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.trash()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.report()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.settings()}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
         </Route>
         <Route path={paths.user} element={<UserLayout />}>
           <Route

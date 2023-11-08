@@ -130,7 +130,11 @@ export default function ProjectDetail() {
               <p className="font-semibold text-xl">Members</p>
               <Avatar.Group maxCount={8}>
                 {detail.projectMembers.map((member) => (
-                  <Tooltip title={faker.person.fullName} placement="top">
+                  <Tooltip
+                    key={member.memberId}
+                    title={faker.person.fullName}
+                    placement="top"
+                  >
                     <Avatar
                       key={member.userId}
                       src={faker.image.avatarGitHub()}
