@@ -48,11 +48,29 @@ export default function Routers() {
             }
           />
           <Route
+            path={paths.project.tasks}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.sprint}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
+            path={paths.project.calendar}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
+            }
+          />
+          <Route
             path={paths.project.trash}
             element={
               <PageContainer
                 Component={ProjectTrashBin}
-                title="Project Trash"
+                title="Project Trash Bin"
               />
             }
           />
@@ -60,6 +78,12 @@ export default function Routers() {
             path={paths.project.report}
             element={
               <PageContainer Component={ProjectReport} title="Project Report" />
+            }
+          />
+          <Route
+            path={paths.project.settings}
+            element={
+              <PageContainer Component={ProjectDetail} title="Project Detail" />
             }
           />
         </Route>

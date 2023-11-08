@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Avatar, Button, Layout, Menu } from "antd";
 import {
   ApartmentOutlined,
@@ -8,13 +8,13 @@ import {
   DoubleRightOutlined,
   InboxOutlined,
   LineChartOutlined,
+  SettingOutlined,
   SnippetsOutlined,
   SolutionOutlined,
   TableOutlined,
 } from "@ant-design/icons";
 import {
   generatePath,
-  matchRoutes,
   useLocation,
   useNavigate,
   useParams,
@@ -50,83 +50,80 @@ export default function ProjectSider() {
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
-  const items: MenuItem[] = [
-    {
-      label: "Overview",
-      key: "overview",
-      icon: <SolutionOutlined width={iconSize} height={iconSize} />,
-      children: [
-        {
-          label: "Summary",
-          key: "summary",
-          icon: <InboxOutlined width={iconSize} height={iconSize} />,
-        },
-      ],
-    },
-    {
-      label: "Boards",
-      key: "boards",
-      icon: <TableOutlined width={iconSize} height={iconSize} />,
-      children: [
-        {
-          label: "Work Items",
-          key: "tasks",
-          icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
-        },
-        {
-          label: "Sprints",
-          key: "sprints",
-          icon: (
-            <ApartmentOutlined
-              className="-rotate-90"
-              width={iconSize}
-              height={iconSize}
-            />
-          ),
-        },
-        {
-          label: "Calendar",
-          key: "calendar",
-          icon: <CalendarOutlined width={iconSize} height={iconSize} />,
-        },
-        {
-          label: "Trash Bin",
-          key: paths.project.trash,
-          icon: <DeleteOutlined width={iconSize} height={iconSize} />,
-        },
-      ],
-    },
-    {
-      label: "Report",
-      key: paths.project.report,
-      icon: <LineChartOutlined width={iconSize} height={iconSize} />,
-    },
-  ];
+  const items: MenuItem[] = useMemo(
+    () => [
+      {
+        label: "Overview",
+        key: "overview",
+        icon: <SolutionOutlined width={iconSize} height={iconSize} />,
+        children: [
+          {
+            label: "Summary",
+            key: generatePath(paths.project.detail, { projectId }),
+            icon: <InboxOutlined width={iconSize} height={iconSize} />,
+          },
+        ],
+      },
+      {
+        label: "Boards",
+        key: "boards",
+        icon: <TableOutlined width={iconSize} height={iconSize} />,
+        children: [
+          {
+            label: "Work Items",
+            key: generatePath(paths.project.tasks, { projectId }),
+            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
+          },
+          {
+            label: "Sprints",
+            key: generatePath(paths.project.sprint, { projectId }),
+            icon: (
+              <ApartmentOutlined
+                className="-rotate-90"
+                width={iconSize}
+                height={iconSize}
+              />
+            ),
+          },
+          {
+            label: "Calendar",
+            key: generatePath(paths.project.calendar, { projectId }),
+            icon: <CalendarOutlined width={iconSize} height={iconSize} />,
+          },
+          {
+            label: "Trash Bin",
+            key: generatePath(paths.project.trash, { projectId }),
+            icon: <DeleteOutlined width={iconSize} height={iconSize} />,
+          },
+        ],
+      },
+      {
+        label: "Report",
+        key: generatePath(paths.project.report, { projectId }),
+        icon: <LineChartOutlined width={iconSize} height={iconSize} />,
+      },
+      {
+        label: "Settings",
+        key: generatePath(paths.project.settings, { projectId }),
+        icon: <SettingOutlined width={iconSize} height={iconSize} />,
+      },
+    ],
+    [projectId, iconSize]
+  );
 
   useEffect(() => {
-    const routes = matchRoutes(
-      Object.values(paths.project).map((path) => ({ path })),
-      location
+    const keys = location.pathname;
+    const openItem = items.find(
+      (item) => item.children?.find((child) => child.key === keys)
     );
-    if (routes?.[0]) {
-      const openKey = items.find(
-        (item) =>
-          item.children?.some((c) =>
-            matchRoutes([{ path: c.key as string }], location)
-          )
-      )?.key as string;
-      setOpenKeys([openKey]);
-      setSelectedKeys([routes[0].route.path]);
+    if (openItem) {
+      setOpenKeys([openItem.key as string]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+    setSelectedKeys([keys]);
+  }, [location.pathname, items]);
 
-  const onClickMenuItem = ({ key }: { key: string }) => {
-    navigate(
-      generatePath(key, {
-        projectId,
-      })
-    );
+  const onClickMenuItem = ({ keyPath }: { keyPath: string[] }) => {
+    navigate(keyPath[0]);
   };
 
   const onOpenSubMenu = (keys: string[]) => {

@@ -16,7 +16,6 @@ export default function ProjectLayout() {
               <Outlet />
             </div>
           </Layout.Content>
-          {/* <DashboardFooter /> */}
         </Layout>
       </Layout>
     </>
