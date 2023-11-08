@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { Button, Divider, Layout, Menu, Typography } from "antd";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Layout, Menu } from "antd";
 import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
@@ -12,9 +12,7 @@ import {
 
 import BrandHeader from "@/assets/images/BrandHeader.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
-import { AuthContext } from "@/context/Auth";
 import { paths } from "@/routers/paths";
-import UserMenu from "../UserMenu";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -29,8 +27,6 @@ interface MenuItem {
 const AdminDashboardSider = () => {
   const [collapsed, setCollapsed] = useState(window.innerWidth < 1200);
   const [selectedKeys, setSelectedKeys] = useState<string>("");
-
-  const { userInfo } = useContext(AuthContext);
 
   const location = useLocation();
 
@@ -79,6 +75,7 @@ const AdminDashboardSider = () => {
       collapsedWidth={96}
       breakpoint="xl"
       className="relative p-2 !bg-white shadow-custom"
+      theme="light"
     >
       <div className="flex flex-col h-full justify-between">
         <div className="flex flex-col gap-5 flex-1 h-0">
@@ -99,31 +96,6 @@ const AdminDashboardSider = () => {
           <Button type="text" onClick={() => setCollapsed((value) => !value)}>
             {collapsed ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
           </Button>
-        </div>
-        <Divider className="border-neutral-200" />
-        <div className="flex justify-center items-center">
-          {collapsed ? (
-            <UserMenu>
-              <UserOutlined className="h-10 w-10 bg-neutral-200 rounded-full flex justify-center" />
-            </UserMenu>
-          ) : (
-            <div className="flex w-full justify-between items-center">
-              <div className="flex items-center gap-2">
-                <UserOutlined className="h-10 w-10 bg-neutral-200 rounded-full flex justify-center" />
-                <div className="flex flex-col">
-                  <Typography.Text className="font-semibold break-keep">
-                    {userInfo?.fullname || "User"}
-                  </Typography.Text>
-                  <Typography.Text className="break-keep">
-                    {userInfo?.email || "Email"}
-                  </Typography.Text>
-                </div>
-              </div>
-              <UserMenu>
-                <SettingOutlined className=" cursor-pointer" />
-              </UserMenu>
-            </div>
-          )}
         </div>
       </div>
     </Layout.Sider>

@@ -64,34 +64,39 @@ export interface IProjectMember {
 }
 
 export interface IAdminProject {
-  data: {
-    projectId: string;
-    projectName: string;
-    description: string;
-    projectStatus: string;
-    startDate: Date;
-    endDate: Date;
-    manager: {
-      id: string;
-      name: string;
+  projectId: string;
+  projectName: string;
+  description: string;
+  projectStatus: string;
+  startDate: Date;
+  endDate: Date;
+  manager: {
+    userId: string;
+    userName: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: boolean;
+    address: string;
+    dob: Date | null;
+  };
+  member: [
+    {
+      userId: string;
+      userName: string;
       email: string;
-      phoneNumber: string | null;
+      phoneNumber: string;
       statusName: string;
       isAdmin: boolean;
-    };
-    member: {
-      id: string;
-      name: string;
-      email: string;
-      phoneNumber: string | null;
-      statusName: string;
-      isAdmin: boolean;
-    }[];
-    createAt: Date;
-    deleteAt: Date | null;
-    expireAt: Date | null;
-    privacyStatus: boolean;
-  }[];
+      address: string;
+      dob: Date | null;
+    },
+  ];
+  createAt: Date;
+  deleteAt: null;
+  expireAt: null;
+  privacyStatus: boolean;
+  pagination: null;
 }
 
 export interface IAdminProjectAnalyzation {
@@ -110,14 +115,14 @@ export interface IAdminUserProjectList {
   description: string;
   projectStatus: string;
   manager: {
-    id: string;
-    name: string;
+    userId: string;
+    userName: string;
     email: string;
     phoneNumber: string;
     statusName: string;
-    isAdmin: false;
+    isAdmin: boolean;
     address: string;
-    dob: Date;
+    dob: Date | null;
   };
   startDate: Date;
 }

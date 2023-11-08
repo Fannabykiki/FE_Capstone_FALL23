@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { Avatar, Button, Layout, Menu } from "antd";
 import {
   ApartmentOutlined,
   CalendarOutlined,
@@ -10,14 +12,17 @@ import {
   SolutionOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Layout, Menu } from "antd";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { makePath } from "@/utils/common";
-import { paths } from "@/routers/paths";
-import useMenuCollapse from "@/hooks/useMenuCollapse";
-import Brand from "./Brand";
+import {
+  generatePath,
+  matchRoutes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import useProjectDetail from "@/hooks/useProjectDetail";
+import useMenuCollapse from "@/hooks/useMenuCollapse";
+import { paths } from "@/routers/paths";
+import Brand from "../Layout/Brand";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -35,6 +40,15 @@ export default function ProjectSider() {
   );
 
   const iconSize = menuCollapse ? 16 : 20;
+
+  const { projectId } = useParams();
+
+  const { detail } = useProjectDetail(projectId);
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
   const items: MenuItem[] = [
     {
@@ -77,31 +91,42 @@ export default function ProjectSider() {
         },
         {
           label: "Trash Bin",
-          key: "trash-bin",
+          key: paths.project.trash,
           icon: <DeleteOutlined width={iconSize} height={iconSize} />,
         },
       ],
     },
     {
       label: "Report",
-      key: "report",
+      key: paths.project.report,
       icon: <LineChartOutlined width={iconSize} height={iconSize} />,
     },
   ];
 
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
-
   useEffect(() => {
-    const keys = location.pathname.split("/").slice(1);
-    setOpenKeys(keys);
-    setSelectedKeys(keys);
-  }, [location.pathname]);
+    const routes = matchRoutes(
+      Object.values(paths.project).map((path) => ({ path })),
+      location
+    );
+    if (routes?.[0]) {
+      const openKey = items.find(
+        (item) =>
+          item.children?.some((c) =>
+            matchRoutes([{ path: c.key as string }], location)
+          )
+      )?.key as string;
+      setOpenKeys([openKey]);
+      setSelectedKeys([routes[0].route.path]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
-  const onClickMenuItem = ({ keyPath }: { keyPath: string[] }) => {
-    navigate(makePath([...keyPath].reverse()));
+  const onClickMenuItem = ({ key }: { key: string }) => {
+    navigate(
+      generatePath(key, {
+        projectId,
+      })
+    );
   };
 
   const onOpenSubMenu = (keys: string[]) => {
@@ -120,9 +145,6 @@ export default function ProjectSider() {
       setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
     }
   };
-
-  const { projectId } = useParams();
-  const { detail } = useProjectDetail(projectId);
 
   return (
     <>

@@ -1,17 +1,17 @@
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Divider, Layout, Menu } from "antd";
 import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
   HomeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Layout, Menu } from "antd";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { makePath } from "@/utils/common";
-import { paths } from "@/routers/paths";
+
 import useMenuCollapse from "@/hooks/useMenuCollapse";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateProject } from "../Modal";
+import { paths } from "@/routers/paths";
 import Brand from "./Brand";
 
 type PathKeys = keyof typeof paths;
@@ -55,8 +55,8 @@ export default function UserSider() {
     setSelectedKeys(keys);
   }, [location.pathname]);
 
-  const onClickMenuItem = ({ keyPath }: { keyPath: string[] }) => {
-    navigate(makePath([...keyPath].reverse()));
+  const onClickMenuItem = ({ key }: { key: string }) => {
+    navigate(key);
   };
 
   const onOpenSubMenu = (keys: string[]) => {
