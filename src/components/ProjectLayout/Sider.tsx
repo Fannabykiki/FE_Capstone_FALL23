@@ -6,6 +6,7 @@ import {
   DoubleRightOutlined,
   InboxOutlined,
   LineChartOutlined,
+  SettingOutlined,
   SnippetsOutlined,
   SolutionOutlined,
   TableOutlined,
@@ -86,6 +87,11 @@ export default function ProjectSider() {
       label: "Report",
       key: "report",
       icon: <LineChartOutlined width={iconSize} height={iconSize} />,
+    },
+    {
+      label: "Settings",
+      key: "settings",
+      icon: <SettingOutlined width={iconSize} height={iconSize} />,
     },
   ];
 
