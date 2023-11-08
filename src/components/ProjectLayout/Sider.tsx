@@ -39,11 +39,10 @@ export default function ProjectSider() {
     window.innerWidth < 1200
   );
 
-  const iconSize = menuCollapse ? 16 : 20;
-
   const { projectId } = useParams();
-
   const { detail } = useProjectDetail(projectId);
+
+  const iconSize = menuCollapse ? 16 : 20;
 
   const location = useLocation();
   const navigate = useNavigate();

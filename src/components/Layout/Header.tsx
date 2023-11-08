@@ -1,5 +1,5 @@
-import { Breadcrumb, Layout, Typography } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { Badge, Breadcrumb, Layout, Typography } from "antd";
+import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import {
   generatePath,
   useLocation,
@@ -79,21 +79,30 @@ export default function Header() {
         className="whitespace-nowrap font-semibold"
         items={breadcrumbItems}
       />
-      <UserMenu>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2 cursor-pointer">
-            <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
-            <div className="flex flex-col">
-              <Typography.Text className="font-semibold text-base break-keep">
-                {userInfo?.fullname || "User"}
-              </Typography.Text>
-              <Typography.Text className="break-keep">
-                {userInfo?.email || "Email"}
-              </Typography.Text>
+      <div className="flex gap-x-6 items-center">
+        <Badge
+          count={11}
+          overflowCount={10}
+          className="cursor-pointer select-none"
+        >
+          <BellOutlined className="text-2xl" />
+        </Badge>
+        <UserMenu>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2 cursor-pointer">
+              <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
+              <div className="flex flex-col">
+                <Typography.Text className="font-semibold text-base break-keep">
+                  {userInfo?.fullname || "User"}
+                </Typography.Text>
+                <Typography.Text className="break-keep">
+                  {userInfo?.email || "Email"}
+                </Typography.Text>
+              </div>
             </div>
           </div>
-        </div>
-      </UserMenu>
+        </UserMenu>
+      </div>
     </Layout.Header>
   );
 }

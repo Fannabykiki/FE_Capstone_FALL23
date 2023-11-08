@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { matchRoutes, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Layout, Menu } from "antd";
 import {
   DoubleLeftOutlined,
@@ -12,7 +12,7 @@ import {
 
 import BrandHeader from "@/assets/images/BrandHeader.png";
 import BrandIcon from "@/assets/images/BrandIcon.png";
-import { adminPaths, paths } from "@/routers/paths";
+import { paths } from "@/routers/paths";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -62,12 +62,9 @@ const AdminDashboardSider = () => {
   };
 
   useEffect(() => {
-    const routes = matchRoutes(
-      Object.values(adminPaths).map((path) => ({ path })),
-      location
-    );
-    if (routes?.[0]) setSelectedKeys(routes[0].route.path);
-  }, [location]);
+    const keys = location.pathname;
+    setSelectedKeys(keys);
+  }, [location.pathname]);
 
   return (
     <Layout.Sider

@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import jwtDecode from "jwt-decode";
 import { DATETIME_FORMAT, DATE_FORMAT } from "./constants";
 
-function classNames(...className: (string | undefined)[]) {
+function classNames(...className: (string | undefined | boolean)[]) {
   return className.filter((name) => Boolean(name)).join(" ");
 }
 
