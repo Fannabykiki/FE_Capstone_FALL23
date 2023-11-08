@@ -9,21 +9,25 @@ export const paths = {
   user: "/user",
   project: {
     index: "/project",
-    detail: (projectId = ":projectId") => `/project/${projectId}`,
-    tasks: (projectId = ":projectId") => `/project/${projectId}/tasks`,
-    sprint: (projectId = ":projectId") => `/project/${projectId}/sprint`,
-    calendar: (projectId = ":projectId") => `/project/${projectId}/calendar`,
-    trash: (projectId = ":projectId") => `/project/${projectId}/trash`,
-    report: (projectId = ":projectId") => `/project/${projectId}/report`,
-    settings: (projectId = ":projectId") => `/project/${projectId}/settings`,
+    detail: `/project/:projectId`,
+    tasks: `/project/:projectId/tasks`,
+    sprint: `/project/:projectId/sprint`,
+    calendar: `/project/:projectId/calendar`,
+    trash: `/project/:projectId/trash`,
+    report: `/project/:projectId/report`,
+    settings: `/project/:projectId/settings`,
   },
   adminDashboard: "/admin",
   adminUserManagement: "/admin/user",
   adminRoleManagement: "/admin/role",
+  adminPermissionManagement: "/admin/permission",
+  adminProjectPermission: "/admin/permission/:projectId",
 };
 
 export const adminPaths = pick(paths, [
   "adminDashboard",
   "adminUserManagement",
   "adminRoleManagement",
+  "adminPermissionManagement",
+  "adminProjectPermission",
 ]);

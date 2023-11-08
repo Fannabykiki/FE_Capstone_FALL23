@@ -1,12 +1,13 @@
+import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { ColumnsType } from "antd/es/table";
+import debounce from "lodash/debounce";
 import {
   EyeOutlined,
   MoreOutlined,
   SearchOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import { useSearchParams } from "react-router-dom";
-import { ColumnsType } from "antd/es/table";
-import debounce from "lodash/debounce";
 import {
   Avatar,
   Col,
@@ -24,26 +25,29 @@ import { convertToODataParams } from "@/utils/convertToODataParams";
 import deactiveUser from "@/assets/images/deactive-user.png";
 import activeUser from "@/assets/images/active-user.png";
 import { IAdminUsers } from "@/interfaces/user";
-import { useState } from "react";
 import UserDetailModal from "./UserDetailModal";
+import { pagination } from "@/utils/pagination";
+import { randomBgColor } from "@/utils/random";
 
 const UserManagement = () => {
-  const [isOpenViewDetailModal, setOpenViewDetailModal] = useState(false);
+  const [userDetail, setUserDetail] = useState<IAdminUsers>();
   const [searchParams, setSearchParams] = useSearchParams({
-    page: "0",
+    page: "1",
     limit: "10",
   });
 
-  const { users, isLoading } = useAdminUserManagement({
-    // $skip: (
-    //   +(searchParams.get("page") || "0") * +(searchParams.get("limit") || "10")
-    // ).toString(),
-    // $top: searchParams.get("limit") || "10",
-    // $search: searchParams.get("search") || undefined,
-    // $filter: convertToODataParams({
-    //   statusName: searchParams.get("status"),
-    //   isAdmin: searchParams.get("role") === "admin" ? 1 : 0,
-    // }),
+  const { users, analyzation, isLoading } = useAdminUserManagement({
+    $filter: convertToODataParams(
+      {
+        statusName: searchParams.get("status"),
+        isAdmin: searchParams.get("role")
+          ? searchParams.get("role") === "admin"
+          : undefined,
+      },
+      {
+        userName: searchParams.get("search"),
+      }
+    ),
   });
 
   const onChangePage = (page: number, pageSize: number) => {
@@ -56,7 +60,11 @@ const UserManagement = () => {
 
   const handleChange = (fieldName: string) => (value: string) => {
     setSearchParams((prev) => {
-      prev.set(fieldName, value);
+      if (!value) {
+        prev.delete(fieldName);
+      } else {
+        prev.set(fieldName, value);
+      }
       return prev;
     });
   };
@@ -72,25 +80,29 @@ const UserManagement = () => {
     });
   }, 1000);
 
-  const handleViewDetail = () => {
-    setOpenViewDetailModal(true);
+  const handleViewDetail = (record: IAdminUsers) => {
+    setUserDetail(record);
   };
 
-  const columns: ColumnsType<IAdminUsers["users"][number]> = [
+  const columns: ColumnsType<IAdminUsers> = [
     {
       title: "USER",
-      dataIndex: "name",
-      width: "35%",
+      dataIndex: "userName",
+      width: "40%",
       render: (name, record) => (
-        <Row gutter={16}>
+        <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar>{name?.charAt(0).toUpperCase()}</Avatar>
+            <Avatar style={{ backgroundColor: randomBgColor() }}>
+              {name?.charAt(0).toUpperCase()}
+            </Avatar>
           </Col>
           <Col span={20}>
-            <Typography.Title level={5} className="!m-0">
+            <Typography.Title level={5} className="!m-0 min-h-[24px]">
               {name}
             </Typography.Title>
-            <Typography.Text>{record.email}</Typography.Text>
+            <Typography.Text className="min-h-[19px]">
+              {record.email}
+            </Typography.Text>
           </Col>
         </Row>
       ),
@@ -117,14 +129,14 @@ const UserManagement = () => {
     {
       title: "CONTACT",
       dataIndex: "phoneNumber",
-      width: "25%",
+      width: "12%",
     },
     {
       title: "STATUS",
       dataIndex: "statusName",
-      width: "10%",
+      width: "18%",
       render: (statusName) => (
-        <Row align="middle" justify="space-between">
+        <Row align="middle" className="gap-2">
           <Switch defaultChecked={statusName === "Active"} />
           <Typography.Text
             className={`px-2 py-1 rounded font-medium ${
@@ -141,11 +153,11 @@ const UserManagement = () => {
     {
       title: "ACTIONS",
       width: "10%",
-      render: () => (
+      render: (_, record) => (
         <Space size="large">
           <EyeOutlined
             className="text-xl cursor-pointer"
-            onClick={handleViewDetail}
+            onClick={() => handleViewDetail(record)}
           />
           <MoreOutlined className="text-xl cursor-pointer" />
         </Space>
@@ -164,7 +176,7 @@ const UserManagement = () => {
             <Col span={20}>
               <Typography.Title level={4}>Total Users</Typography.Title>
               <Typography.Title level={4} className="!mt-4">
-                {users?.totalUser}
+                {analyzation?.totalUser}
                 <small className="text-green-500 ml-2">(100%)</small>
               </Typography.Title>
             </Col>
@@ -178,9 +190,9 @@ const UserManagement = () => {
             <Col span={20}>
               <Typography.Title level={4}>Active Users</Typography.Title>
               <Typography.Title level={4} className="!mt-4">
-                {users?.activeUsers}
+                {analyzation?.activeUsers}
                 <small className="text-green-500 ml-2">
-                  ({users?.percentActive}%)
+                  ({analyzation?.percentActive}%)
                 </small>
               </Typography.Title>
             </Col>
@@ -198,9 +210,9 @@ const UserManagement = () => {
             <Col span={20}>
               <Typography.Title level={4}>Inactive Users</Typography.Title>
               <Typography.Title level={4} className="!mt-4">
-                {users?.inActiveUser}
+                {analyzation?.inactiveUser}
                 <small className="text-red-500 ml-2">
-                  ({users?.percentInActive}%)
+                  ({analyzation?.percentInactive}%)
                 </small>
               </Typography.Title>
             </Col>
@@ -223,6 +235,7 @@ const UserManagement = () => {
               defaultValue={searchParams.get("search") || ""}
               prefix={<SearchOutlined />}
               onChange={handleSearch}
+              allowClear
             />
           </Col>
           <Col span={7}>
@@ -231,6 +244,7 @@ const UserManagement = () => {
               placeholder="Select Role"
               defaultValue={searchParams.get("role")}
               onChange={handleChange("role")}
+              allowClear
               options={[
                 { value: "admin", label: "Admin" },
                 { value: "member", label: "Member" },
@@ -243,9 +257,10 @@ const UserManagement = () => {
               placeholder="Select Status"
               defaultValue={searchParams.get("status")}
               onChange={handleChange("status")}
+              allowClear
               options={[
-                { value: "active", label: "Active" },
-                { value: "inactive", label: "Inactive" },
+                { value: "Active", label: "Active" },
+                { value: "InActive", label: "Inactive" },
               ]}
             />
           </Col>
@@ -255,21 +270,25 @@ const UserManagement = () => {
           className="mt-5"
           columns={columns}
           loading={isLoading}
-          dataSource={users?.users}
+          dataSource={pagination(
+            users,
+            parseInt(searchParams.get("page") || "1"),
+            parseInt(searchParams.get("limit") || "10")
+          )}
           pagination={{
             showSizeChanger: true,
-            current: parseInt(searchParams.get("page") || "0") + 1,
+            current: parseInt(searchParams.get("page") || "1"),
             pageSize: parseInt(searchParams.get("limit") || "10"),
             pageSizeOptions: [10, 20, 50, 100],
-            total: 100,
+            total: users?.length,
             onChange: onChangePage,
             className: "px-5 !mb-0",
           }}
         />
       </Space>
       <UserDetailModal
-        isOpen={isOpenViewDetailModal}
-        handleClose={() => setOpenViewDetailModal(false)}
+        userDetail={userDetail}
+        handleClose={() => setUserDetail(undefined)}
       />
     </Space>
   );

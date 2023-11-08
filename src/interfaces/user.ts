@@ -36,17 +36,20 @@ export interface IUpdateUserPayload {
 }
 
 export interface IAdminUsers {
-  totalUser: number;
+  userId: string;
+  userName: string;
+  email: string;
+  phoneNumber: string;
+  statusName: string;
+  isAdmin: boolean;
+  address: string;
+  dob: Date | null;
+}
+
+export interface IAdminUsersAnalyzation {
   activeUsers: number;
+  inactiveUser: number;
   percentActive: number;
-  inActiveUser: number;
-  percentInActive: number;
-  users: {
-    id: string;
-    name: string;
-    email: string;
-    statusName: string;
-    isAdmin: boolean;
-    phoneNumber: string;
-  }[];
+  percentInactive: number;
+  totalUser: number;
 }

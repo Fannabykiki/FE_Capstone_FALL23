@@ -1,6 +1,7 @@
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
-import ProjectHeader from "./Header";
+
+import Header from "../Layout/Header";
 import ProjectSider from "./Sider";
 
 export default function ProjectLayout() {
@@ -10,12 +11,11 @@ export default function ProjectLayout() {
         <Layout>
           <ProjectSider />
           <Layout.Content className="flex-1 flex flex-col">
-            <ProjectHeader />
-            <div className="bg-neutral-50 p-8 flex-1 overflow-y-auto">
+            <Header />
+            <div className="p-8 flex-1 overflow-y-auto">
               <Outlet />
             </div>
           </Layout.Content>
-          {/* <DashboardFooter /> */}
         </Layout>
       </Layout>
     </>

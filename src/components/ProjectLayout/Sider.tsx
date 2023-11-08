@@ -1,3 +1,5 @@
+import { useEffect, useState, useMemo } from "react";
+import { Avatar, Button, Layout, Menu } from "antd";
 import {
   ApartmentOutlined,
   CalendarOutlined,
@@ -11,13 +13,16 @@ import {
   SolutionOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Layout, Menu } from "antd";
-import { useEffect, useState, useMemo } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { paths } from "@/routers/paths";
-import useMenuCollapse from "@/hooks/useMenuCollapse";
-import Brand from "./Brand";
+import {
+  generatePath,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import useProjectDetail from "@/hooks/useProjectDetail";
+import useMenuCollapse from "@/hooks/useMenuCollapse";
+import { paths } from "@/routers/paths";
+import Brand from "../Layout/Brand";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -39,6 +44,11 @@ export default function ProjectSider() {
 
   const iconSize = menuCollapse ? 16 : 20;
 
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+
   const items: MenuItem[] = useMemo(
     () => [
       {
@@ -48,7 +58,7 @@ export default function ProjectSider() {
         children: [
           {
             label: "Summary",
-            key: paths.project.detail(projectId),
+            key: generatePath(paths.project.detail, { projectId }),
             icon: <InboxOutlined width={iconSize} height={iconSize} />,
           },
         ],
@@ -60,12 +70,12 @@ export default function ProjectSider() {
         children: [
           {
             label: "Work Items",
-            key: paths.project.tasks(projectId),
+            key: generatePath(paths.project.tasks, { projectId }),
             icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
           },
           {
             label: "Sprints",
-            key: paths.project.sprint(projectId),
+            key: generatePath(paths.project.sprint, { projectId }),
             icon: (
               <ApartmentOutlined
                 className="-rotate-90"
@@ -76,34 +86,29 @@ export default function ProjectSider() {
           },
           {
             label: "Calendar",
-            key: paths.project.calendar(projectId),
+            key: generatePath(paths.project.calendar, { projectId }),
             icon: <CalendarOutlined width={iconSize} height={iconSize} />,
           },
           {
             label: "Trash Bin",
-            key: paths.project.trash(projectId),
+            key: generatePath(paths.project.trash, { projectId }),
             icon: <DeleteOutlined width={iconSize} height={iconSize} />,
           },
         ],
       },
       {
         label: "Report",
-        key: paths.project.report(projectId),
+        key: generatePath(paths.project.report, { projectId }),
         icon: <LineChartOutlined width={iconSize} height={iconSize} />,
       },
       {
         label: "Settings",
-        key: paths.project.settings(projectId),
+        key: generatePath(paths.project.settings, { projectId }),
         icon: <SettingOutlined width={iconSize} height={iconSize} />,
       },
     ],
     [projectId, iconSize]
   );
-
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
   useEffect(() => {
     const keys = location.pathname;

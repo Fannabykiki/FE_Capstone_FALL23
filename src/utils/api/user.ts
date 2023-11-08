@@ -29,10 +29,17 @@ const getAdminUsers = async (
   params: { [key: string]: string | undefined }
 ) =>
   axiosClient({
-    url: "/api/user-management/users",
+    url: "/api/user-management/admin/users",
     method: HTTP_METHODS.GET,
     signal,
     params,
+  }).then((resp) => resp.data);
+
+const getAdminUsersAnalyzation = async (signal: AbortSignal | undefined) =>
+  axiosClient({
+    url: "/api/user-management/admin/users/analyzation",
+    method: HTTP_METHODS.GET,
+    signal,
   }).then((resp) => resp.data);
 
 export const userApi = {
@@ -44,4 +51,6 @@ export const userApi = {
   //Admin
   getAdminUsers,
   getAdminUsersKey: "adminUsersGet",
+  getAdminUsersAnalyzation,
+  getAdminUsersAnalyzationKey: "getAdminUsersAnalyzation",
 };

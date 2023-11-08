@@ -64,39 +64,65 @@ export interface IProjectMember {
 }
 
 export interface IAdminProject {
+  projectId: string;
+  projectName: string;
+  description: string;
+  projectStatus: string;
+  startDate: Date;
+  endDate: Date;
+  manager: {
+    userId: string;
+    userName: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: boolean;
+    address: string;
+    dob: Date | null;
+  };
+  member: [
+    {
+      userId: string;
+      userName: string;
+      email: string;
+      phoneNumber: string;
+      statusName: string;
+      isAdmin: boolean;
+      address: string;
+      dob: Date | null;
+    },
+  ];
+  createAt: Date;
+  deleteAt: null;
+  expireAt: null;
+  privacyStatus: boolean;
+  pagination: null;
+}
+
+export interface IAdminProjectAnalyzation {
+  projectActive: number;
+  projectActivePercent: number;
+  projectDelete: number;
+  projectDeletePercent: number;
+  projectInActive: number;
+  projectInActivePercent: number;
   totalProject: number;
-  activeProject: number;
-  percentActive: number;
-  closeProject: number;
-  percentClose: number;
-  otherProject: number;
-  percentOther: number;
-  getAllProjectViewModels: {
-    projectId: string;
-    projectName: string;
-    description: string;
-    projectStatus: string;
-    startDate: Date;
-    endDate: Date;
-    manager: {
-      id: string;
-      name: string;
-      email: string;
-      phoneNumber: string | null;
-      statusName: string;
-      isAdmin: boolean;
-    };
-    member: {
-      id: string;
-      name: string;
-      email: string;
-      phoneNumber: string | null;
-      statusName: string;
-      isAdmin: boolean;
-    }[];
-    createAt: Date;
-    deleteAt: Date | null;
-    expireAt: Date | null;
-    privacyStatus: boolean;
-  }[];
+}
+
+export interface IAdminUserProjectList {
+  projectId: string;
+  projectName: string;
+  description: string;
+  projectStatus: string;
+  manager: {
+    userId: string;
+    userName: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: boolean;
+    address: string;
+    dob: Date | null;
+  };
+  startDate: Date;
 }

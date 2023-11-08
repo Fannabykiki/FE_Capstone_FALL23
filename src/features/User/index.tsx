@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 import { Avatar, Typography } from "antd";
 import { useAuthContext } from "@/context/Auth";
 import { IProject } from "@/interfaces/project";
-import { useNavigate } from "react-router-dom";
+import { generatePath, useNavigate } from "react-router-dom";
 import { paths } from "@/routers/paths";
 
 export default function UserMainPage() {
@@ -13,7 +13,11 @@ export default function UserMainPage() {
   const navigate = useNavigate();
 
   const navigateToProject = (projectId: string) => {
-    navigate(paths.project.detail(projectId));
+    navigate(
+      generatePath(paths.project.detail, {
+        projectId,
+      })
+    );
   };
 
   const mostRecentProjects: IProject[] = useMemo(() => {
