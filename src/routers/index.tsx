@@ -22,6 +22,7 @@ import ProjectSprint from "@/features/Project/Sprint";
 import ProjectSettings from "@/features/Project/Settings";
 import ProjectCalendar from "@/features/Project/Calendar";
 import ProjectTasks from "@/features/Project/Tasks";
+import WorkItem from "@/features/Project/WorkItem";
 
 export default function Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
@@ -53,7 +54,7 @@ export default function Routers() {
           <Route
             path={paths.project.tasks}
             element={
-              <PageContainer Component={ProjectTasks} title="Project Tasks" />
+              <PageContainer Component={WorkItem} title="Work Items" />
             }
           />
           <Route
