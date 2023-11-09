@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, Divider, Modal, Row, Select, Space, Typography } from "antd";
 import { toast } from "react-toastify";
@@ -16,7 +16,12 @@ interface Props {
   handleClose: () => void;
 }
 
-const GrantPermission = ({ isOpen, schema, handleClose }: Props) => {
+const GrantPermission = ({
+  isOpen,
+  schema,
+  permission,
+  handleClose,
+}: Props) => {
   const [permissions, setPermissions] = useState<string[]>([]);
   const [role, setRole] = useState<string>();
 
@@ -74,6 +79,15 @@ const GrantPermission = ({ isOpen, schema, handleClose }: Props) => {
     });
   };
 
+  useEffect(() => {
+    setRole(undefined);
+    if (permission) {
+      setPermissions([permission.permissionId]);
+    } else {
+      setPermissions([]);
+    }
+  }, [permission]);
+
   return (
     <Modal
       title="Grant permission"
@@ -99,7 +113,7 @@ const GrantPermission = ({ isOpen, schema, handleClose }: Props) => {
               allowClear
               className="w-full"
               placeholder="Select permissions"
-              // defaultValue={["a10", "c12"]}
+              value={permissions}
               onChange={setPermissions}
               options={options}
             />
@@ -118,6 +132,7 @@ const GrantPermission = ({ isOpen, schema, handleClose }: Props) => {
               placeholder="Select a role"
               optionFilterProp="children"
               onChange={setRole}
+              value={role}
               filterOption={(input, option) =>
                 (option?.label ?? "")
                   .toLowerCase()
