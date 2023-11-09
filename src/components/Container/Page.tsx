@@ -38,7 +38,7 @@ export default function PageContainer({
             location
           )
             ? location.pathname
-            : paths.adminDashboard,
+            : paths.admin.index,
           search: location.search,
         });
       } else {

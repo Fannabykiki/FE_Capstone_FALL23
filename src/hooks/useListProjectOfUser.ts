@@ -4,7 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function useListProjectOfUser() {
   const { userInfo } = useAuthContext();
-  const { data: projects, isLoading } = useQuery({
+  const {
+    data: projects,
+    isLoading,
+    refetch: refetchProjects,
+  } = useQuery({
     queryKey: [projectApi.getListByUserKey, userInfo?.id],
     queryFn: ({ signal }) => projectApi.getListByUser(signal),
     enabled: Boolean(userInfo),
@@ -13,5 +17,6 @@ export default function useListProjectOfUser() {
   return {
     projects,
     isLoading,
+    refetchProjects,
   };
 }

@@ -1,22 +1,60 @@
 import { useState } from "react";
-import { Avatar, Button, Col, Row, Space, Typography } from "antd";
+import { Button, Col, Row, Skeleton, Space, Typography } from "antd";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { toast } from "react-toastify";
 
-import CreateEditRole, { RoleInputType } from "./CreateEditRole";
-import { randomBgColor } from "@/utils/random";
+import { useAuthContext } from "@/context/Auth";
+import { IAdminRoles } from "@/interfaces/role";
+import CreateEditRole from "./CreateEditRole";
+import { roleApi } from "@/utils/api/role";
+import RoleDetail from "./Detail";
 
 const RoleManagement = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [roleEdit, setRoleEdit] = useState<RoleInputType>();
+  const [isOpenCreateEditModal, setIsOpenCreateEditModal] = useState(false);
+  const [isOpenDetailModal, setIsOpenDetailModal] = useState(false);
+  const [roleSelected, setRoleSelected] = useState<IAdminRoles>();
 
-  const handleOpenModal = (role?: RoleInputType) => {
-    setIsModalOpen(true);
-    setRoleEdit(role);
+  const queryClient = useQueryClient();
+
+  const { userInfo } = useAuthContext();
+
+  const { data: roles, isLoading } = useQuery<IAdminRoles[]>({
+    queryKey: [roleApi.getAdminRolesKey, userInfo?.id],
+    queryFn: ({ signal }) => roleApi.getAdminRoles(signal),
+    enabled: Boolean(userInfo),
+  });
+
+  const {
+    mutate: deleteRole,
+    isLoading: isDeleting,
+    variables,
+  } = useMutation({
+    mutationFn: roleApi.deleteRole,
+    mutationKey: [roleApi.deleteRoleKey],
+    onSuccess: () => {
+      queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Delete role failed");
+    },
+  });
+
+  const handleOpenCreateEditModal = (role?: IAdminRoles) => {
+    setIsOpenCreateEditModal(true);
+    setRoleSelected(role);
+  };
+
+  const handleOpenRoleDetailModal = (role: IAdminRoles) => {
+    setIsOpenDetailModal(true);
+    setRoleSelected(role);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setRoleEdit(undefined);
+    setRoleSelected(undefined);
+    setIsOpenCreateEditModal(false);
+    setIsOpenDetailModal(false);
   };
 
   return (
@@ -35,14 +73,14 @@ const RoleManagement = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => handleOpenModal()}
+            onClick={() => handleOpenCreateEditModal()}
           >
             Add new role
           </Button>
         </Col>
       </Row>
       <Row gutter={[24, 24]} className="w-full">
-        {roles.map((role, index) => (
+        {(roles || Array.from({ length: 5 }))?.map((role, index) => (
           <Col
             key={index}
             span={8}
@@ -51,78 +89,53 @@ const RoleManagement = () => {
             <Space
               direction="vertical"
               className="w-full bg-white p-5 rounded-lg shadow-custom"
+              onClick={() => !isLoading && handleOpenRoleDetailModal(role)}
             >
-              <Row justify="end">
-                <Avatar.Group
-                  maxCount={4}
-                  maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
-                >
-                  <Avatar style={{ backgroundColor: randomBgColor() }}>
-                    A
-                  </Avatar>
-                  <Avatar style={{ backgroundColor: randomBgColor() }}>
-                    B
-                  </Avatar>
-                  <Avatar style={{ backgroundColor: randomBgColor() }}>
-                    C
-                  </Avatar>
-                  <Avatar style={{ backgroundColor: randomBgColor() }}>
-                    D
-                  </Avatar>
-                </Avatar.Group>
-              </Row>
-              <Row>
+              <Skeleton loading={isLoading}>
                 <Typography.Title level={3} className="!m-0">
-                  {role.name}
+                  {role?.role.roleName}
                 </Typography.Title>
-              </Row>
-              <Row>
-                <Button
-                  type="link"
-                  className="!p-0"
-                  onClick={() => handleOpenModal(role)}
-                >
-                  Edit role
-                </Button>
-                <Button type="link" className="!p-0 ml-5">
-                  Delete role
-                </Button>
-                <EyeOutlined className="text-xl ml-auto" />
-              </Row>
+                <Row>
+                  <Button
+                    type="link"
+                    className="!p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenCreateEditModal(role);
+                    }}
+                  >
+                    Edit role
+                  </Button>
+                  <Button
+                    type="link"
+                    className="!p-0 ml-5"
+                    loading={isDeleting && role.role.roleId === variables}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteRole(role?.role.roleId);
+                    }}
+                  >
+                    Delete role
+                  </Button>
+                  <EyeOutlined className="text-xl ml-auto" />
+                </Row>
+              </Skeleton>
             </Space>
           </Col>
         ))}
       </Row>
       <CreateEditRole
-        isOpen={isModalOpen}
-        roleEdit={roleEdit}
+        isOpen={isOpenCreateEditModal}
+        roleEdit={roleSelected}
+        handleClose={handleCloseModal}
+      />
+      <RoleDetail
+        isOpen={isOpenDetailModal}
+        role={roleSelected}
         handleClose={handleCloseModal}
       />
     </Space>
   );
 };
-
-const roles: RoleInputType[] = [
-  {
-    name: "Administrator",
-    description: "Administrator",
-  },
-  {
-    name: "Project Manager",
-    description: "Project Manager",
-  },
-  {
-    name: "Developer",
-    description: "Developer",
-  },
-  {
-    name: "Tester",
-    description: "Tester",
-  },
-  {
-    name: "BA",
-    description: "BA",
-  },
-];
 
 export default RoleManagement;

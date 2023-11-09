@@ -9,16 +9,19 @@ import Register from "@/features/Register";
 
 import { paths } from "./paths";
 import { PageContainer, ProjectLayout, Layout } from "@/components";
-
+import { useAuthContext } from "@/context/Auth";
+import { Spin } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
 import VerifyAccount from "@/features/VerifyAccount";
-import UserMainPage from "@/features/User";
+import UserDashboard from "@/features/User";
 import ProjectDetail from "@/features/Project/detail";
-import { useAuthContext } from "@/context/Auth";
-import { Spin } from "antd";
 import ProjectTrashBin from "@/features/Project/Trash";
 import ProjectReport from "@/features/Project/Report";
+import ProjectSprint from "@/features/Project/Sprint";
+import ProjectSettings from "@/features/Project/Settings";
+import ProjectCalendar from "@/features/Project/Calendar";
+import ProjectTasks from "@/features/Project/Tasks";
 import WorkItem from "@/features/Project/WorkItem";
 
 export default function Routers() {
@@ -50,18 +53,23 @@ export default function Routers() {
           />
           <Route
             path={paths.project.tasks}
-            element={<PageContainer Component={WorkItem} title="Work Item" />}
+            element={
+              <PageContainer Component={WorkItem} title="Work Items" />
+            }
           />
           <Route
             path={paths.project.sprint}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer Component={ProjectSprint} title="Project Sprint" />
             }
           />
           <Route
             path={paths.project.calendar}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer
+                Component={ProjectCalendar}
+                title="Project Calendar"
+              />
             }
           />
           <Route
@@ -82,7 +90,10 @@ export default function Routers() {
           <Route
             path={paths.project.settings}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer
+                Component={ProjectSettings}
+                title="Project Settings"
+              />
             }
           />
         </Route>
@@ -90,12 +101,12 @@ export default function Routers() {
           <Route
             index
             element={
-              <PageContainer Component={UserMainPage} title="User Dashboard" />
+              <PageContainer Component={UserDashboard} title="User Dashboard" />
             }
           />
         </Route>
         {/* Admin */}
-        <Route path={paths.adminDashboard} element={<Layout isAdmin />}>
+        <Route path={paths.admin.index} element={<Layout isAdmin />}>
           <Route
             index
             element={
@@ -106,7 +117,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminUserManagement}
+            path={paths.admin.userManagement}
             element={
               <PageContainer
                 Component={UserManagement}
@@ -115,7 +126,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminRoleManagement}
+            path={paths.admin.roleManagement}
             element={
               <PageContainer
                 Component={RoleManagement}
@@ -124,7 +135,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminPermissionManagement}
+            path={paths.admin.permissionManagement}
             element={
               <PageContainer
                 Component={PermissionSchemes}
@@ -133,7 +144,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminProjectPermission}
+            path={paths.admin.projectPermission}
             element={
               <PageContainer
                 Component={ProjectPermission}
