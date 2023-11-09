@@ -19,6 +19,7 @@ import { useAuthContext } from "@/context/Auth";
 import { Spin } from "antd";
 import ProjectTrashBin from "@/features/Project/Trash";
 import ProjectReport from "@/features/Project/Report";
+import WorkItem from "@/features/Project/WorkItem";
 
 export default function Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
@@ -49,9 +50,7 @@ export default function Routers() {
           />
           <Route
             path={paths.project.tasks}
-            element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
-            }
+            element={<PageContainer Component={WorkItem} title="Work Item" />}
           />
           <Route
             path={paths.project.sprint}
