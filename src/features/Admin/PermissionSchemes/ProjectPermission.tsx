@@ -1,23 +1,40 @@
 import { useState } from "react";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Col, Row, Space, Table, Typography } from "antd";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 
-import useAdminUserManagement from "@/hooks/useAdminUserManagement";
-import RemovePermission from "./RemovePermission";
-import { IAdminUsers } from "@/interfaces/user";
+import RevokePermission from "./RevokePermission";
 import GrantPermission from "./GrantPermission";
+import { useAuthContext } from "@/context/Auth";
+import { schemaApi } from "@/utils/api/schema";
+import { ISchema } from "@/interfaces/schema";
 
 const ProjectPermission = () => {
-  const [isOpenGrantPermModal, setOpenGrantPermModal] = useState(false);
-  const [isOpenRmPermModal, setOpenRmPermModal] = useState(false);
+  const [isOpenRvkPermModal, setOpenRvkPermModal] = useState<boolean>(false);
+  const [permissionSelected, setPermissionSelected] =
+    useState<ISchema["rolePermissions"][number]>();
+  const [isOpenGrantPermModal, setOpenGrantPermModal] =
+    useState<boolean>(false);
 
-  const { users, isLoading } = useAdminUserManagement({});
+  const { userInfo } = useAuthContext();
 
-  const { projectId } = useParams();
+  const { schemaId } = useParams();
 
-  const columns: ColumnsType<IAdminUsers> = [
+  const { data: schema, isLoading } = useQuery<ISchema>({
+    queryKey: [schemaApi.getAdminSchemaDetailKey, userInfo?.id, schemaId],
+    queryFn: ({ signal }) => schemaApi.getAdminSchemaDetail(signal, schemaId!),
+    enabled: Boolean(userInfo) && Boolean(schemaId),
+  });
+
+  const handleClose = () => {
+    setPermissionSelected(undefined);
+    setOpenGrantPermModal(false);
+    setOpenRvkPermModal(false);
+  };
+
+  const columns: ColumnsType<ISchema["rolePermissions"][number]> = [
     {
       title: "Permission",
       dataIndex: "name",
@@ -28,27 +45,19 @@ const ProjectPermission = () => {
           <Typography.Title level={5} className="!m-0 min-h-[24px]">
             {name}
           </Typography.Title>
-          <Typography.Text>{name}</Typography.Text>
+          <Typography.Text>{record.description}</Typography.Text>
         </Space>
       ),
     },
     {
       title: "Roles",
-      dataIndex: "isAdmin",
+      dataIndex: "roles",
       width: "45%",
-      render: (isAdmin) => (
+      render: (roles: ISchema["rolePermissions"][number]["roles"]) => (
         <ul>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
-          <li>Project</li>
+          {roles.map((role, index) => (
+            <li key={index}>{role.roleName}</li>
+          ))}
         </ul>
       ),
     },
@@ -56,15 +65,21 @@ const ProjectPermission = () => {
       width: "10%",
       className: "align-top",
       align: "center",
-      render: () => (
+      render: (_, record) => (
         <Row justify="space-evenly">
           <EditOutlined
             className="text-xl cursor-pointer"
-            onClick={() => setOpenGrantPermModal(true)}
+            onClick={() => {
+              setPermissionSelected(record);
+              setOpenGrantPermModal(true);
+            }}
           />
           <DeleteOutlined
             className="text-red-500 text-xl cursor-pointer"
-            onClick={() => setOpenRmPermModal(true)}
+            onClick={() => {
+              setPermissionSelected(record);
+              setOpenRvkPermModal(true);
+            }}
           />
         </Row>
       ),
@@ -79,7 +94,7 @@ const ProjectPermission = () => {
             Permission Schemes
           </Typography.Title>
           <Typography.Title level={3} className="!m-0">
-            {projectId}
+            {schema?.schemaName}
           </Typography.Title>
         </Col>
         <Col span={6} className="flex justify-end items-center">
@@ -88,22 +103,26 @@ const ProjectPermission = () => {
           </Button>
         </Col>
       </Row>
-      <Typography.Text>General team member can Manage Sprint</Typography.Text>
+      <Typography.Text>{schema?.description}</Typography.Text>
       <Table
-        rowKey="id"
+        rowKey="permissionId"
         className="shadow-custom"
         columns={columns}
         loading={isLoading}
-        dataSource={users}
+        dataSource={schema?.rolePermissions}
         pagination={false}
       />
-      <RemovePermission
-        isOpen={isOpenRmPermModal}
-        handleClose={() => setOpenRmPermModal(false)}
+      <RevokePermission
+        isOpen={isOpenRvkPermModal}
+        schemaId={schema?.schemaId}
+        permission={permissionSelected}
+        handleClose={handleClose}
       />
       <GrantPermission
         isOpen={isOpenGrantPermModal}
-        handleClose={() => setOpenGrantPermModal(false)}
+        schema={schema}
+        permission={permissionSelected}
+        handleClose={handleClose}
       />
     </Space>
   );

@@ -25,11 +25,6 @@ interface Props {
   handleClose: () => void;
 }
 
-export interface RoleInputType {
-  name: string;
-  description?: string;
-}
-
 const UserDetailModal = ({ userDetail, handleClose }: Props) => {
   const [conditions, setConditions] = useState<{
     page: number;

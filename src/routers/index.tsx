@@ -96,7 +96,7 @@ export default function Routers() {
           />
         </Route>
         {/* Admin */}
-        <Route path={paths.adminDashboard} element={<Layout isAdmin />}>
+        <Route path={paths.admin.index} element={<Layout isAdmin />}>
           <Route
             index
             element={
@@ -107,7 +107,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminUserManagement}
+            path={paths.admin.userManagement}
             element={
               <PageContainer
                 Component={UserManagement}
@@ -116,7 +116,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminRoleManagement}
+            path={paths.admin.roleManagement}
             element={
               <PageContainer
                 Component={RoleManagement}
@@ -125,7 +125,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminPermissionManagement}
+            path={paths.admin.permissionManagement}
             element={
               <PageContainer
                 Component={PermissionSchemes}
@@ -134,7 +134,7 @@ export default function Routers() {
             }
           />
           <Route
-            path={paths.adminProjectPermission}
+            path={paths.admin.projectPermission}
             element={
               <PageContainer
                 Component={ProjectPermission}

@@ -37,22 +37,22 @@ const AdminDashboardSider = () => {
   const items: MenuItem[] = [
     {
       label: "Dashboard",
-      key: paths.adminDashboard,
+      key: paths.admin.index,
       icon: <HomeOutlined width={iconSize} height={iconSize} />,
     },
     {
       label: "User Management",
-      key: paths.adminUserManagement,
+      key: paths.admin.userManagement,
       icon: <UserOutlined width={iconSize} height={iconSize} />,
     },
     {
       label: "Role Management",
-      key: paths.adminRoleManagement,
+      key: paths.admin.roleManagement,
       icon: <SettingOutlined width={iconSize} height={iconSize} />,
     },
     {
       label: "Permission Schemes",
-      key: paths.adminPermissionManagement,
+      key: paths.admin.permissionManagement,
       icon: <LockOutlined width={iconSize} height={iconSize} />,
     },
   ];
@@ -62,8 +62,11 @@ const AdminDashboardSider = () => {
   };
 
   useEffect(() => {
-    const keys = location.pathname;
-    setSelectedKeys(keys);
+    const key = items
+      .reverse()
+      .find((item) => location.pathname.includes(item.key as string));
+    setSelectedKeys((key?.key as string) || "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   return (

@@ -17,17 +17,19 @@ export const paths = {
     report: `/project/:projectId/report`,
     settings: `/project/:projectId/settings`,
   },
-  adminDashboard: "/admin",
-  adminUserManagement: "/admin/user",
-  adminRoleManagement: "/admin/role",
-  adminPermissionManagement: "/admin/permission",
-  adminProjectPermission: "/admin/permission/:projectId",
+  admin: {
+    index: "/admin",
+    userManagement: "/admin/user",
+    roleManagement: "/admin/role",
+    permissionManagement: "/admin/permission",
+    projectPermission: "/admin/permission/:schemaId",
+  },
 };
 
-export const adminPaths = pick(paths, [
-  "adminDashboard",
-  "adminUserManagement",
-  "adminRoleManagement",
-  "adminPermissionManagement",
-  "adminProjectPermission",
+export const adminPaths = pick(paths.admin, [
+  "index",
+  "userManagement",
+  "roleManagement",
+  "permissionManagement",
+  "projectPermission",
 ]);

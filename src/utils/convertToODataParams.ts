@@ -26,7 +26,9 @@ export const convertToODataParams = (
       const value = contains[key];
       if (value !== "" && value !== undefined && value !== null) {
         if (contains.hasOwnProperty(key)) {
-          odataParams.push(`contains(tolower(${key}), '${value}')`);
+          odataParams.push(
+            `contains(tolower(${key}), '${value.toLowerCase()}')`
+          );
         }
       }
     }
