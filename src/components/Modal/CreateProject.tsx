@@ -1,3 +1,4 @@
+import useListProjectOfUser from "@/hooks/useListProjectOfUser";
 import {
   EProjectPrivacyStatusLabel,
   ICreateProjectPayload,
@@ -32,11 +33,14 @@ export default function CreateProject({ open, onClose }: Props) {
     privacyStatus: false,
   };
 
+  const { refetchProjects } = useListProjectOfUser();
+
   const { mutate: createProject, isLoading } = useMutation({
     mutationFn: projectApi.create,
     mutationKey: [projectApi.createKey],
     onSuccess: (_, variables) => {
       toast.success(`Create project '${variables.projectName}' succeed`);
+      refetchProjects();
       onClose();
     },
   });

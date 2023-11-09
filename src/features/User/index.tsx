@@ -23,10 +23,14 @@ export default function UserDashboard() {
   const mostRecentProjects: IProject[] = useMemo(() => {
     const savedProjects = localStorage.getItem(`${userInfo?.id}-projects`);
     if (savedProjects) {
-      return JSON.parse(savedProjects);
+      const parsedSavedProjects = JSON.parse(savedProjects) as IProject[];
+      return parsedSavedProjects.filter(
+        (project) =>
+          projects?.find((_project) => _project.projectId === project.projectId)
+      );
     }
     return [];
-  }, [userInfo]);
+  }, [userInfo, projects]);
 
   return (
     <div>
