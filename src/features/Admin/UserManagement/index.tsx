@@ -266,7 +266,7 @@ const UserManagement = () => {
           </Col>
         </Row>
         <Table
-          rowKey="id"
+          rowKey="userId"
           className="mt-5"
           columns={columns}
           loading={isLoading}

@@ -24,10 +24,10 @@ export default function Header() {
   const routes = useMemo<RouteObj>(() => {
     const routeObject = {
       [paths.user]: "Projects",
-      [paths.adminDashboard]: "Admin Dashboard",
-      [paths.adminUserManagement]: "User Management",
-      [paths.adminRoleManagement]: "Role Management",
-      [paths.adminPermissionManagement]: "Permission Schemes",
+      [paths.admin.index]: "Admin Dashboard",
+      [paths.admin.userManagement]: "User Management",
+      [paths.admin.roleManagement]: "Role Management",
+      [paths.admin.permissionManagement]: "Permission Schemes",
     };
     if (detail && projectId) {
       routeObject[generatePath(paths.project.detail, { projectId })] =

@@ -1,30 +1,77 @@
-import {
-  Col,
-  Divider,
-  Modal,
-  Row,
-  Select,
-  SelectProps,
-  Space,
-  Typography,
-} from "antd";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Col, Divider, Modal, Row, Select, Space, Typography } from "antd";
+import { toast } from "react-toastify";
+
+import { useAuthContext } from "@/context/Auth";
+import { IAdminRoles } from "@/interfaces/role";
+import { schemaApi } from "@/utils/api/schema";
+import { ISchema } from "@/interfaces/schema";
+import { roleApi } from "@/utils/api/role";
 
 interface Props {
   isOpen: boolean;
+  schema: ISchema | undefined;
+  permission: ISchema["rolePermissions"][number] | undefined;
   handleClose: () => void;
 }
 
-const GrantPermission = ({ isOpen, handleClose }: Props) => {
+const GrantPermission = ({ isOpen, schema, handleClose }: Props) => {
+  const [permissions, setPermissions] = useState<string[]>([]);
+  const [role, setRole] = useState<string>();
+
+  const { userInfo } = useAuthContext();
+
+  const queryClient = useQueryClient();
+
+  const { mutate: grantPermission, isLoading } = useMutation({
+    mutationKey: [schemaApi.grantPermissionKey],
+    mutationFn: schemaApi.grantPermission,
+    onSuccess: () => {
+      queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+      handleClose();
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Grant permission failed");
+    },
+  });
+
+  const { data: roles } = useQuery<IAdminRoles[]>({
+    queryKey: [roleApi.getAdminRolesKey, userInfo?.id],
+    queryFn: ({ signal }) => roleApi.getAdminRoles(signal),
+    enabled: Boolean(userInfo),
+  });
+
+  const options = useMemo(
+    () =>
+      schema?.rolePermissions.map((role) => ({
+        label: role.name,
+        value: role.permissionId,
+      })),
+    [schema?.rolePermissions]
+  );
   const handleSubmit = () => {
-    console.log("granted");
-  };
+    if (!schema) {
+      toast.error("Has an error, please try again");
+      handleClose();
+      return;
+    } else if (!role) {
+      toast.error("Please select role");
+      return;
+    } else if (!permissions.length) {
+      toast.error("Please select at least 1 permission");
+      return;
+    }
 
-  const handleChange = (value: string[]) => {
-    console.log(`selected ${value}`);
-  };
-
-  const onChange = (value: string) => {
-    console.log(`selected ${value}`);
+    grantPermission({
+      id: schema.schemaId,
+      data: {
+        schemaId: schema.schemaId,
+        permissionIds: permissions,
+        roleId: role,
+      },
+    });
   };
 
   return (
@@ -33,6 +80,9 @@ const GrantPermission = ({ isOpen, handleClose }: Props) => {
       open={isOpen}
       onCancel={handleClose}
       onOk={handleSubmit}
+      okButtonProps={{
+        loading: isLoading,
+      }}
       okText="Grant"
     >
       <Divider className="!m-0" />
@@ -47,10 +97,10 @@ const GrantPermission = ({ isOpen, handleClose }: Props) => {
             <Select
               mode="multiple"
               allowClear
-              style={{ width: "100%" }}
-              placeholder="Please select permission"
-              defaultValue={["a10", "c12"]}
-              onChange={handleChange}
+              className="w-full"
+              placeholder="Select permissions"
+              // defaultValue={["a10", "c12"]}
+              onChange={setPermissions}
               options={options}
             />
           </Col>
@@ -65,28 +115,18 @@ const GrantPermission = ({ isOpen, handleClose }: Props) => {
             <Select
               showSearch
               className="w-full"
-              placeholder="Select a grant"
+              placeholder="Select a role"
               optionFilterProp="children"
-              onChange={onChange}
+              onChange={setRole}
               filterOption={(input, option) =>
                 (option?.label ?? "")
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              options={[
-                {
-                  value: "jack",
-                  label: "Jack",
-                },
-                {
-                  value: "lucy",
-                  label: "Lucy",
-                },
-                {
-                  value: "tom",
-                  label: "Tom",
-                },
-              ]}
+              options={roles?.map((role) => ({
+                label: role.role.roleName,
+                value: role.role.roleId,
+              }))}
             />
           </Col>
         </Row>
@@ -95,14 +135,5 @@ const GrantPermission = ({ isOpen, handleClose }: Props) => {
     </Modal>
   );
 };
-
-const options: SelectProps["options"] = [];
-
-for (let i = 10; i < 36; i++) {
-  options.push({
-    label: i.toString(36) + i,
-    value: i.toString(36) + i,
-  });
-}
 
 export default GrantPermission;
