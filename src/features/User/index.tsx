@@ -7,7 +7,7 @@ import { IProject } from "@/interfaces/project";
 import { generatePath, useNavigate } from "react-router-dom";
 import { paths } from "@/routers/paths";
 
-export default function UserMainPage() {
+export default function UserDashboard() {
   const { projects } = useListProjectOfUser();
   const { userInfo } = useAuthContext();
   const navigate = useNavigate();
