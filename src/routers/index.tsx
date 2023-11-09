@@ -9,16 +9,19 @@ import Register from "@/features/Register";
 
 import { paths } from "./paths";
 import { PageContainer, ProjectLayout, Layout } from "@/components";
-
+import { useAuthContext } from "@/context/Auth";
+import { Spin } from "antd";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
 import VerifyAccount from "@/features/VerifyAccount";
-import UserMainPage from "@/features/User";
+import UserDashboard from "@/features/User";
 import ProjectDetail from "@/features/Project/detail";
-import { useAuthContext } from "@/context/Auth";
-import { Spin } from "antd";
 import ProjectTrashBin from "@/features/Project/Trash";
 import ProjectReport from "@/features/Project/Report";
+import ProjectSprint from "@/features/Project/Sprint";
+import ProjectSettings from "@/features/Project/Settings";
+import ProjectCalendar from "@/features/Project/Calendar";
+import ProjectTasks from "@/features/Project/Tasks";
 
 export default function Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
@@ -50,19 +53,22 @@ export default function Routers() {
           <Route
             path={paths.project.tasks}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer Component={ProjectTasks} title="Project Tasks" />
             }
           />
           <Route
             path={paths.project.sprint}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer Component={ProjectSprint} title="Project Sprint" />
             }
           />
           <Route
             path={paths.project.calendar}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer
+                Component={ProjectCalendar}
+                title="Project Calendar"
+              />
             }
           />
           <Route
@@ -83,7 +89,10 @@ export default function Routers() {
           <Route
             path={paths.project.settings}
             element={
-              <PageContainer Component={ProjectDetail} title="Project Detail" />
+              <PageContainer
+                Component={ProjectSettings}
+                title="Project Settings"
+              />
             }
           />
         </Route>
@@ -91,7 +100,7 @@ export default function Routers() {
           <Route
             index
             element={
-              <PageContainer Component={UserMainPage} title="User Dashboard" />
+              <PageContainer Component={UserDashboard} title="User Dashboard" />
             }
           />
         </Route>
