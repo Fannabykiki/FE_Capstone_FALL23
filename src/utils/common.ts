@@ -1,7 +1,12 @@
 import { JwtTokenInfo } from "@/interfaces/user";
 import dayjs from "dayjs";
 import jwtDecode from "jwt-decode";
-import { DATETIME_FORMAT, DATE_FORMAT } from "./constants";
+import {
+  DATETIME_FORMAT,
+  DATE_FORMAT,
+  SAFE_DAY_TIL_DUE_DATE,
+  WARNING_DAY_TIL_DUE_DATE,
+} from "./constants";
 
 function classNames(...className: (string | undefined | boolean)[]) {
   return className.filter((name) => Boolean(name)).join(" ");
@@ -46,6 +51,22 @@ const defaultFormatDate = (date: Date | string) =>
 const defaultFormatDateTime = (date: Date | string) =>
   dayjs(date).format(DATETIME_FORMAT);
 
+const calcTaskDueDateColor = (dueDate: Date) => {
+  const colors = [
+    "bg-green-200 text-green-600",
+    "bg-yellow-200 text-yellow-600",
+    "bg-red-200 text-red-600",
+  ];
+  const today = new Date();
+  const dayDiff = dayjs(today).diff(dueDate, "day");
+  if (dayDiff <= SAFE_DAY_TIL_DUE_DATE) {
+    return colors[0];
+  } else if (dayDiff < WARNING_DAY_TIL_DUE_DATE) {
+    return colors[1];
+  }
+  return colors[2];
+};
+
 export {
   classNames,
   makePath,
@@ -53,4 +74,5 @@ export {
   checkTokenValid,
   defaultFormatDate,
   defaultFormatDateTime,
+  calcTaskDueDateColor,
 };

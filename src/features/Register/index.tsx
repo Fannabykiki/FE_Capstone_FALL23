@@ -30,21 +30,26 @@ export default function Register() {
     password: string,
     callback: (error?: string | undefined) => void
   ) => {
+    form.getFieldsError();
     switch (true) {
       case password.length < 8:
-        callback("Password must be equal or longer than 8 characters");
-        break;
-      case !REGEX_NUMBER.test(password):
-        callback("Password must have atleast one number");
-        break;
-      case !REGEX_SPECIAL_CHARACTER.test(password):
-        callback("Password must have atleast one special character");
-        break;
-      case !REGEX_CHARACTER.test(password):
-        callback(
-          "Password must have atleast one upper and lower case character"
+        return Promise.reject(
+          new Error("Password must be equal or longer than 8 characters")
         );
-        break;
+      case !REGEX_NUMBER.test(password):
+        return Promise.reject(
+          new Error("Password must have atleast one number")
+        );
+      case !REGEX_SPECIAL_CHARACTER.test(password):
+        return Promise.reject(
+          new Error("Password must have atleast one special character")
+        );
+      case !REGEX_CHARACTER.test(password):
+        return Promise.reject(
+          new Error(
+            "Password must have atleast one upper and lower case character"
+          )
+        );
       default:
         break;
     }

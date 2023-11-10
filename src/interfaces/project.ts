@@ -61,6 +61,8 @@ export interface IProjectMember {
   projectId: string;
   roleName: string | null;
   isOwner: boolean;
+  fullname: string;
+  email: string;
 }
 
 export interface IAdminProject {
