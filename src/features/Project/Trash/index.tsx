@@ -37,7 +37,7 @@ const TrashBin = () => {
   const onClick: MenuProps["onClick"] = ({ key }) => {
     modal.confirm({
       title: "Warning",
-      content: "Are you sure you want to restore the record?",
+      content: "Are you sure to restore this record?",
       onOk: () => {
         console.log("ok");
       },

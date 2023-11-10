@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Col, Row, Skeleton, Space, Typography } from "antd";
+import { Button, Col, Modal, Row, Skeleton, Space, Typography } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -14,6 +14,8 @@ const RoleManagement = () => {
   const [isOpenCreateEditModal, setIsOpenCreateEditModal] = useState(false);
   const [isOpenDetailModal, setIsOpenDetailModal] = useState(false);
   const [roleSelected, setRoleSelected] = useState<IAdminRoles>();
+
+  const [modal, contextHolder] = Modal.useModal();
 
   const queryClient = useQueryClient();
 
@@ -57,8 +59,17 @@ const RoleManagement = () => {
     setIsOpenDetailModal(false);
   };
 
+  const handleDelete = (roleId: string) => {
+    modal.confirm({
+      title: "Warning",
+      content: "Are you sure to delete this role?",
+      onOk: () => deleteRole(roleId),
+    });
+  };
+
   return (
     <Space direction="vertical" className="w-full gap-5">
+      {contextHolder}
       <Row gutter={12}>
         <Col span={18}>
           <Typography.Title level={1}>Project Role</Typography.Title>
@@ -109,10 +120,10 @@ const RoleManagement = () => {
                   <Button
                     type="link"
                     className="!p-0 ml-5"
-                    loading={isDeleting && role.role.roleId === variables}
+                    loading={isDeleting && role?.role.roleId === variables}
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteRole(role?.role.roleId);
+                      handleDelete(role?.role.roleId);
                     }}
                   >
                     Delete role
