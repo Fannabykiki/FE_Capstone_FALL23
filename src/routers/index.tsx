@@ -21,8 +21,8 @@ import ProjectReport from "@/features/Project/Report";
 import ProjectSprint from "@/features/Project/Sprint";
 import ProjectSettings from "@/features/Project/Settings";
 import ProjectCalendar from "@/features/Project/Calendar";
-import ProjectTasks from "@/features/Project/Tasks";
 import WorkItem from "@/features/Project/WorkItem";
+import InviteMember from "@/features/InviteMember";
 
 export default function Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
@@ -53,9 +53,7 @@ export default function Routers() {
           />
           <Route
             path={paths.project.tasks}
-            element={
-              <PageContainer Component={WorkItem} title="Work Items" />
-            }
+            element={<PageContainer Component={WorkItem} title="Work Items" />}
           />
           <Route
             path={paths.project.sprint}
@@ -190,6 +188,16 @@ export default function Routers() {
               requireAuth={false}
               Component={VerifyAccount}
               title="Verify Account"
+            />
+          }
+        />
+        <Route
+          path={paths.joinProject}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={InviteMember}
+              title="Invite Member"
             />
           }
         />

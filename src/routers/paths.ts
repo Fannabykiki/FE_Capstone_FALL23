@@ -7,6 +7,7 @@ export const paths = {
   forgotPassword: "/forgot-password",
   verifyAccount: "/verify-account",
   user: "/user",
+  joinProject: "user/invite",
   project: {
     index: "/project",
     detail: `/project/:projectId`,

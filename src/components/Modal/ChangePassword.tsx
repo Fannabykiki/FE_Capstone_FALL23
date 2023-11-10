@@ -1,10 +1,13 @@
 import { useAuthContext } from "@/context/Auth";
-import { Gender, IUpdateProfile } from "@/interfaces/user";
 import { userApi } from "@/utils/api/user";
-import { classNames } from "@/utils/common";
-import { DATE_FORMAT } from "@/utils/constants";
+import {
+  REGEX_CHARACTER,
+  REGEX_NUMBER,
+  REGEX_SPECIAL_CHARACTER,
+} from "@/utils/constants";
 import { useMutation } from "@tanstack/react-query";
-import { DatePicker, Form, Input, Modal, Radio, Typography } from "antd";
+import { Form, Input, Modal } from "antd";
+import { RuleObject } from "antd/es/form";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -12,39 +15,69 @@ interface Props {
 }
 
 export default function ChangePassword({ onCancel = () => {} }: Props) {
-  const [form] = Form.useForm<IUpdateProfile>();
+  const [form] = Form.useForm();
 
-  const { userInfo, refetchProfile } = useAuthContext();
+  const { userInfo } = useAuthContext();
 
   const initialValues = {
-    address: "",
-    doB: null,
-    fullname: "",
-    gender: Gender.Male,
-    phoneNumber: "",
-    userName: "",
+    email: userInfo?.email,
+    token: localStorage?.token,
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   };
 
-  const { mutate: updateProfile, isLoading } = useMutation({
-    mutationFn: userApi.update,
-    mutationKey: [userApi.updateKey],
-  });
+  const { mutate: changePassword, isLoading } = useMutation(
+    userApi.changePassword,
+    {
+      onSuccess: () => {
+        toast.success("Change Password Successfully!");
+        onCancel();
+      },
+    }
+  );
 
   const onSubmit = async () => {
-    const formValues = await form.validateFields();
-    updateProfile(
-      {
-        id: userInfo!.id,
-        data: formValues,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Update profile succeed");
-          refetchProfile();
-        },
-      }
-    );
+    try {
+      const formValues = await form.validateFields();
+
+      const data = {
+        email: initialValues.email,
+        token: initialValues.token,
+        ...formValues,
+      };
+
+      changePassword(data);
+    } catch (error) {
+      console.error("Validation failed:", error);
+    }
   };
+
+  const handleValidatePassword = async (
+    _: RuleObject,
+    password: string,
+    callback: (error?: string | undefined) => void
+  ) => {
+    switch (true) {
+      case password.length < 8:
+        callback("Password must be equal or longer than 8 characters");
+        break;
+      case !REGEX_NUMBER.test(password):
+        callback("Password must have atleast one number");
+        break;
+      case !REGEX_SPECIAL_CHARACTER.test(password):
+        callback("Password must have atleast one special character");
+        break;
+      case !REGEX_CHARACTER.test(password):
+        callback(
+          "Password must have atleast one upper and lower case character"
+        );
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <Modal
@@ -65,37 +98,48 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
           initialValues={initialValues}
         >
           <Form.Item
-            label="Old Password"
-            name="oldpassword"
+            label="Current Password"
+            name="currentPassword"
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Input />
+            <Input.Password />
           </Form.Item>
           <Form.Item
             label="New Password"
-            name="newpassword"
+            name="newPassword"
             rules={[
               {
                 required: true,
               },
+              {
+                validator: handleValidatePassword,
+              },
             ]}
           >
-            <Input />
+            <Input.Password />
           </Form.Item>
           <Form.Item
             label="Confirm New Password"
-            name="confirmnewpassword"
+            name="confirmPassword"
             rules={[
               {
                 required: true,
               },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Password mismatch"));
+                },
+              }),
             ]}
           >
-            <Input />
+            <Input.Password />
           </Form.Item>
         </Form>
       </Modal>
