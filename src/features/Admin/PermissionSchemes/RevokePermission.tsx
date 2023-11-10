@@ -99,6 +99,7 @@ const RevokePermission = ({
                 options={permission?.roles.map((role) => ({
                   label: role.roleName,
                   value: role.roleId,
+                  disabled: role.roleName === "PO",
                 }))}
                 onChange={onChange}
               />
