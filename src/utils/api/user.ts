@@ -1,4 +1,8 @@
-import { IUpdateUserPayload, JwtTokenInfo } from "@/interfaces/user";
+import {
+  ChangePassword,
+  IUpdateUserPayload,
+  JwtTokenInfo,
+} from "@/interfaces/user";
 import { HTTP_METHODS } from "@/utils/constants";
 import jwtDecode from "jwt-decode";
 import axiosClient from "./axios-client";
@@ -21,6 +25,13 @@ const update = ({ id, data }: IUpdateUserPayload) =>
     method: HTTP_METHODS.PUT,
     data,
   });
+
+const changePassword = async (data: ChangePassword) =>
+  axiosClient({
+    url: `api/authentication/change-password`,
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
 
 // ======================================= Admin =======================================
 
@@ -45,8 +56,10 @@ const getAdminUsersAnalyzation = async (signal: AbortSignal | undefined) =>
 export const userApi = {
   getProfile,
   update,
+  changePassword,
   getProfileKey: "userGetProfile",
   updateKey: "userUpdate",
+  changePasswordKey: "userChangePassword",
 
   //Admin
   getAdminUsers,

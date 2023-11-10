@@ -15,6 +15,15 @@ export interface UserInfo {
   userName: string;
   isFirstTime: boolean;
   id: string;
+  token: string;
+}
+
+export interface ChangePassword {
+  email: string;
+  token: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export interface JwtTokenInfo {
