@@ -4,6 +4,12 @@ export interface IPermissionSchemes {
   schemaId: string;
   schemaName: string;
   description: string;
+  projectsUsed: {
+    projectId: string;
+    projectName: string;
+    description: string;
+    projectStatus: string;
+  }[];
 }
 
 export interface ISchema {

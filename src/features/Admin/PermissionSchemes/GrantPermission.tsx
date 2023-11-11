@@ -32,8 +32,9 @@ const GrantPermission = ({
   const { mutate: grantPermission, isLoading } = useMutation({
     mutationKey: [schemaApi.grantPermissionKey],
     mutationFn: schemaApi.grantPermission,
-    onSuccess: () => {
-      queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+    onSuccess: async () => {
+      await queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+      toast.success("Grant permission successfully");
       handleClose();
     },
     onError: (err) => {
@@ -44,7 +45,7 @@ const GrantPermission = ({
 
   const { data: roles } = useQuery<IAdminRoles[]>({
     queryKey: [roleApi.getAdminRolesKey, userInfo?.id],
-    queryFn: ({ signal }) => roleApi.getAdminRoles(signal),
+    queryFn: ({ signal }) => roleApi.getAdminRoles(signal, {}),
     enabled: Boolean(userInfo),
   });
 

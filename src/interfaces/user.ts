@@ -62,3 +62,11 @@ export interface IAdminUsersAnalyzation {
   percentInactive: number;
   totalUser: number;
 }
+
+export interface IUpdateUserStatus {
+  id: string;
+  data: {
+    reason: string;
+    statusIdChangeTo: boolean;
+  };
+}

@@ -27,8 +27,9 @@ const RevokePermission = ({
   const { mutate: revokePermission, isLoading } = useMutation({
     mutationKey: [schemaApi.revokePermissionKey],
     mutationFn: schemaApi.revokePermission,
-    onSuccess: () => {
-      queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+    onSuccess: async () => {
+      await queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+      toast.success("Revoke permission successfully");
       handleClose();
     },
     onError: (err) => {
@@ -99,7 +100,8 @@ const RevokePermission = ({
                 options={permission?.roles.map((role) => ({
                   label: role.roleName,
                   value: role.roleId,
-                  disabled: role.roleName === "PO",
+                  disabled:
+                    role.roleName === "PO" || role.roleName === "System Admin",
                 }))}
                 onChange={onChange}
               />

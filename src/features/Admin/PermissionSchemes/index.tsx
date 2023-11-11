@@ -85,65 +85,17 @@ const PermissionSchemes = () => {
     },
     {
       title: "Projects",
-      dataIndex: "isAdmin",
+      dataIndex: "projectsUsed",
       width: "45%",
-      render: (isAdmin) => (
+      render: (projectsUsed: IPermissionSchemes["projectsUsed"]) => (
         <ul>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
-          <li>
-            <Button type="link" className="text-sm p-0">
-              Project
-            </Button>
-          </li>
+          {projectsUsed.map((project, index) => (
+            <li key={index}>
+              <Button type="link" className="text-sm p-0">
+                {project.projectName}
+              </Button>
+            </li>
+          ))}
         </ul>
       ),
     },

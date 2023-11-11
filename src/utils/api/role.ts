@@ -2,11 +2,15 @@ import { RoleInputType } from "@/features/Admin/RoleManagement/CreateEditRole";
 import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
 
-const getAdminRoles = async (signal: AbortSignal | undefined) =>
+const getAdminRoles = async (
+  signal: AbortSignal | undefined,
+  params: { [key: string]: string | undefined }
+) =>
   axiosClient({
     url: "/api/role-management/system/roles",
     method: HTTP_METHODS.GET,
     signal,
+    params,
   }).then((resp) => resp.data);
 
 const createRole = (data: RoleInputType) =>

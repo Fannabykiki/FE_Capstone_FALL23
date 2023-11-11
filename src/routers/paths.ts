@@ -27,10 +27,22 @@ export const paths = {
   },
 };
 
-export const adminPaths = pick(paths.admin, [
-  "index",
-  "userManagement",
-  "roleManagement",
-  "permissionManagement",
-  "projectPermission",
-]);
+export const adminPaths = Object.assign(
+  pick(paths.admin, [
+    "index",
+    "userManagement",
+    "roleManagement",
+    "permissionManagement",
+    "projectPermission",
+  ]),
+  pick(paths.project, [
+    "index",
+    "detail",
+    "tasks",
+    "sprint",
+    "calendar",
+    "trash",
+    "report",
+    "settings",
+  ])
+);
