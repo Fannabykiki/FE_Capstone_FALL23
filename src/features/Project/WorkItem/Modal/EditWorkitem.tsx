@@ -1,10 +1,4 @@
-import Icon, {
-  BugFilled,
-  BugOutlined,
-  CheckSquareFilled,
-  CheckSquareOutlined,
-  MinusCircleFilled,
-} from "@ant-design/icons";
+import { BugFilled, CheckSquareFilled } from "@ant-design/icons";
 import { Avatar, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
 
 const { TextArea } = Input;

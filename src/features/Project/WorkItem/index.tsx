@@ -5,19 +5,88 @@ import {
   CheckSquareFilled,
   CheckSquareOutlined,
   EyeTwoTone,
+  FilterFilled,
   PlusOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
-import { Row, Space, Typography, Table, Button, Col, Avatar } from "antd";
+import {
+  Row,
+  Space,
+  Typography,
+  Table,
+  Button,
+  Col,
+  Avatar,
+  Card,
+  Input,
+  Select,
+} from "antd";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { useSearchParams } from "react-router-dom";
 import CreateWorkitem from "@/features/Project/WorkItem/Modal/CreateWorkitem";
-import EditWorkitem from "@/features/Project/WorkItem/Modal/EditWorkitem";
 import { useState } from "react";
+
+const TYPE_OPTION = [
+  {
+    label: (
+      <>
+        <CheckSquareFilled className="text-yellow-600 mr-2" /> Task
+      </>
+    ),
+    value: "task",
+  },
+  {
+    label: (
+      <>
+        <BugFilled className="text-red-500 mr-2" /> Bug
+      </>
+    ),
+    value: "bug",
+  },
+];
+
+const STATE_OPTION = [
+  {
+    label: "To do",
+    value: "todo",
+  },
+  {
+    label: "Doing",
+    value: "doing",
+  },
+  {
+    label: "Done",
+    value: "done",
+  },
+  {
+    label: "Close",
+    value: "close",
+  },
+];
+
+const ITERATION_OPTION = [
+  {
+    label: "Iteration 1",
+    value: "1",
+  },
+  {
+    label: "Iteration 2",
+    value: "2",
+  },
+  {
+    label: "Iteration 3",
+    value: "3",
+  },
+  {
+    label: "Iteration 4",
+    value: "4",
+  },
+];
 
 export default function WorkItem() {
   const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
-  const [isModalEditOpen, setIsModalEditOpen] = useState(false);
+  const [isCardVisible, setIsCardVisible] = useState(false);
 
   const handleOpenModalCreate = () => {
     setIsModalCreateOpen(true);
@@ -27,12 +96,8 @@ export default function WorkItem() {
     setIsModalCreateOpen(false);
   };
 
-  const handleOpenModalEdit = () => {
-    setIsModalEditOpen(true);
-  };
-
-  const handleCloseModalEdit = () => {
-    setIsModalEditOpen(false);
+  const handleToggleCardVisibility = () => {
+    setIsCardVisible((prev) => !prev);
   };
 
   const [searchParams, setSearchParams] = useSearchParams({
@@ -85,7 +150,7 @@ export default function WorkItem() {
     {
       title: "Assign To",
       dataIndex: "asignTo",
-      width: "20%",
+      width: "15%",
       render: (_, record) =>
         record.manager?.userName ? (
           <Row align="middle">
@@ -105,7 +170,7 @@ export default function WorkItem() {
     {
       title: "State",
       dataIndex: "state",
-      width: "20%",
+      width: "10%",
       render: (state) => (
         <Row align="middle" className="gap-2">
           <Typography.Text
@@ -129,32 +194,19 @@ export default function WorkItem() {
     {
       title: "Area Path",
       dataIndex: "areaPath",
-      width: "20%",
+      width: "10%",
     },
     {
       title: "Iteration",
       dataIndex: "iteration",
-      width: "30%",
+      width: "10%",
     },
     {
       title: "Created Date",
       dataIndex: "createdDate",
-      width: "25%",
+      width: "10%",
       render: (createdDate) =>
-        createdDate
-          ? dayjs(createdDate).format("DD/MM/YYYY HH:mm")
-          : createdDate,
-    },
-    {
-      title: "Action",
-      dataIndex: "action",
-      width: "25%",
-      align: "center",
-      render: (text, record) => (
-        <Space size="middle">
-          <EyeTwoTone onClick={() => handleOpenModalEdit()} />
-        </Space>
-      ),
+        createdDate ? dayjs(createdDate).format("DD/MM/YYYY") : createdDate,
     },
   ];
 
@@ -203,21 +255,63 @@ export default function WorkItem() {
         isOpen={isModalCreateOpen}
         handleClose={handleCloseModalCreate}
       />
-      <EditWorkitem
-        isOpen={isModalEditOpen}
-        handleClose={handleCloseModalEdit}
-      />
+
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Work items</Typography.Title>
-        <Button
-          type="primary"
-          title="New Work Item"
-          onClick={() => handleOpenModalCreate()}
-          icon={<PlusOutlined />}
-        >
-          New Work Item
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            title="New Work Item"
+            onClick={() => handleOpenModalCreate()}
+            icon={<PlusOutlined />}
+          >
+            New Work Item
+          </Button>
+          <Button
+            onClick={handleToggleCardVisibility}
+            type="dashed"
+            title="Filter"
+            icon={<FilterFilled />}
+          >
+            Filter
+          </Button>
+        </Space>
       </div>
+
+      {isCardVisible && (
+        <Card className="w-full mt-2 shadow-custom bg-gray-50">
+          <Row gutter={16}>
+            <Col span={12}>
+              <Input
+                bordered={false}
+                placeholder="Filter By Title"
+                prefix={<SearchOutlined />}
+                width={150}
+              />
+            </Col>
+            <Col className="text-right" span={12}>
+              <Select
+                bordered={false}
+                options={TYPE_OPTION}
+                className="mr-3 w-24"
+                placeholder="Type"
+              />
+              <Select
+                bordered={false}
+                options={STATE_OPTION}
+                className="mr-3 w-24"
+                placeholder="State"
+              />
+              <Select
+                options={ITERATION_OPTION}
+                className="w-24"
+                bordered={false}
+                placeholder="Iteration"
+              />
+            </Col>
+          </Row>
+        </Card>
+      )}
 
       <Space direction="vertical" className="w-full shadow-custom pb-5">
         <Table
