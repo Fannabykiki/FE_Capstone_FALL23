@@ -29,8 +29,9 @@ const CreateEditPermissionScheme = ({
   const { mutate: createPermissionScheme, isLoading } = useMutation({
     mutationKey: [schemaApi.createPermissionSchemeKey],
     mutationFn: schemaApi.createPermissionScheme,
-    onSuccess: () => {
-      queryClient.refetchQueries([schemaApi.getAdminSchemasKey]);
+    onSuccess: async () => {
+      await queryClient.refetchQueries([schemaApi.getAdminSchemasKey]);
+      toast.success("Create permission scheme successfully");
       handleClose();
     },
     onError: (err) => {
@@ -43,8 +44,9 @@ const CreateEditPermissionScheme = ({
     {
       mutationKey: [schemaApi.updatePermissionSchemeKey],
       mutationFn: schemaApi.updatePermissionScheme,
-      onSuccess: () => {
-        queryClient.refetchQueries([schemaApi.getAdminSchemasKey]);
+      onSuccess: async () => {
+        await queryClient.refetchQueries([schemaApi.getAdminSchemasKey]);
+        toast.success("Update permission scheme successfully");
         handleClose();
       },
       onError: (err) => {

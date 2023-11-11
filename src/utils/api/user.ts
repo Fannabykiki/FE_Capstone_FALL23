@@ -1,6 +1,7 @@
 import {
   ChangePassword,
   IUpdateUserPayload,
+  IUpdateUserStatus,
   JwtTokenInfo,
 } from "@/interfaces/user";
 import { HTTP_METHODS } from "@/utils/constants";
@@ -53,6 +54,13 @@ const getAdminUsersAnalyzation = async (signal: AbortSignal | undefined) =>
     signal,
   }).then((resp) => resp.data);
 
+const changeUserStatus = ({ id, data }: IUpdateUserStatus) =>
+  axiosClient({
+    url: `/api/user-management/users/change-status/${id}`,
+    method: HTTP_METHODS.PUT,
+    data,
+  });
+
 export const userApi = {
   getProfile,
   update,
@@ -63,7 +71,9 @@ export const userApi = {
 
   //Admin
   getAdminUsers,
-  getAdminUsersKey: "adminUsersGet",
+  getAdminUsersKey: "adminUsersGetKey",
   getAdminUsersAnalyzation,
-  getAdminUsersAnalyzationKey: "getAdminUsersAnalyzation",
+  getAdminUsersAnalyzationKey: "getAdminUsersAnalyzationKey",
+  changeUserStatus,
+  changeUserStatusKey: "changeUserStatusKey",
 };

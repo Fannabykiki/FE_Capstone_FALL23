@@ -25,8 +25,9 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
   const { mutate: createRole, isLoading } = useMutation({
     mutationFn: roleApi.createRole,
     mutationKey: [roleApi.createRoleKey],
-    onSuccess: () => {
-      queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+    onSuccess: async () => {
+      await queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+      toast.success("Create role successfully");
       handleClose();
     },
     onError: (err) => {
@@ -38,8 +39,9 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
   const { mutate: updateRole, isLoading: isUpdating } = useMutation({
     mutationFn: roleApi.updateRole,
     mutationKey: [roleApi.updateRoleKey],
-    onSuccess: () => {
-      queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+    onSuccess: async () => {
+      await queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+      toast.success("Update role successfully");
       handleClose();
     },
     onError: (err) => {

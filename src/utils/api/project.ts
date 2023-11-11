@@ -127,7 +127,7 @@ const getAdminUsersAnalyzationByUserId = async (
   userId: string | undefined
 ) =>
   axiosClient({
-    url: `/api/project-management/projects/${userId}/analyzation`,
+    url: `/api/project-management/projects/analyzation/${userId}`,
     method: HTTP_METHODS.GET,
     signal,
   }).then((resp) => resp.data);
@@ -159,7 +159,7 @@ export const projectApi = {
   getAdminProjects,
   getAdminProjectsKey: "getAdminProjectsKey",
   getAdminProjectsAnalyzation,
-  getAdminProjectsAnalyzationKey: "getAdminProjectsAnalyzation",
+  getAdminProjectsAnalyzationKey: "getAdminProjectsAnalyzationKey",
   getAdminUsersAnalyzationByUserId,
-  getAdminUsersAnalyzationByUserIdKey: "getAdminUsersAnalyzationByUserId",
+  getAdminUsersAnalyzationByUserIdKey: "getAdminUsersAnalyzationByUserIdKey",
 };

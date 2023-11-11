@@ -1,8 +1,9 @@
-import { useSearchParams } from "react-router-dom";
+import { generatePath, useNavigate, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 import debounce from "lodash/debounce";
 import {
   Avatar,
+  Button,
   Col,
   Input,
   Row,
@@ -24,6 +25,7 @@ import { convertToODataParams } from "@/utils/convertToODataParams";
 import { IAdminProject } from "@/interfaces/project";
 import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
+import { paths } from "@/routers/paths";
 
 const AdminDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams({
@@ -41,6 +43,8 @@ const AdminDashboard = () => {
       }
     ),
   });
+
+  const navigate = useNavigate();
 
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
@@ -71,6 +75,129 @@ const AdminDashboard = () => {
       return prev;
     });
   }, 1000);
+
+  const columns: ColumnsType<IAdminProject> = [
+    {
+      dataIndex: "index",
+      width: "5%",
+      align: "center",
+      render: (_row, _record, index) => index + 1,
+    },
+    {
+      title: "PROJECT",
+      dataIndex: "projectName",
+      width: "35%",
+      sorter: (a, b) => a.projectName.localeCompare(b.projectName),
+      render: (projectName, record) => (
+        <Space direction="vertical" className="gap-0">
+          <Button
+            type="link"
+            className="p-0 min-h-[24px]"
+            onClick={() => {
+              navigate(
+                generatePath(paths.project.detail, {
+                  projectId: record.projectId,
+                })
+              );
+            }}
+          >
+            <Typography.Title level={5} className="!m-0 !text-[#ADA6F5]">
+              {projectName}
+            </Typography.Title>
+          </Button>
+          <Typography.Text className="min-h-[19px]">
+            {record.description}
+          </Typography.Text>
+        </Space>
+      ),
+    },
+    {
+      title: "STATUS",
+      dataIndex: "projectStatus",
+      width: "15%",
+      align: "center",
+      sorter: (a, b) => a.projectStatus.localeCompare(b.projectStatus),
+      render: (status) => {
+        let color = "";
+        let bg = "";
+
+        switch (status) {
+          case "Active":
+            color = "#6ED99F";
+            bg = "#E5F8ED";
+            break;
+          case "Close":
+            color = "#4AD8EC";
+            bg = "#E0F9FC";
+            break;
+          case "Inactive":
+            color = "#968EF3";
+            bg = "#EEEDFD";
+            break;
+          case "Deleted":
+            color = "#EE8181";
+            bg = "#FCEAEA";
+            break;
+          default:
+            color = "";
+            bg = "";
+            break;
+        }
+
+        return (
+          <Row align="middle" justify="center">
+            <Typography.Text
+              style={{
+                color,
+                backgroundColor: bg,
+              }}
+              className="px-4 py-1 ml-5 rounded-2xl font-medium"
+            >
+              {status}
+            </Typography.Text>
+          </Row>
+        );
+      },
+    },
+    {
+      title: "MANAGER",
+      dataIndex: "manager",
+      width: "25%",
+      sorter: (a, b) => a.manager?.userName.localeCompare(b.manager?.userName),
+      render: (_, record) =>
+        record.manager?.userName ? (
+          <Row align="middle">
+            <Col span={5} className="flex items-center">
+              <Avatar style={{ backgroundColor: randomBgColor() }}>
+                {record.manager?.userName?.charAt(0).toUpperCase()}
+              </Avatar>
+            </Col>
+            <Col span={19}>
+              <Typography.Title level={5} className="!m-0">
+                {record.manager?.userName}
+              </Typography.Title>
+            </Col>
+          </Row>
+        ) : null,
+    },
+    {
+      title: "MEMBERS",
+      dataIndex: "members",
+      width: "20%",
+      render: (_, record) => (
+        <Avatar.Group
+          maxCount={4}
+          maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
+        >
+          {record.member?.map((member, index) => (
+            <Avatar key={index} style={{ backgroundColor: randomBgColor() }}>
+              {member.userName?.charAt(0).toUpperCase()}
+            </Avatar>
+          ))}
+        </Avatar.Group>
+      ),
+    },
+  ];
 
   return (
     <Space direction="vertical" className="w-full">
@@ -187,118 +314,5 @@ const AdminDashboard = () => {
     </Space>
   );
 };
-
-const columns: ColumnsType<IAdminProject> = [
-  {
-    dataIndex: "index",
-    width: "5%",
-    render: (_row, _record, index) => index + 1,
-  },
-  {
-    title: "PROJECT",
-    dataIndex: "projectName",
-    width: "35%",
-    sorter: (a, b) => a.projectName.localeCompare(b.projectName),
-    render: (projectName, record) => (
-      <Col span={20}>
-        <Typography.Title
-          level={5}
-          className="!m-0 !text-[#ADA6F5] min-h-[24px]"
-        >
-          {projectName}
-        </Typography.Title>
-        <Typography.Text className="min-h-[19px]">
-          {record.description}
-        </Typography.Text>
-      </Col>
-    ),
-  },
-  {
-    title: "STATUS",
-    dataIndex: "projectStatus",
-    width: "15%",
-    align: "center",
-    sorter: (a, b) => a.projectStatus.localeCompare(b.projectStatus),
-    render: (status) => {
-      let color = "";
-      let bg = "";
-
-      switch (status) {
-        case "Active":
-          color = "#6ED99F";
-          bg = "#E5F8ED";
-          break;
-        case "Close":
-          color = "#4AD8EC";
-          bg = "#E0F9FC";
-          break;
-        case "Inactive":
-          color = "#968EF3";
-          bg = "#EEEDFD";
-          break;
-        case "Deleted":
-          color = "#EE8181";
-          bg = "#FCEAEA";
-          break;
-        default:
-          color = "";
-          bg = "";
-          break;
-      }
-
-      return (
-        <Row align="middle" justify="center">
-          <Typography.Text
-            style={{
-              color,
-              backgroundColor: bg,
-            }}
-            className="px-4 py-1 ml-5 rounded-2xl font-medium"
-          >
-            {status}
-          </Typography.Text>
-        </Row>
-      );
-    },
-  },
-  {
-    title: "MANAGER",
-    dataIndex: "manager",
-    width: "25%",
-    sorter: (a, b) => a.manager?.userName.localeCompare(b.manager?.userName),
-    render: (_, record) =>
-      record.manager?.userName ? (
-        <Row align="middle">
-          <Col span={5} className="flex items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>
-              {record.manager?.userName?.charAt(0).toUpperCase()}
-            </Avatar>
-          </Col>
-          <Col span={19}>
-            <Typography.Title level={5} className="!m-0">
-              {record.manager?.userName}
-            </Typography.Title>
-          </Col>
-        </Row>
-      ) : null,
-  },
-  {
-    title: "MEMBERS",
-    dataIndex: "members",
-    width: "20%",
-    render: (_, record) => (
-      <Avatar.Group
-        maxCount={4}
-        maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
-      >
-        {record.member?.map((member, index) => (
-          <Avatar key={index} style={{ backgroundColor: randomBgColor() }}>
-            {member.userName?.charAt(0).toUpperCase()}
-          </Avatar>
-        ))}
-      </Avatar.Group>
-    ),
-  },
-];
 
 export default AdminDashboard;

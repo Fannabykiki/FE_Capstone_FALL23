@@ -1,9 +1,22 @@
 import { useState } from "react";
-import { Button, Col, Modal, Row, Skeleton, Space, Typography } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { EyeOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import debounce from "lodash/debounce";
+import orderBy from "lodash/orderBy";
+import {
+  Button,
+  Col,
+  Modal,
+  Row,
+  Input,
+  Skeleton,
+  Space,
+  Typography,
+} from "antd";
 
+import { convertToODataParams } from "@/utils/convertToODataParams";
 import { useAuthContext } from "@/context/Auth";
 import { IAdminRoles } from "@/interfaces/role";
 import CreateEditRole from "./CreateEditRole";
@@ -21,9 +34,26 @@ const RoleManagement = () => {
 
   const { userInfo } = useAuthContext();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const { data: roles, isLoading } = useQuery<IAdminRoles[]>({
-    queryKey: [roleApi.getAdminRolesKey, userInfo?.id],
-    queryFn: ({ signal }) => roleApi.getAdminRoles(signal),
+    queryKey: [
+      roleApi.getAdminRolesKey,
+      userInfo?.id,
+      searchParams.get("search"),
+    ],
+    queryFn: async ({ signal }) => {
+      const data = await roleApi.getAdminRoles(signal, {
+        $filter: convertToODataParams(
+          {},
+          {
+            // roleName: searchParams.get("search"),
+          }
+        ),
+      });
+
+      return orderBy(data, ["role.roleName"], ["asc"]);
+    },
     enabled: Boolean(userInfo),
   });
 
@@ -34,8 +64,9 @@ const RoleManagement = () => {
   } = useMutation({
     mutationFn: roleApi.deleteRole,
     mutationKey: [roleApi.deleteRoleKey],
-    onSuccess: () => {
-      queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+    onSuccess: async () => {
+      await queryClient.refetchQueries([roleApi.getAdminRolesKey]);
+      toast.success("Delete role successfully");
     },
     onError: (err) => {
       console.error(err);
@@ -67,6 +98,17 @@ const RoleManagement = () => {
     });
   };
 
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (!e.target.value) {
+        prev.delete("search");
+      } else {
+        prev.set("search", e.target.value);
+      }
+      return prev;
+    });
+  }, 1000);
+
   return (
     <Space direction="vertical" className="w-full gap-5">
       {contextHolder}
@@ -89,6 +131,16 @@ const RoleManagement = () => {
             Add new role
           </Button>
         </Col>
+      </Row>
+      <Row>
+        <Input
+          className="w-full"
+          placeholder="Search"
+          defaultValue={searchParams.get("search") || ""}
+          prefix={<SearchOutlined />}
+          onChange={handleSearch}
+          allowClear
+        />
       </Row>
       <Row gutter={[24, 24]} className="w-full">
         {(roles || Array.from({ length: 5 }))?.map((role, index) => (

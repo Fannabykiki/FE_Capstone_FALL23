@@ -1,13 +1,10 @@
 import { useState } from "react";
+import { EyeOutlined, SearchOutlined, TeamOutlined } from "@ant-design/icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 import debounce from "lodash/debounce";
-import {
-  EyeOutlined,
-  MoreOutlined,
-  SearchOutlined,
-  TeamOutlined,
-} from "@ant-design/icons";
+import { toast } from "react-toastify";
 import {
   Avatar,
   Col,
@@ -28,6 +25,7 @@ import { IAdminUsers } from "@/interfaces/user";
 import UserDetailModal from "./UserDetailModal";
 import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
+import { userApi } from "@/utils/api/user";
 
 const UserManagement = () => {
   const [userDetail, setUserDetail] = useState<IAdminUsers>();
@@ -48,6 +46,27 @@ const UserManagement = () => {
         userName: searchParams.get("search"),
       }
     ),
+  });
+
+  const queryClient = useQueryClient();
+
+  const {
+    mutate: updateUserStatus,
+    isLoading: isUpdating,
+    variables,
+  } = useMutation({
+    mutationFn: userApi.changeUserStatus,
+    mutationKey: [userApi.changeUserStatusKey],
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.refetchQueries([userApi.getAdminUsersKey]),
+        queryClient.refetchQueries([userApi.getAdminUsersAnalyzationKey]),
+      ]);
+      toast.success("Change status successfully");
+    },
+    onError: (err) => {
+      toast.error("Change status failed");
+    },
   });
 
   const onChangePage = (page: number, pageSize: number) => {
@@ -82,6 +101,16 @@ const UserManagement = () => {
 
   const handleViewDetail = (record: IAdminUsers) => {
     setUserDetail(record);
+  };
+
+  const handleChangeStatus = (userId: string, value: boolean) => {
+    updateUserStatus({
+      id: userId,
+      data: {
+        statusIdChangeTo: value,
+        reason: "",
+      },
+    });
   };
 
   const columns: ColumnsType<IAdminUsers> = [
@@ -135,9 +164,13 @@ const UserManagement = () => {
       title: "STATUS",
       dataIndex: "statusName",
       width: "18%",
-      render: (statusName) => (
+      render: (statusName, record) => (
         <Row align="middle" className="gap-2">
-          <Switch defaultChecked={statusName === "Active"} />
+          <Switch
+            defaultChecked={statusName === "Active"}
+            disabled={variables?.id === record.userId && isUpdating}
+            onChange={(value) => handleChangeStatus(record.userId, value)}
+          />
           <Typography.Text
             className={`px-2 py-1 rounded font-medium ${
               statusName === "Active"
@@ -153,13 +186,13 @@ const UserManagement = () => {
     {
       title: "ACTIONS",
       width: "10%",
+      align: "center",
       render: (_, record) => (
         <Space size="large">
           <EyeOutlined
             className="text-xl cursor-pointer"
             onClick={() => handleViewDetail(record)}
           />
-          <MoreOutlined className="text-xl cursor-pointer" />
         </Space>
       ),
     },
