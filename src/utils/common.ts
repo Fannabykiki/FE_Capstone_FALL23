@@ -4,6 +4,9 @@ import jwtDecode from "jwt-decode";
 import {
   DATETIME_FORMAT,
   DATE_FORMAT,
+  REGEX_CHARACTER,
+  REGEX_NUMBER,
+  REGEX_SPECIAL_CHARACTER,
   SAFE_DAY_TIL_DUE_DATE,
   WARNING_DAY_TIL_DUE_DATE,
 } from "./constants";
@@ -67,6 +70,29 @@ const calcTaskDueDateColor = (dueDate: Date) => {
   return colors[2];
 };
 
+const handleValidatePassword = async (password: string) => {
+  switch (true) {
+    case password.length < 8:
+      return Promise.reject(
+        new Error("Password must be equal or longer than 8 characters")
+      );
+    case !REGEX_NUMBER.test(password):
+      return Promise.reject(new Error("Password must have atleast one number"));
+    case !REGEX_SPECIAL_CHARACTER.test(password):
+      return Promise.reject(
+        new Error("Password must have atleast one special character")
+      );
+    case !REGEX_CHARACTER.test(password):
+      return Promise.reject(
+        new Error(
+          "Password must have atleast one upper and lower case character"
+        )
+      );
+    default:
+      break;
+  }
+};
+
 export {
   classNames,
   makePath,
@@ -75,4 +101,5 @@ export {
   defaultFormatDate,
   defaultFormatDateTime,
   calcTaskDueDateColor,
+  handleValidatePassword,
 };

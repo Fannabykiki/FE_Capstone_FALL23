@@ -30,7 +30,7 @@ export default function CreateProject({ open, onClose }: Props) {
     description: "",
     startDate: dayjs(),
     endDate: dayjs(),
-    privacyStatus: false,
+    privacyStatus: true,
   };
 
   const { refetchProjects } = useListProjectOfUser();
@@ -46,8 +46,12 @@ export default function CreateProject({ open, onClose }: Props) {
   });
 
   const onCreateProject = async () => {
-    const values = await form.validateFields();
-    createProject(values);
+    try {
+      const values = await form.validateFields();
+      createProject(values);
+    } catch (error) {
+      console.error("Validation Failed:", error);
+    }
   };
 
   return (
@@ -57,8 +61,8 @@ export default function CreateProject({ open, onClose }: Props) {
       okText="Create"
       okButtonProps={{ loading: isLoading }}
       onCancel={onClose}
+      title="Create new Project"
     >
-      <Typography.Title level={1}>Create New Project</Typography.Title>
       <Form<ICreateProjectPayload>
         form={form}
         initialValues={initialValues}
@@ -66,25 +70,20 @@ export default function CreateProject({ open, onClose }: Props) {
       >
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="projectName" label="Name">
+            <Form.Item
+              name="projectName"
+              label="Name"
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter the project name",
+                },
+              ]}
+            >
               <Input />
             </Form.Item>
           </Col>
           <Col span={12}>
-            {/* <Form.Item name="projectStatus" label="Status">
-              <Select
-                options={[
-                  {
-                    label: "Open",
-                    value: EProjectStatus.Open,
-                  },
-                  {
-                    label: "Close",
-                    value: EProjectStatus.Close,
-                  },
-                ]}
-              />
-            </Form.Item> */}
             <Form.Item
               name="privacyStatus"
               label="Privacy"
@@ -102,12 +101,41 @@ export default function CreateProject({ open, onClose }: Props) {
         </Form.Item>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item name="startDate" label="Start Date">
+            <Form.Item
+              name="startDate"
+              label="Start Date"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the start date",
+                },
+              ]}
+            >
               <DatePicker className="w-full" />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item name="endDate" label="End Date">
+            <Form.Item
+              name="endDate"
+              label="End Date"
+              dependencies={["startDate"]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please select the end date",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("startDate").isBefore(value)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("End date must be after start date")
+                    );
+                  },
+                }),
+              ]}
+            >
               <DatePicker className="w-full" />
             </Form.Item>
           </Col>

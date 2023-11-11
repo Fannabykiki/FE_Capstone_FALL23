@@ -1,58 +1,26 @@
-import { Button, Form, Image, Input } from "antd";
+import { Button, Form, Image, Input, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@/utils/api/auth";
 import { paths } from "@/routers/paths";
 import { useMutation } from "@tanstack/react-query";
-import { classNames } from "@/utils/common";
+import { classNames, handleValidatePassword } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
-import { IFormError } from "@/interfaces/shared/common";
-import {
-  REGEX_CHARACTER,
-  REGEX_NUMBER,
-  REGEX_SPECIAL_CHARACTER,
-} from "@/utils/constants";
-import { RuleObject } from "antd/es/form";
+import { useEffect, useState } from "react";
+import { IErrorInfoState } from "@/interfaces/shared/state";
 
 export default function Register() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-
+  const [errorInfo, setErrorInfo] = useState<IErrorInfoState>({
+    isError: false,
+    message: "",
+  });
   const initialValues = {
     email: "",
     password: "",
     confirmPassword: "",
-  };
-
-  const handleValidatePassword = async (
-    _: RuleObject,
-    password: string,
-    callback: (error?: string | undefined) => void
-  ) => {
-    form.getFieldsError();
-    switch (true) {
-      case password.length < 8:
-        return Promise.reject(
-          new Error("Password must be equal or longer than 8 characters")
-        );
-      case !REGEX_NUMBER.test(password):
-        return Promise.reject(
-          new Error("Password must have atleast one number")
-        );
-      case !REGEX_SPECIAL_CHARACTER.test(password):
-        return Promise.reject(
-          new Error("Password must have atleast one special character")
-        );
-      case !REGEX_CHARACTER.test(password):
-        return Promise.reject(
-          new Error(
-            "Password must have atleast one upper and lower case character"
-          )
-        );
-      default:
-        break;
-    }
   };
 
   const { mutate: register, isLoading } = useMutation({
@@ -64,12 +32,48 @@ export default function Register() {
       );
       navigate(paths.login);
     },
-    onError: (err: AxiosError<IFormError>) => {
+    onError: (err: AxiosError<any>) => {
       console.error(err);
-      if (err.response?.data?.errors) {
+      if (err.response?.data) {
+        if (err.response.data.errors) {
+          form.setFields(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: key.toLowerCase(),
+              errors: [value] as string[],
+            }))
+          );
+        } else if (typeof err.response.data === "string") {
+          setErrorInfo({
+            isError: true,
+            message: err.response.data,
+          });
+        }
       }
+      toast.error(
+        err.response?.data || "Register failed! Please try again later"
+      );
     },
   });
+
+  const setErrorWithTimeout = (err: IErrorInfoState) => {
+    setErrorInfo(err);
+
+    return setTimeout(() => {
+      setErrorInfo({
+        isError: false,
+        message: "",
+      });
+    }, 6000);
+  };
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (errorInfo.isError) {
+      timeoutId = setErrorWithTimeout(errorInfo);
+      // Return a cleanup function to clear the timeout
+    }
+    return () => clearTimeout(timeoutId);
+  }, [errorInfo]);
 
   const onSubmit = async () => {
     const formValues = await form.validateFields();
@@ -92,6 +96,11 @@ export default function Register() {
           initialValues={initialValues}
           onFinish={onSubmit}
         >
+          {errorInfo.isError && (
+            <Typography.Paragraph className="text-center text-red-400 font-semibold">
+              {errorInfo.message}
+            </Typography.Paragraph>
+          )}
           <Form.Item
             label="Email"
             name="email"
@@ -110,11 +119,11 @@ export default function Register() {
             rules={[
               {
                 required: true,
-                validator: handleValidatePassword,
+                validator: (_, password) => handleValidatePassword(password),
               },
             ]}
           >
-            <Input type="password" />
+            <Input.Password />
           </Form.Item>
           <Form.Item
             label="Confirm password"
@@ -133,7 +142,7 @@ export default function Register() {
               }),
             ]}
           >
-            <Input type="password" />
+            <Input.Password />
           </Form.Item>
           <Button
             type="primary"
