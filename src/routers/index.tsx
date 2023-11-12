@@ -15,7 +15,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ForgotPassword from "@/features/ForgotPassword";
 import VerifyAccount from "@/features/VerifyAccount";
 import UserDashboard from "@/features/User";
-import ProjectDetail from "@/features/Project/detail";
+import ProjectDetail from "@/features/Project/Detail";
 import ProjectTrashBin from "@/features/Project/Trash";
 import ProjectReport from "@/features/Project/Report";
 import ProjectSprint from "@/features/Project/Sprint";

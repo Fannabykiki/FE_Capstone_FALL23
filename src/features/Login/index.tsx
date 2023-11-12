@@ -1,16 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
-import { Button, Form, Image, Input } from "antd";
+import { Button, Form, Image, Input, Typography } from "antd";
 import { useAuthContext } from "@/context/Auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authApi } from "@/utils/api/auth";
 import { paths } from "@/routers/paths";
-import { classNames } from "@/utils/common";
+import { classNames, handleValidatePassword } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
+import { AxiosError } from "axios";
+import { useEffect, useState } from "react";
+import { IErrorInfoState } from "@/interfaces/shared/state";
 
 export default function Login() {
   const navigate = useNavigate();
-
+  const [errorInfo, setErrorInfo] = useState<IErrorInfoState>({
+    isError: false,
+    message: "",
+  });
+  const [form] = Form.useForm();
   const { setAuthenticate } = useAuthContext();
 
   const { mutate: login, isLoading } = useMutation({
@@ -26,11 +33,37 @@ export default function Login() {
         navigate(paths.user);
       }
     },
-    onError: (err) => {
+    onError: (err: AxiosError<any>) => {
       console.error(err);
-      toast.error("Login failed! Please try again later");
+      if (err.response?.data) {
+        setErrorInfo({
+          isError: true,
+          message: err.response.data,
+        });
+      }
+      toast.error(err.response?.data || "Login failed! Please try again later");
     },
   });
+
+  const setErrorWithTimeout = (err: IErrorInfoState) => {
+    setErrorInfo(err);
+
+    return setTimeout(() => {
+      setErrorInfo({
+        isError: false,
+        message: "",
+      });
+    }, 6000);
+  };
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (errorInfo.isError) {
+      timeoutId = setErrorWithTimeout(errorInfo);
+      // Return a cleanup function to clear the timeout
+    }
+    return () => clearTimeout(timeoutId);
+  }, [errorInfo]);
 
   const onFinish = (values: any) => {
     login(values);
@@ -48,9 +81,15 @@ export default function Login() {
         <Form
           className="w-full"
           layout="vertical"
+          form={form}
           initialValues={{ email: "", password: "" }}
           onFinish={onFinish}
         >
+          {errorInfo.isError && (
+            <Typography.Paragraph className="text-center text-red-400 font-semibold">
+              {errorInfo.message}
+            </Typography.Paragraph>
+          )}
           <Form.Item
             label="Email"
             name="email"
@@ -70,9 +109,14 @@ export default function Login() {
               </Button>
             }
             name="password"
-            rules={[{ required: true }]}
+            rules={[
+              {
+                required: true,
+                validator: (_, password) => handleValidatePassword(password),
+              },
+            ]}
           >
-            <Input type="password" />
+            <Input.Password />
           </Form.Item>
           <Button
             type="primary"

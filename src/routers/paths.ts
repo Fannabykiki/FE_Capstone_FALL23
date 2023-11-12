@@ -7,7 +7,7 @@ export const paths = {
   forgotPassword: "/forgot-password",
   verifyAccount: "/verify-account",
   user: "/user",
-  joinProject: "user/invite",
+  joinProject: "/user/invite",
   project: {
     index: "/project",
     detail: `/project/:projectId`,
@@ -45,4 +45,21 @@ export const adminPaths = Object.assign(
     "report",
     "settings",
   ])
+);
+
+export const userPaths = Object.assign(
+  {
+    ...pick(paths, ["user", "joinProject"]),
+    ...pick(paths.project, [
+      "index",
+      "detail",
+      "tasks",
+      "sprint",
+      "calendar",
+      "trash",
+      "report",
+      "settings",
+    ]),
+  },
+  {}
 );

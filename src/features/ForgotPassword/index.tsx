@@ -1,4 +1,4 @@
-import { Button, Form, Image, Input } from "antd";
+import { Button, Form, Image, Input, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "@/utils/api/auth";
 import { paths } from "@/routers/paths";
@@ -7,11 +7,16 @@ import { classNames } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { IErrorInfoState } from "@/interfaces/shared/state";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-
+  const [errorInfo, setErrorInfo] = useState<IErrorInfoState>({
+    isError: false,
+    message: "",
+  });
   const initialValues = {
     email: "",
   };
@@ -26,9 +31,38 @@ export default function ForgotPassword() {
       navigate(paths.login);
     },
     onError: (err: AxiosError<string>) => {
-      toast.error(err?.response?.data);
+      console.error(err);
+      if (err.response?.data) {
+        setErrorInfo({
+          isError: true,
+          message: err.response.data,
+        });
+      }
+      toast.error(
+        err.response?.data || "Register failed! Please try again later"
+      );
     },
   });
+
+  const setErrorWithTimeout = (err: IErrorInfoState) => {
+    setErrorInfo(err);
+
+    return setTimeout(() => {
+      setErrorInfo({
+        isError: false,
+        message: "",
+      });
+    }, 6000);
+  };
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    if (errorInfo.isError) {
+      timeoutId = setErrorWithTimeout(errorInfo);
+      // Return a cleanup function to clear the timeout
+    }
+    return () => clearTimeout(timeoutId);
+  }, [errorInfo]);
 
   const onSubmit = async () => {
     const formValues = await form.validateFields();
@@ -51,6 +85,11 @@ export default function ForgotPassword() {
           initialValues={initialValues}
           onFinish={onSubmit}
         >
+          {errorInfo.isError && (
+            <Typography.Paragraph className="text-center text-red-400 font-semibold">
+              {errorInfo.message}
+            </Typography.Paragraph>
+          )}
           <Form.Item
             label="Email"
             name="email"

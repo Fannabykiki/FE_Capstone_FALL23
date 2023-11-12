@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
 
-import { adminPaths, paths } from "@/routers/paths";
+import { adminPaths, paths, userPaths } from "@/routers/paths";
 import { checkTokenValid } from "@/utils/common";
 import { useAuthContext } from "@/context/Auth";
 
@@ -44,11 +44,13 @@ export default function PageContainer({
       } else {
         navigate({
           pathname: matchRoutes(
-            Object.values(adminPaths).map((path) => ({ path })),
+            Object.values(userPaths).map((path) => ({ path })) as {
+              path: string;
+            }[],
             location
           )
-            ? paths.dashboard
-            : location.pathname,
+            ? location.pathname
+            : paths.dashboard,
           search: location.search,
         });
       }

@@ -22,7 +22,7 @@ interface Props {
   onClose: VoidFunction;
 }
 
-export default function CreateProject({ open, onClose }: Props) {
+export default function CreateIteration({ open, onClose }: Props) {
   const [form] = Form.useForm();
   const initialValues = {
     projectName: "",

@@ -1,15 +1,11 @@
-import { classNames } from "@/utils/common";
 import React, { useState } from "react";
 import {
   DragDropContext,
-  Droppable,
-  Draggable,
   OnDragEndResponder,
   DraggableLocation,
-  DraggableProps,
   DragDropContextProps,
-  DroppableProps,
 } from "react-beautiful-dnd";
+import MainTaskDisplay from "./MainTaskDisplay";
 
 // Helper functions to reorder and move subtasks
 const reorderSubtasks = (
@@ -36,53 +32,57 @@ const moveSubtask = (
   return sourceClone;
 };
 
-interface Task {
+export interface Task {
   id: string;
   content: string;
+  type?: TaskType;
   subtasks: SubTask[];
+  dueDate: Date;
 }
 
-interface SubTask {
+export interface SubTask {
   id: string;
   content: string;
   status: Status;
-  type: SubTaskType;
+  type: TaskType;
+  dueDate: Date;
 }
 
-enum Status {
+export enum Status {
   Todo = "todo",
   Review = "review",
   InProgress = "inProgress",
   Done = "done",
 }
 
-enum SubTaskType {
+export enum TaskType {
+  Main = "main",
   Bug = "bug",
   Task = "task",
 }
-
-const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
 const DragDropContextComponent =
   DragDropContext as React.ComponentClass<DragDropContextProps>;
-const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 
 const TaskBoard = () => {
   const initialTasks: Task[] = [
     {
       id: "1",
       content: "Task A",
+      dueDate: new Date("2023-11-20"),
       subtasks: [
         {
           id: "2",
           content: "Sub task A1",
           status: Status.Todo,
-          type: SubTaskType.Bug,
+          type: TaskType.Bug,
+          dueDate: new Date("2023-11-15"),
         },
         {
           id: "6",
           content: "Sub task A2",
           status: Status.InProgress,
-          type: SubTaskType.Task,
+          type: TaskType.Task,
+          dueDate: new Date("2023-11-09"),
         },
         // ... other subtasks
       ],
@@ -90,18 +90,21 @@ const TaskBoard = () => {
     {
       id: "3",
       content: "Task B",
+      dueDate: new Date("2023-11-20"),
       subtasks: [
         {
           id: "4",
           content: "Sub task B1",
           status: Status.Review,
-          type: SubTaskType.Bug,
+          type: TaskType.Bug,
+          dueDate: new Date("2023-11-15"),
         },
         {
           id: "5",
           content: "Sub task B2",
           status: Status.Done,
-          type: SubTaskType.Task,
+          type: TaskType.Task,
+          dueDate: new Date("2023-11-09"),
         },
         // ... other subtasks
       ],
@@ -157,83 +160,10 @@ const TaskBoard = () => {
     }
   };
 
-  // Function to render subtasks
-  const renderSubtasks = (task: Task, status: string) => {
-    return task.subtasks
-      .filter((subtask) => subtask.status === status)
-      .map((subtask, index) => (
-        <DraggableComponent
-          key={subtask.id}
-          draggableId={subtask.id}
-          index={index}
-        >
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              className={classNames(
-                "select-none p-4 min-h-[50px] rounded shadow",
-                snapshot.isDragging ? "bg-neutral-400" : "bg-white",
-                "border-0 border-l-4 border-solid",
-                subtask.type === SubTaskType.Bug
-                  ? "border-red-400"
-                  : "border-green-400"
-              )}
-              style={{
-                ...provided.draggableProps.style,
-              }}
-            >
-              <h3>{subtask.content}</h3>
-            </div>
-          )}
-        </DraggableComponent>
-      ));
-  };
-
   return (
     <DragDropContextComponent onDragEnd={onDragEnd}>
       {tasks.map((task, idx) => (
-        <div key={task.id}>
-          <div className="flex w-full gap-x-4">
-            <div className="p-2">
-              {idx === 0 && <h4>Collapse all</h4>}
-              <div
-                className={classNames(
-                  "w-44 bg-white h-fit p-4 rounded shadow",
-                  "border-0 border-l-4 border-solid border-blue-400"
-                )}
-              >
-                <h3>{task.content}</h3>
-              </div>
-            </div>
-            {["todo", "inProgress", "review", "done"].map((status, index) => (
-              <DroppableComponent
-                key={index}
-                droppableId={`${task.id}-${status}`}
-              >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    className={classNames(
-                      "p-2 w-[250px] rounded",
-                      snapshot.isDraggingOver && "bg-neutral-200"
-                    )}
-                    {...provided.droppableProps}
-                  >
-                    <>
-                      {idx === 0 && <h4>{status}</h4>}
-                      <div className="flex flex-col gap-y-4">
-                        {renderSubtasks(task, status)}
-                      </div>
-                      {provided.placeholder}
-                    </>
-                  </div>
-                )}
-              </DroppableComponent>
-            ))}
-          </div>
-        </div>
+        <MainTaskDisplay task={task} taskIndex={idx} key={task.id} />
       ))}
     </DragDropContextComponent>
   );

@@ -132,7 +132,7 @@ export default function ProjectDetail() {
                 {detail.projectMembers.map((member) => (
                   <Tooltip
                     key={member.memberId}
-                    title={faker.person.fullName}
+                    title={member.fullname}
                     placement="top"
                   >
                     <Avatar
