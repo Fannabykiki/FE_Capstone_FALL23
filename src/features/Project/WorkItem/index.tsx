@@ -3,8 +3,6 @@ import { randomBgColor } from "@/utils/random";
 import {
   BugFilled,
   CheckSquareFilled,
-  CheckSquareOutlined,
-  EyeTwoTone,
   FilterFilled,
   PlusOutlined,
   SearchOutlined,
@@ -279,11 +277,10 @@ export default function WorkItem() {
       </div>
 
       {isCardVisible && (
-        <Card className="w-full mt-2 shadow-custom bg-gray-50">
+        <Card className="w-full mt-2 shadow-custom">
           <Row gutter={16}>
             <Col span={12}>
               <Input
-                bordered={false}
                 placeholder="Filter By Title"
                 prefix={<SearchOutlined />}
                 width={150}
@@ -291,21 +288,19 @@ export default function WorkItem() {
             </Col>
             <Col className="text-right" span={12}>
               <Select
-                bordered={false}
+                bordered
                 options={TYPE_OPTION}
                 className="mr-3 w-24"
                 placeholder="Type"
               />
               <Select
-                bordered={false}
                 options={STATE_OPTION}
-                className="mr-3 w-24"
+                className="mr-3 w-20"
                 placeholder="State"
               />
               <Select
                 options={ITERATION_OPTION}
-                className="w-24"
-                bordered={false}
+                className="w-28"
                 placeholder="Iteration"
               />
             </Col>
