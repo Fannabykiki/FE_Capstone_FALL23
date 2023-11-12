@@ -37,8 +37,14 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
 
   const { data, isLoading } = useQuery<IAdminUserProjectList[]>({
     queryKey: [projectApi.getAdminUsersAnalyzationByUserIdKey, userInfo?.id],
-    queryFn: ({ signal }) =>
-      projectApi.getAdminUsersAnalyzationByUserId(signal, userInfo?.id),
+    queryFn: async ({ signal }) => {
+      const data: IAdminUserProjectList[] =
+        await projectApi.getAdminUsersAnalyzationByUserId(signal, userInfo?.id);
+      return data.map((user) => ({
+        ...user,
+        manager: { ...user.manager, avatarColor: randomBgColor() },
+      }));
+    },
     enabled: Boolean(userInfo) && !!userDetail,
   });
 
@@ -63,7 +69,7 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       render: (projectName, record) => (
         <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>
+            <Avatar style={{ backgroundColor: "" }}>
               {projectName?.charAt(0).toUpperCase()}
             </Avatar>
           </Col>
@@ -130,7 +136,7 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       render: (_, record) => (
         <Row align="middle">
           <Col span={6} className="flex items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>
+            <Avatar style={{ backgroundColor: record.manager.avatarColor }}>
               {record.manager?.userName?.charAt(0).toUpperCase()}
             </Avatar>
           </Col>
@@ -176,7 +182,7 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
               <Avatar
                 shape="square"
                 className="w-[80px] h-[80px] flex justify-center items-center text-3xl"
-                style={{ backgroundColor: randomBgColor() }}
+                style={{ backgroundColor: userDetail?.avatarColor }}
               >
                 {userDetail?.userName?.charAt(0).toUpperCase()}
               </Avatar>

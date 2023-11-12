@@ -24,7 +24,6 @@ import activeUser from "@/assets/images/active-user.png";
 import { IAdminUsers } from "@/interfaces/user";
 import UserDetailModal from "./UserDetailModal";
 import { pagination } from "@/utils/pagination";
-import { randomBgColor } from "@/utils/random";
 import { userApi } from "@/utils/api/user";
 
 const UserManagement = () => {
@@ -121,7 +120,7 @@ const UserManagement = () => {
       render: (name, record) => (
         <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>
+            <Avatar style={{ backgroundColor: record.avatarColor }}>
               {name?.charAt(0).toUpperCase()}
             </Avatar>
           </Col>
