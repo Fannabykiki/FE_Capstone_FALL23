@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { IAdminUsers, IAdminUsersAnalyzation } from "@/interfaces/user";
 import { useAuthContext } from "@/context/Auth";
+import { randomBgColor } from "@/utils/random";
 import { userApi } from "@/utils/api/user";
 
 interface Params {
@@ -15,7 +16,14 @@ export default function useAdminUserManagement(params: Params) {
     IAdminUsers[]
   >({
     queryKey: [userApi.getAdminUsersKey, userInfo?.id, params],
-    queryFn: ({ signal }) => userApi.getAdminUsers(signal, params),
+    queryFn: async ({ signal }) => {
+      const data: IAdminUsers[] = await userApi.getAdminUsers(signal, params);
+
+      return data.map((user) => ({
+        ...user,
+        avatarColor: randomBgColor(),
+      }));
+    },
     enabled: Boolean(userInfo),
   });
 

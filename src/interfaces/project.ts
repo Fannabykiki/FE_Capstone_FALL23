@@ -79,19 +79,19 @@ export interface IAdminProject {
     isAdmin: boolean;
     address: string;
     dob: Date | null;
+    avatarColor?: string;
   };
-  member: [
-    {
-      userId: string;
-      userName: string;
-      email: string;
-      phoneNumber: string;
-      statusName: string;
-      isAdmin: boolean;
-      address: string;
-      dob: Date | null;
-    },
-  ];
+  member: {
+    userId: string;
+    userName: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: boolean;
+    address: string;
+    dob: Date | null;
+    avatarColor?: string;
+  }[];
   createAt: Date;
   deleteAt: null;
   expireAt: null;
@@ -123,6 +123,7 @@ export interface IAdminUserProjectList {
     isAdmin: boolean;
     address: string;
     dob: Date | null;
+    avatarColor?: string;
   };
   startDate: Date;
 }

@@ -24,7 +24,6 @@ import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
 import { convertToODataParams } from "@/utils/convertToODataParams";
 import { IAdminProject } from "@/interfaces/project";
 import { pagination } from "@/utils/pagination";
-import { randomBgColor } from "@/utils/random";
 import { paths } from "@/routers/paths";
 
 const AdminDashboard = () => {
@@ -87,7 +86,8 @@ const AdminDashboard = () => {
       title: "PROJECT",
       dataIndex: "projectName",
       width: "35%",
-      sorter: (a, b) => a.projectName.localeCompare(b.projectName),
+      className: "select-none",
+      sorter: (a, b) => a.projectName?.localeCompare(b.projectName),
       render: (projectName, record) => (
         <Space direction="vertical" className="gap-0">
           <Button
@@ -101,7 +101,10 @@ const AdminDashboard = () => {
               );
             }}
           >
-            <Typography.Title level={5} className="!m-0 !text-[#ADA6F5]">
+            <Typography.Title
+              level={5}
+              className="!m-0 !text-[#ADA6F5] hover:!text-[#867aff]"
+            >
               {projectName}
             </Typography.Title>
           </Button>
@@ -116,7 +119,8 @@ const AdminDashboard = () => {
       dataIndex: "projectStatus",
       width: "15%",
       align: "center",
-      sorter: (a, b) => a.projectStatus.localeCompare(b.projectStatus),
+      className: "select-none",
+      sorter: (a, b) => a.projectStatus?.localeCompare(b.projectStatus),
       render: (status) => {
         let color = "";
         let bg = "";
@@ -163,12 +167,13 @@ const AdminDashboard = () => {
       title: "MANAGER",
       dataIndex: "manager",
       width: "25%",
-      sorter: (a, b) => a.manager?.userName.localeCompare(b.manager?.userName),
+      className: "select-none",
+      sorter: (a, b) => a.manager?.userName?.localeCompare(b.manager?.userName),
       render: (_, record) =>
         record.manager?.userName ? (
           <Row align="middle">
             <Col span={5} className="flex items-center">
-              <Avatar style={{ backgroundColor: randomBgColor() }}>
+              <Avatar style={{ backgroundColor: record.manager?.avatarColor }}>
                 {record.manager?.userName?.charAt(0).toUpperCase()}
               </Avatar>
             </Col>
@@ -190,7 +195,7 @@ const AdminDashboard = () => {
           maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
         >
           {record.member?.map((member, index) => (
-            <Avatar key={index} style={{ backgroundColor: randomBgColor() }}>
+            <Avatar key={index} style={{ backgroundColor: member.avatarColor }}>
               {member.userName?.charAt(0).toUpperCase()}
             </Avatar>
           ))}
