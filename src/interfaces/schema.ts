@@ -20,7 +20,7 @@ export interface ISchema {
     permissionId: string;
     name: string;
     description: string;
-    roles: IAdminRoles["role"][];
+    roles: IAdminRoles[];
   }[];
 }
 

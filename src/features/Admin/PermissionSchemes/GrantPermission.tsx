@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, Divider, Modal, Row, Select, Space, Typography } from "antd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
-import { useAuthContext } from "@/context/Auth";
-import { IAdminRoles } from "@/interfaces/role";
+import { IAdminGrantPermissionList } from "@/interfaces/role";
 import { schemaApi } from "@/utils/api/schema";
 import { ISchema } from "@/interfaces/schema";
-import { roleApi } from "@/utils/api/role";
 
 interface Props {
   isOpen: boolean;
@@ -25,9 +23,12 @@ const GrantPermission = ({
   const [permissions, setPermissions] = useState<string[]>([]);
   const [role, setRole] = useState<string>();
 
-  const { userInfo } = useAuthContext();
-
   const queryClient = useQueryClient();
+
+  const data = queryClient.getQueryData<IAdminGrantPermissionList[]>([
+    "grant-list",
+    { id: schema?.schemaId },
+  ]);
 
   const { mutate: grantPermission, isLoading } = useMutation({
     mutationKey: [schemaApi.grantPermissionKey],
@@ -41,12 +42,6 @@ const GrantPermission = ({
       console.error(err);
       toast.error("Grant permission failed");
     },
-  });
-
-  const { data: roles } = useQuery<IAdminRoles[]>({
-    queryKey: [roleApi.getAdminRolesKey, userInfo?.id],
-    queryFn: ({ signal }) => roleApi.getAdminRoles(signal, {}),
-    enabled: Boolean(userInfo),
   });
 
   const options = useMemo(
@@ -139,9 +134,9 @@ const GrantPermission = ({
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
-              options={roles?.map((role) => ({
-                label: role.role.roleName,
-                value: role.role.roleId,
+              options={data?.map((role) => ({
+                label: role.roleName,
+                value: role.roleId,
               }))}
             />
           </Col>

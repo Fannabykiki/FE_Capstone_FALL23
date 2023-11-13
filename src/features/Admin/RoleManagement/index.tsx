@@ -47,7 +47,7 @@ const RoleManagement = () => {
         $filter: convertToODataParams(
           {},
           {
-            // roleName: searchParams.get("search"),
+            roleName: searchParams.get("search"),
           }
         ),
       });
@@ -156,7 +156,7 @@ const RoleManagement = () => {
             >
               <Skeleton loading={isLoading}>
                 <Typography.Title level={3} className="!m-0">
-                  {role?.role.roleName}
+                  {role?.roleName}
                 </Typography.Title>
                 <Row>
                   <Button
@@ -172,10 +172,10 @@ const RoleManagement = () => {
                   <Button
                     type="link"
                     className="!p-0 ml-5"
-                    loading={isDeleting && role?.role.roleId === variables}
+                    loading={isDeleting && role?.roleId === variables}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(role?.role.roleId);
+                      handleDelete(role?.roleId);
                     }}
                   >
                     Delete role
