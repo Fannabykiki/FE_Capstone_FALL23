@@ -1,6 +1,7 @@
 import axiosClient from "./axios-client";
 import { HTTP_METHODS } from "../constants";
-import { ITask, ITaskStatus, ISubtask } from "@/interfaces/task";
+import { ITask, ITaskStatus } from "@/interfaces/task";
+import { sortBy } from "lodash";
 
 const getKanbanTasks = (
   signal: AbortSignal | undefined,
@@ -26,16 +27,16 @@ const getTaskStatuses = (
   projectId: string
 ): Promise<ITaskStatus[]> => {
   return axiosClient({
-    url: "/api/task-management/task-status",
+    url: "/api/task-management/tasks/status",
     method: HTTP_METHODS.GET,
     params: { projectId },
     signal,
-  }).then((resp) => resp.data);
+  }).then((resp) => sortBy(resp.data || [], "order"));
 };
 
 const postTaskStatus = (status: ITaskStatus): Promise<ITaskStatus> => {
   return axiosClient({
-    url: "/api/task-management/task-status",
+    url: "/api/task-management/tasks/status",
     method: HTTP_METHODS.POST,
     data: status,
   }).then((resp) => resp.data);
@@ -56,7 +57,7 @@ const createTask = (task: ITask): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const createSubtask = (subtask: ISubtask): Promise<ISubtask> => {
+const createSubtask = (subtask: ITask): Promise<ITask> => {
   return axiosClient({
     url: "/api/task-management/subtask",
     method: HTTP_METHODS.POST,

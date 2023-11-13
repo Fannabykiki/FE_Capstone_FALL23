@@ -1,5 +1,12 @@
 export interface ITask {
-  // Define the properties of a task
+  taskId: string;
+  title: string;
+  taskType: string;
+  taskTypeId: string;
+  statusId: string;
+  taskStatus: string;
+  endDate: Date;
+  tasks?: ITask[];
 }
 
 export interface ITaskStatus {
@@ -7,8 +14,4 @@ export interface ITaskStatus {
   title: string;
   boardId: string;
   baseResponse: string | null;
-}
-
-export interface ISubtask {
-  // Define the properties of a subtask
 }
