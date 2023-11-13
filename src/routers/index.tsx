@@ -23,6 +23,7 @@ import ProjectSettings from "@/features/Project/Settings";
 import ProjectCalendar from "@/features/Project/Calendar";
 import WorkItem from "@/features/Project/WorkItem";
 import InviteMember from "@/features/InviteMember";
+import Notifications from "@/features/Notifications";
 
 export default function Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
@@ -198,6 +199,16 @@ export default function Routers() {
               requireAuth={false}
               Component={InviteMember}
               title="Invite Member"
+            />
+          }
+        />
+        <Route
+          path={paths.notification}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={Notifications}
+              title="Notifications"
             />
           }
         />
