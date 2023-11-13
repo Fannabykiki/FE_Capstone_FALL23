@@ -1,9 +1,19 @@
 import { useState } from "react";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { generatePath, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Col, Row, Select, Space, Table, Typography } from "antd";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
+import {
+  Button,
+  Col,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Table,
+  Typography,
+} from "antd";
 
 import { convertToODataParams } from "@/utils/convertToODataParams";
 import CreatePermissionScheme from "./CreateEditPermissionScheme";
@@ -18,9 +28,15 @@ const PermissionSchemes = () => {
   const [isOpenCreatePermSchemeModal, setOpenCreatePermSchemeModal] =
     useState<boolean>(false);
 
+  const [modal, contextHolder] = Modal.useModal();
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { userInfo } = useAuthContext();
+
+  const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
 
   const { data: schemas, isLoading } = useQuery<IPermissionSchemes[]>({
     queryKey: [
@@ -40,7 +56,30 @@ const PermissionSchemes = () => {
     enabled: Boolean(userInfo),
   });
 
-  const navigate = useNavigate();
+  const {
+    mutate: deleteSchema,
+    isLoading: isDeleting,
+    variables,
+  } = useMutation({
+    mutationFn: schemaApi.deleteSchema,
+    mutationKey: [schemaApi.deleteSchemaKey],
+    onSuccess: async () => {
+      await queryClient.refetchQueries([schemaApi.getAdminSchemasKey]);
+      toast.success("Delete schema successfully");
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Delete schema failed");
+    },
+  });
+
+  const handleDelete = (schemaId: string) => {
+    modal.confirm({
+      title: "Warning",
+      content: "Are you sure to delete this schema?",
+      onOk: () => deleteSchema(schemaId),
+    });
+  };
 
   const onChange = (value: string) => {
     setSearchParams((prev) => {
@@ -105,7 +144,21 @@ const PermissionSchemes = () => {
       align: "center",
       render: (_, record) => (
         <Row justify="space-evenly">
-          <DeleteOutlined className="text-red-500 text-xl cursor-pointer" />
+          <Button
+            type="text"
+            ghost
+            className="hover:!bg-transparent focus:outline-none active:!bg-transparent"
+            loading={isDeleting && record.schemaId === variables}
+            onClick={() => handleDelete(record.schemaId)}
+            icon={
+              <DeleteOutlined
+                style={{
+                  color: "red",
+                  fontSize: 22,
+                }}
+              />
+            }
+          />
           <EditOutlined
             className="text-xl cursor-pointer"
             onClick={() => {
@@ -120,6 +173,7 @@ const PermissionSchemes = () => {
 
   return (
     <Space direction="vertical" className="w-full">
+      {contextHolder}
       <Row>
         <Col span={18}>
           <Typography.Title level={1} className="!m-0">

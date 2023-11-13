@@ -1,10 +1,12 @@
-import {
-  BugFilled,
-  BugOutlined,
-  CheckSquareFilled,
-  CheckSquareOutlined,
-} from "@ant-design/icons";
-import { Avatar, Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
+import { ICreateTaskRequest } from "@/interfaces/task";
+import { projectApi } from "@/utils/api/project";
+import { taskApi } from "@/utils/api/task";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
+import dayjs from "dayjs";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const { TextArea } = Input;
 
@@ -16,113 +18,99 @@ interface Props {
 export default function CreateWorkitem({ isOpen, handleClose }: Props) {
   const [form] = Form.useForm();
 
+  const queryClient = useQueryClient();
+
+  const { projectId } = useParams();
+
+  const { mutate: createWorkItem, isLoading } = useMutation({
+    mutationKey: [taskApi.createTaskKey],
+    mutationFn: taskApi.createTask,
+    onSuccess: async () => {
+      await queryClient.refetchQueries([
+        projectApi.getWorkItemListByProjectIdKey,
+      ]);
+      toast.success("Create work item successfully");
+      handleClose();
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Create work item failed");
+    },
+  });
+
+  const { data: priorityList } = useQuery({
+    queryKey: [taskApi.getTaskPriorityKey],
+    queryFn: async ({ signal }) => taskApi.getTaskPriority(signal),
+    enabled: Boolean(isOpen) && Boolean(projectId),
+  });
+
+  const { data: statusList } = useQuery({
+    queryKey: [taskApi.getTaskStatusKey],
+    queryFn: async ({ signal }) => {
+      const data = await taskApi.getTaskStatus(signal, projectId);
+      form.setFieldValue(
+        "statusId",
+        data.find((status) => status.title === "To do")?.boardStatusId
+      );
+      return data.sort((a, b) => a.order - b.order);
+    },
+    enabled: Boolean(isOpen) && Boolean(projectId),
+  });
+
+  const { data: typeList } = useQuery({
+    queryKey: [taskApi.getTaskTypeKey],
+    queryFn: async ({ signal }) => taskApi.getTaskType(signal),
+    enabled: Boolean(isOpen) && Boolean(projectId),
+  });
+
+  const { data: memberList } = useQuery({
+    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+    queryFn: async ({ signal }) =>
+      projectApi.getListUserInProjectByProjectId(signal, projectId),
+    enabled: Boolean(isOpen) && Boolean(projectId),
+  });
+
+  const { data: interationList } = useQuery({
+    queryKey: [projectApi.getLisInterationInProjectByProjectIdKey, projectId],
+    queryFn: async ({ signal }) =>
+      projectApi.getLisInterationInProjectByProjectId(signal, projectId),
+    enabled: Boolean(isOpen) && Boolean(projectId),
+  });
+
   const onCancel = () => {
     form.resetFields();
     handleClose();
   };
 
-  const TYPE_OPTION = [
-    {
-      label: (
-        <>
-          <CheckSquareFilled className="text-yellow-600 mr-2" /> Task
-        </>
-      ),
-      value: "task",
-    },
-    {
-      label: (
-        <>
-          <BugFilled className="text-red-500 mr-2" /> Bug
-        </>
-      ),
-      value: "bug",
-    },
-  ];
+  const onSubmit = (values: ICreateTaskRequest) => {
+    if (!projectId) return;
+    createWorkItem({ ...values, projectId, prevId: null });
+  };
 
-  const STATE_OPTION = [
-    {
-      label: "To do",
-      value: "todo",
-    },
-  ];
-
-  const PRIORITY_OPTION = [
-    {
-      label: "1",
-      value: "high",
-    },
-    {
-      label: "2",
-      value: "medium",
-    },
-    {
-      label: "3",
-      value: "low",
-    },
-    {
-      label: "4",
-      value: "very low",
-    },
-  ];
-
-  const MEMBER_OPTION = [
-    {
-      label: (
-        <div className="flex items-center">
-          <Avatar size="small" className="mr-2" />
-          Phan Luong Nam
-        </div>
-      ),
-      value: "Phan Luong Nam",
-    },
-    {
-      label: (
-        <div className="flex items-center">
-          <Avatar size="small" className="mr-2" />
-          Pham Van Toan
-        </div>
-      ),
-      value: "Pham Van Toan",
-    },
-    {
-      label: (
-        <div className="flex items-center">
-          <Avatar size="small" className="mr-2" />
-          Bui Quang Cuong
-        </div>
-      ),
-      value: "Bui Quang Cuong",
-    },
-    {
-      label: (
-        <div className="flex items-center">
-          <Avatar size="small" className="mr-2" />
-          Nguyen Hoai Son
-        </div>
-      ),
-      value: "Nguyen Hoai Son",
-    },
-    {
-      label: (
-        <div className="flex items-center">
-          <Avatar size="small" className="mr-2" />
-          Nguyen Huu Duc
-        </div>
-      ),
-      value: "Nguyen Huu Duc",
-    },
-  ];
+  useEffect(() => {
+    if (!isOpen) return;
+    form.resetFields();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   return (
     <Modal
-      title="Creat Work Item"
+      title="Create Work Item"
       onCancel={onCancel}
       open={isOpen}
       onOk={form.submit}
-      okText="Save"
+      okButtonProps={{
+        loading: isLoading,
+      }}
+      okText="Create"
+      width="80vw"
     >
-      <Form className="w-full" layout="vertical" form={form}>
+      <Form
+        className="w-full"
+        layout="vertical"
+        form={form}
+        onFinish={onSubmit}
+      >
         <Form.Item
           label="Title"
           name="title"
@@ -130,41 +118,73 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
         >
           <Input />
         </Form.Item>
-        <Row gutter={16}>
-          <Col span={8}>
+        <Row gutter={12}>
+          <Col span={6}>
+            <Form.Item
+              label="Interation"
+              name="interationId"
+              rules={[{ required: true, message: "Interation is required" }]}
+            >
+              <Select
+                options={interationList?.map((interation) => ({
+                  label: interation.interationName,
+                  value: interation.interationId,
+                }))}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
             <Form.Item
               label="Type"
-              name="type"
+              name="typeId"
               rules={[{ required: true, message: "Type is required" }]}
             >
-              <Select options={TYPE_OPTION} />
+              <Select
+                options={typeList?.map((type) => ({
+                  label: type.title,
+                  value: type.typeId,
+                }))}
+              />
             </Form.Item>
           </Col>
-          <Col span={8}>
-            <Form.Item label="State" name="state">
-              <Select defaultValue={"todo"} disabled options={STATE_OPTION} />
+          <Col span={6}>
+            <Form.Item label="State" name="statusId">
+              <Select
+                disabled
+                options={statusList?.map((status) => ({
+                  label: status.title,
+                  value: status.boardStatusId,
+                }))}
+              />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          <Col span={6}>
             <Form.Item
               label="Priority"
-              name="priority"
+              name="priorityId"
               rules={[{ required: true, message: "Priority is required" }]}
             >
-              <Select options={PRIORITY_OPTION} />
+              <Select
+                options={priorityList?.map((priority) => ({
+                  label: priority.title,
+                  value: priority.levelId,
+                }))}
+              />
             </Form.Item>
           </Col>
         </Row>
         <Form.Item
           label="Assign To"
-          name="asignTo"
+          name="assignTo"
           rules={[{ required: true, message: "Assign To is required" }]}
         >
           <Select
             size="large"
             allowClear
-            mode="multiple"
-            options={MEMBER_OPTION}
+            options={memberList?.map((member) => ({
+              label: member.fullname,
+              value: member.memberId,
+            }))}
           />
         </Form.Item>
         <Row gutter={16}>
@@ -174,7 +194,14 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
               name="startDate"
               rules={[{ required: true, message: "Start Date is required" }]}
             >
-              <DatePicker className="w-full" />
+              <DatePicker
+                className="w-full"
+                disabledDate={(current) =>
+                  current &&
+                  form.getFieldValue("dueDate") &&
+                  dayjs(form.getFieldValue("dueDate")).isBefore(current)
+                }
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -183,7 +210,14 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
               name="dueDate"
               rules={[{ required: true, message: "Due Date is required" }]}
             >
-              <DatePicker className="w-full" />
+              <DatePicker
+                className="w-full"
+                disabledDate={(current) =>
+                  current &&
+                  form.getFieldValue("startDate") &&
+                  dayjs(form.getFieldValue("startDate")).isAfter(current)
+                }
+              />
             </Form.Item>
           </Col>
         </Row>

@@ -33,6 +33,36 @@ const deleteRole = (id: string) =>
     method: HTTP_METHODS.DELETE,
   }).then((resp) => resp.data);
 
+const getGrantListBySchemaId = ({
+  data,
+  schemaId,
+}: {
+  schemaId: string;
+  data: {
+    permissionIds: string[];
+  };
+}) =>
+  axiosClient({
+    url: `/api/role-management/permission/roles/grant/${schemaId}`,
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
+const getRevokeListBySchemaId = ({
+  data,
+  schemaId,
+}: {
+  schemaId: string;
+  data: {
+    permissionIds: string[];
+  };
+}) =>
+  axiosClient({
+    url: `/api/role-management/permission/roles/revoke/${schemaId}`,
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
 export const roleApi = {
   getAdminRoles,
   getAdminRolesKey: "getAdminRolesKey",
@@ -42,4 +72,8 @@ export const roleApi = {
   updateRoleKey: "updateRoleKey",
   deleteRole,
   deleteRoleKey: "deleteRoleKey",
+  getGrantListBySchemaId,
+  getGrantListBySchemaIdKey: "getGrantListBySchemaIdKey",
+  getRevokeListBySchemaId,
+  getRevokeListBySchemaIdKey: "getRevokeListBySchemaIdKey",
 };

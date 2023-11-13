@@ -61,6 +61,12 @@ const revokePermission = ({ id, data }: IRevokePermissionRequest) =>
     data,
   }).then((resp) => resp.data);
 
+const deleteSchema = (id: string) =>
+  axiosClient({
+    url: `/api/schema-management/system/schema/${id}`,
+    method: HTTP_METHODS.DELETE,
+  }).then((resp) => resp.data);
+
 export const schemaApi = {
   getAdminSchemas,
   getAdminSchemasKey: "getAdminSchemasKey",
@@ -74,4 +80,6 @@ export const schemaApi = {
   grantPermissionKey: "grantPermissionKey",
   revokePermission,
   revokePermissionKey: "revokePermissionKey",
+  deleteSchema,
+  deleteSchemaKey: "deleteSchemaKey",
 };

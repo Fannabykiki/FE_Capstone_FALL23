@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { toast } from "react-toastify";
 
-import { ISchema } from "@/interfaces/schema";
+import { IAdminRevokePermissionList } from "@/interfaces/role";
 import { schemaApi } from "@/utils/api/schema";
+import { ISchema } from "@/interfaces/schema";
 
 interface Props {
   isOpen: boolean;
@@ -23,6 +24,11 @@ const RevokePermission = ({
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
   const queryClient = useQueryClient();
+
+  const data = queryClient.getQueryData<IAdminRevokePermissionList[]>([
+    "revoke-list",
+    { id: schemaId },
+  ]);
 
   const { mutate: revokePermission, isLoading } = useMutation({
     mutationKey: [schemaApi.revokePermissionKey],
@@ -97,11 +103,9 @@ const RevokePermission = ({
             <Space direction="vertical" className="w-full">
               <Checkbox.Group
                 className="flex-col"
-                options={permission?.roles.map((role) => ({
+                options={data?.map((role) => ({
                   label: role.roleName,
                   value: role.roleId,
-                  disabled:
-                    role.roleName === "PO" || role.roleName === "System Admin",
                 }))}
                 onChange={onChange}
               />

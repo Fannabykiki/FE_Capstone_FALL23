@@ -53,7 +53,7 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
   const onSubmit = (values: RoleInputType) => {
     if (roleEdit) {
       updateRole({
-        id: roleEdit.role.roleId,
+        id: roleEdit.roleId,
         data: values,
       });
     } else {
@@ -69,8 +69,8 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
   useEffect(() => {
     if (!isOpen) return;
     form.setFields([
-      { name: "roleName", value: roleEdit?.role.roleName },
-      { name: "description", value: roleEdit?.role.description },
+      { name: "roleName", value: roleEdit?.roleName },
+      { name: "description", value: roleEdit?.description },
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, roleEdit]);

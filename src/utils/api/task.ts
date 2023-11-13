@@ -1,6 +1,14 @@
 import axiosClient from "./axios-client";
 import { HTTP_METHODS } from "../constants";
-import { ITask, ITaskStatus, ISubtask } from "@/interfaces/task";
+import {
+  ITask,
+  ICreateTaskRequest,
+  ITaskStatus,
+  ISubtask,
+  IGetTypeListResponse,
+  IGetStatusListResponse,
+  IGetPriorityListResponse,
+} from "@/interfaces/task";
 
 const getKanbanTasks = (
   signal: AbortSignal | undefined,
@@ -48,9 +56,9 @@ const getTaskTypes = (): Promise<any[]> => {
   }).then((resp) => resp.data);
 };
 
-const createTask = (task: ITask): Promise<ITask> => {
+const createTask = (task: ICreateTaskRequest): Promise<ITask> => {
   return axiosClient({
-    url: "/api/task-management/task",
+    url: "/api/task-management/tasks",
     method: HTTP_METHODS.POST,
     data: task,
   }).then((resp) => resp.data);
@@ -79,6 +87,40 @@ const deleteTask = (taskId: string): Promise<void> => {
   }).then((resp) => resp.data);
 };
 
+const getTaskPriority = (
+  signal: AbortSignal | undefined
+): Promise<IGetPriorityListResponse[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/priority",
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+};
+
+const getTaskStatus = (
+  signal: AbortSignal | undefined,
+  projectId: string | undefined
+): Promise<IGetStatusListResponse[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/status",
+    method: HTTP_METHODS.GET,
+    signal,
+    params: {
+      projectId,
+    },
+  }).then((resp) => resp.data);
+};
+
+const getTaskType = (
+  signal: AbortSignal | undefined
+): Promise<IGetTypeListResponse[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/type",
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+};
+
 export const taskApi = {
   getKanbanTasks,
   getKanbanTasksKey: "taskGetKanbanTasks",
@@ -98,4 +140,10 @@ export const taskApi = {
   updateTaskKey: "taskUpdateTask",
   deleteTask,
   deleteTaskKey: "taskDeleteTask",
+  getTaskPriority,
+  getTaskPriorityKey: "taskgetTaskPriorityKey",
+  getTaskStatus,
+  getTaskStatusKey: "taskgetTaskStatusKey",
+  getTaskType,
+  getTaskTypeKey: "taskgetTaskTypeKey",
 };

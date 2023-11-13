@@ -32,10 +32,10 @@ const RoleDetail = ({ isOpen, role, handleClose }: Props) => {
           className="flex justify-center w-full gap-0"
         >
           <Typography.Text>
-            <b>Name:</b> {role?.role.roleName}
+            <b>Name:</b> {role?.roleName}
           </Typography.Text>
           <Typography.Text>
-            <b>Description:</b> {role?.role.description}
+            <b>Description:</b> {role?.description}
           </Typography.Text>
         </Space>
         <Table

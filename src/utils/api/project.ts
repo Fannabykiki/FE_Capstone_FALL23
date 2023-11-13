@@ -1,6 +1,7 @@
 import {
   ICreateMemberRolePayload,
   ICreateProjectPayload,
+  IInteration,
   IProject,
   IProjectMember,
   IUpdateInfoProjectPayload,
@@ -132,6 +133,36 @@ const getAdminUsersAnalyzationByUserId = async (
     signal,
   }).then((resp) => resp.data);
 
+const getWorkItemListByProjectId = async (
+  signal: AbortSignal | undefined,
+  projectId: string | undefined
+) =>
+  axiosClient({
+    url: `/api/project-management/projects/tasks/${projectId}`,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
+const getListUserInProjectByProjectId = (
+  signal: AbortSignal | undefined,
+  projectId: string | undefined
+): Promise<IProjectMember[]> =>
+  axiosClient({
+    url: `/api/project-management/projects/${projectId}`,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
+const getLisInterationInProjectByProjectId = (
+  signal: AbortSignal | undefined,
+  projectId: string | undefined
+): Promise<IInteration[]> =>
+  axiosClient({
+    url: `/api/project-management/projects/interation/${projectId}`,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -155,6 +186,13 @@ export const projectApi = {
   updatePrivacyKey: "projectUpdatePrivacy",
   restore,
   restoreKey: "projectRestore",
+  getWorkItemListByProjectId,
+  getWorkItemListByProjectIdKey: "getWorkItemListByProjectIdKey",
+  getListUserInProjectByProjectId,
+  getListUserInProjectByProjectIdKey: "getListUserInProjectByProjectIdKey",
+  getLisInterationInProjectByProjectId,
+  getLisInterationInProjectByProjectIdKey:
+    "getLisInterationInProjectByProjectIdKey",
   //Admin
   getAdminProjects,
   getAdminProjectsKey: "getAdminProjectsKey",

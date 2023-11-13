@@ -21,70 +21,34 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import CreateWorkitem from "@/features/Project/WorkItem/Modal/CreateWorkitem";
 import { useState } from "react";
-
-const TYPE_OPTION = [
-  {
-    label: (
-      <>
-        <CheckSquareFilled className="text-yellow-600 mr-2" /> Task
-      </>
-    ),
-    value: "task",
-  },
-  {
-    label: (
-      <>
-        <BugFilled className="text-red-500 mr-2" /> Bug
-      </>
-    ),
-    value: "bug",
-  },
-];
-
-const STATE_OPTION = [
-  {
-    label: "To do",
-    value: "todo",
-  },
-  {
-    label: "Doing",
-    value: "doing",
-  },
-  {
-    label: "Done",
-    value: "done",
-  },
-  {
-    label: "Close",
-    value: "close",
-  },
-];
-
-const ITERATION_OPTION = [
-  {
-    label: "Iteration 1",
-    value: "1",
-  },
-  {
-    label: "Iteration 2",
-    value: "2",
-  },
-  {
-    label: "Iteration 3",
-    value: "3",
-  },
-  {
-    label: "Iteration 4",
-    value: "4",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { projectApi } from "@/utils/api/project";
+import { IWorkItemList } from "@/interfaces/project";
 
 export default function WorkItem() {
   const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
   const [isCardVisible, setIsCardVisible] = useState(false);
+
+  const { projectId } = useParams();
+
+  const { data, isLoading } = useQuery<IWorkItemList[]>({
+    queryKey: [projectApi.getWorkItemListByProjectIdKey],
+
+    queryFn: async ({ signal }) => {
+      const data: IWorkItemList[] = await projectApi.getWorkItemListByProjectId(
+        signal,
+        projectId
+      );
+      return data.map((user) => ({
+        ...user,
+        assignTo: { ...user.assignTo, avatarColor: randomBgColor() },
+      }));
+    },
+    enabled: Boolean(projectId),
+  });
 
   const handleOpenModalCreate = () => {
     setIsModalCreateOpen(true);
@@ -110,142 +74,6 @@ export default function WorkItem() {
       return prev;
     });
   };
-
-  const columns: ColumnsType<any> = [
-    {
-      dataIndex: "index",
-      width: "5%",
-      render: (_row, _record, index) => index + 1,
-    },
-    {
-      title: "Title",
-      dataIndex: "title",
-      width: "40%",
-      render: (title, record) => {
-        let Component = null;
-
-        switch (record.itemType) {
-          case "Bug":
-            Component = <BugFilled className="text-red-500" />;
-            break;
-          case "Task":
-            Component = <CheckSquareFilled className="text-yellow-600" />;
-            break;
-          default:
-            break;
-        }
-
-        return (
-          <Row align="middle">
-            {Component}
-            <Typography.Text className="ml-2 font-medium text-[#3394D6]">
-              {title}
-            </Typography.Text>
-          </Row>
-        );
-      },
-    },
-    {
-      title: "Assign To",
-      dataIndex: "asignTo",
-      width: "15%",
-      render: (_, record) =>
-        record.manager?.userName ? (
-          <Row align="middle">
-            <Col span={5} className="flex items-center">
-              <Avatar style={{ backgroundColor: randomBgColor() }}>
-                {record.manager?.userName?.charAt(0).toUpperCase()}
-              </Avatar>
-            </Col>
-            <Col span={19}>
-              <Typography.Title level={5} className="!m-0">
-                {record.manager?.userName}
-              </Typography.Title>
-            </Col>
-          </Row>
-        ) : null,
-    },
-    {
-      title: "State",
-      dataIndex: "state",
-      width: "10%",
-      render: (state) => (
-        <Row align="middle" className="gap-2">
-          <Typography.Text
-            className={`px-2 py-1 rounded font-medium ${
-              state === "To do"
-                ? "text-gray-600 bg-gray-300"
-                : state === "Doing"
-                ? "text-blue-700 bg-blue-100"
-                : state === "Done"
-                ? "text-green-500 bg-[#43ff641a]"
-                : state === "Close"
-                ? "text-red-500 bg-[#ef44441a]"
-                : ""
-            }`}
-          >
-            {state}
-          </Typography.Text>
-        </Row>
-      ),
-    },
-    {
-      title: "Area Path",
-      dataIndex: "areaPath",
-      width: "10%",
-    },
-    {
-      title: "Iteration",
-      dataIndex: "iteration",
-      width: "10%",
-    },
-    {
-      title: "Created Date",
-      dataIndex: "createdDate",
-      width: "10%",
-      render: (createdDate) =>
-        createdDate ? dayjs(createdDate).format("DD/MM/YYYY") : createdDate,
-    },
-  ];
-
-  const data = [
-    {
-      itemType: "Bug",
-      title: "Bug",
-      asignTo: "Phan Luong Nam",
-      state: "To do",
-      areaPath: "MyMemo",
-      iteration: "iteration 1",
-      createdDate: new Date(),
-    },
-    {
-      itemType: "Task",
-      title: "Task",
-      asignTo: "Phan Luong Nam",
-      state: "Doing",
-      areaPath: "MyMemo",
-      iteration: "iteration 1",
-      createdDate: new Date(),
-    },
-    {
-      itemType: "Task",
-      title: "Task",
-      asignTo: "Phan Luong Nam",
-      state: "Done",
-      areaPath: "MyMemo",
-      iteration: "iteration 1",
-      createdDate: new Date(),
-    },
-    {
-      itemType: "Task",
-      title: "Task",
-      asignTo: "Phan Luong Nam",
-      state: "Close",
-      areaPath: "MyMemo",
-      iteration: "iteration 1",
-      createdDate: new Date(),
-    },
-  ];
 
   return (
     <>
@@ -312,6 +140,7 @@ export default function WorkItem() {
         <Table
           rowKey="projectId"
           columns={columns}
+          loading={isLoading}
           dataSource={pagination(
             data,
             parseInt(searchParams.get("page") || "1"),
@@ -322,7 +151,7 @@ export default function WorkItem() {
             current: parseInt(searchParams.get("page") || "1"),
             pageSize: parseInt(searchParams.get("limit") || "10"),
             pageSizeOptions: [10, 20, 50, 100],
-            total: 1,
+            total: data?.length,
             onChange: onChangePage,
             className: "px-5 !mb-0",
           }}
@@ -331,3 +160,163 @@ export default function WorkItem() {
     </>
   );
 }
+
+const columns: ColumnsType<IWorkItemList> = [
+  {
+    dataIndex: "index",
+    width: "5%",
+    align: "center",
+    render: (_row, _record, index) => index + 1,
+  },
+  {
+    title: "Title",
+    dataIndex: "title",
+    width: "30%",
+  },
+  {
+    title: "Type",
+    dataIndex: "taskType",
+    width: "10%",
+    render: (type) => {
+      let Component = null;
+
+      switch (type) {
+        case "Bug":
+          Component = <BugFilled className="text-red-500" />;
+          break;
+        case "Task":
+          Component = <CheckSquareFilled className="text-yellow-600" />;
+          break;
+        default:
+          break;
+      }
+
+      return (
+        <Row align="middle">
+          {Component}
+          <Typography.Text className="ml-2 font-medium text-[#3394D6]">
+            {type}
+          </Typography.Text>
+        </Row>
+      );
+    },
+  },
+  {
+    title: "Assign To",
+    dataIndex: "assignTo",
+    width: "15%",
+    render: (_, record) =>
+      record.assignTo?.userName ? (
+        <Row align="middle">
+          <Col span={5} className="flex items-center">
+            <Avatar style={{ backgroundColor: record.assignTo.avatarColor }}>
+              {record.assignTo?.userName?.charAt(0).toUpperCase()}
+            </Avatar>
+          </Col>
+          <Col span={19}>
+            <Typography.Title level={5} className="!m-0">
+              {record.assignTo?.userName}
+            </Typography.Title>
+          </Col>
+        </Row>
+      ) : null,
+  },
+  {
+    title: "State",
+    dataIndex: "taskStatus",
+    width: "10%",
+    render: (state) => (
+      <Row align="middle" className="gap-2">
+        <Typography.Text
+          className={`px-2 py-1 rounded font-medium ${
+            state === "To do"
+              ? "text-gray-600 bg-gray-300"
+              : state === "Doing"
+              ? "text-blue-700 bg-blue-100"
+              : state === "Done"
+              ? "text-green-500 bg-[#43ff641a]"
+              : state === "Close"
+              ? "text-red-500 bg-[#ef44441a]"
+              : ""
+          }`}
+        >
+          {state}
+        </Typography.Text>
+      </Row>
+    ),
+  },
+  {
+    title: "Priority",
+    dataIndex: "priority",
+    width: "10%",
+  },
+  {
+    title: "Interation",
+    dataIndex: "interation",
+    width: "10%",
+  },
+  {
+    title: "Created Date",
+    dataIndex: "createTime",
+    width: "10%",
+    render: (createTime) =>
+      createTime ? dayjs(createTime).format("DD/MM/YYYY") : createTime,
+  },
+];
+
+const TYPE_OPTION = [
+  {
+    label: (
+      <>
+        <CheckSquareFilled className="text-yellow-600 mr-2" /> Task
+      </>
+    ),
+    value: "task",
+  },
+  {
+    label: (
+      <>
+        <BugFilled className="text-red-500 mr-2" /> Bug
+      </>
+    ),
+    value: "bug",
+  },
+];
+
+const STATE_OPTION = [
+  {
+    label: "To do",
+    value: "todo",
+  },
+  {
+    label: "Doing",
+    value: "doing",
+  },
+  {
+    label: "Done",
+    value: "done",
+  },
+  {
+    label: "Close",
+    value: "close",
+  },
+];
+
+const ITERATION_OPTION = [
+  {
+    label: "Iteration 1",
+    value: "1",
+  },
+  {
+    label: "Iteration 2",
+    value: "2",
+  },
+  {
+    label: "Iteration 3",
+    value: "3",
+  },
+  {
+    label: "Iteration 4",
+    value: "4",
+  },
+];
