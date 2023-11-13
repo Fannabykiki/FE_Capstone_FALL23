@@ -1,5 +1,6 @@
 import { useAuthContext } from "@/context/Auth";
 import { userApi } from "@/utils/api/user";
+import { handleValidatePassword } from "@/utils/common";
 import {
   REGEX_CHARACTER,
   REGEX_NUMBER,
@@ -53,31 +54,6 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
     }
   };
 
-  const handleValidatePassword = async (
-    _: RuleObject,
-    password: string,
-    callback: (error?: string | undefined) => void
-  ) => {
-    switch (true) {
-      case password.length < 8:
-        callback("Password must be equal or longer than 8 characters");
-        break;
-      case !REGEX_NUMBER.test(password):
-        callback("Password must have atleast one number");
-        break;
-      case !REGEX_SPECIAL_CHARACTER.test(password):
-        callback("Password must have atleast one special character");
-        break;
-      case !REGEX_CHARACTER.test(password):
-        callback(
-          "Password must have atleast one upper and lower case character"
-        );
-        break;
-      default:
-        break;
-    }
-  };
-
   return (
     <>
       <Modal
@@ -114,9 +90,7 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
             rules={[
               {
                 required: true,
-              },
-              {
-                validator: handleValidatePassword,
+                validator: (_, password) => handleValidatePassword(password),
               },
             ]}
           >

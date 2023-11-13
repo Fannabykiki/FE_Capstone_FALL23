@@ -4,6 +4,7 @@ import { Layout } from "antd";
 import AdminDashboardSider from "./AdminSider";
 import UserHeader from "./Header";
 import UserSider from "./Sider";
+import Footer from "./Footer";
 
 interface IProps {
   isAdmin?: boolean;
@@ -20,6 +21,7 @@ export default function UserLayout({ isAdmin }: IProps) {
             <div className="p-8 flex-1 overflow-y-auto">
               <Outlet />
             </div>
+            <Footer />
           </Layout.Content>
           {/* <DashboardFooter /> */}
         </Layout>

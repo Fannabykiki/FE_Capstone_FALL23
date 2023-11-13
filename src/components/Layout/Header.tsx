@@ -1,4 +1,4 @@
-import { Badge, Breadcrumb, Layout, Typography } from "antd";
+import { Badge, Breadcrumb, Layout, Popover, Typography } from "antd";
 import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import {
   generatePath,
@@ -12,6 +12,7 @@ import UserMenu from "../UserMenu";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { paths } from "@/routers/paths";
 import { classNames, getPathSegments } from "@/utils/common";
+import Notification from "@/components/Notifications/Notification";
 
 interface RouteObj {
   [key: string]: string;
@@ -80,13 +81,16 @@ export default function Header() {
         items={breadcrumbItems}
       />
       <div className="flex gap-x-6 items-center">
-        <Badge
-          count={11}
-          overflowCount={10}
-          className="cursor-pointer select-none"
-        >
-          <BellOutlined className="text-2xl" />
-        </Badge>
+        <Popover content={<Notification />} placement="bottom" trigger="click">
+          <Badge
+            count={11}
+            overflowCount={10}
+            className="cursor-pointer select-none"
+          >
+            <BellOutlined className="text-2xl" />
+          </Badge>
+        </Popover>
+
         <UserMenu>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2 cursor-pointer">
