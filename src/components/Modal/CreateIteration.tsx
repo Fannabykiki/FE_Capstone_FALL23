@@ -1,12 +1,11 @@
-import useListProjectOfUser from "@/hooks/useListProjectOfUser";
-import {
-  EProjectPrivacyStatusLabel,
-  ICreateProjectPayload,
-} from "@/interfaces/project";
-import { projectApi } from "@/utils/api/project";
+import { ICreateIterationPayload } from "@/interfaces/iteration";
+import { paths } from "@/routers/paths";
+import { iterationApi } from "@/utils/api/iteration";
 import { useMutation } from "@tanstack/react-query";
-import { Col, DatePicker, Form, Input, Modal, Row, Switch } from "antd";
+import { Col, DatePicker, Form, Input, Modal, Row } from "antd";
 import dayjs from "dayjs";
+import { useLayoutEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -22,22 +21,28 @@ export default function CreateIteration({ open, onClose }: Props) {
     endDate: dayjs(),
   };
 
-  const { refetchProjects } = useListProjectOfUser();
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    if (!projectId) {
+      navigate(paths.user);
+    }
+  }, [projectId, navigate]);
 
   const { mutate: createProject, isLoading } = useMutation({
-    mutationFn: projectApi.create,
-    mutationKey: [projectApi.createKey],
+    mutationFn: iterationApi.create,
+    mutationKey: [iterationApi.createKey],
     onSuccess: (_, variables) => {
-      toast.success(`Create project '${variables.projectName}' succeed`);
-      refetchProjects();
+      toast.success(`Create Iteration '${variables.interationName}' succeed`);
       onClose();
     },
   });
 
-  const onCreateProject = async () => {
+  const onCreate = async () => {
     try {
       const values = await form.validateFields();
-      createProject(values);
+      createProject({ ...values, projectId });
     } catch (error) {
       console.error("Validation Failed:", error);
     }
@@ -46,47 +51,28 @@ export default function CreateIteration({ open, onClose }: Props) {
   return (
     <Modal
       open={open}
-      onOk={onCreateProject}
+      onOk={onCreate}
       okText="Create"
       okButtonProps={{ loading: isLoading }}
       onCancel={onClose}
-      title="Create new Project"
+      title="Create new Iteration"
     >
-      <Form<ICreateProjectPayload>
+      <Form<ICreateIterationPayload>
         form={form}
         initialValues={initialValues}
         layout="vertical"
       >
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="projectName"
-              label="Name"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter the project name",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="privacyStatus"
-              label="Privacy"
-              valuePropName="checked"
-            >
-              <Switch
-                checkedChildren={EProjectPrivacyStatusLabel.Public}
-                unCheckedChildren={EProjectPrivacyStatusLabel.Private}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Form.Item name="description" label="Description">
-          <Input.TextArea />
+        <Form.Item
+          name="interationName"
+          label="Name"
+          rules={[
+            {
+              required: true,
+              message: "Please enter the iteration name",
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
         <Row gutter={16}>
           <Col span={12}>
@@ -129,8 +115,6 @@ export default function CreateIteration({ open, onClose }: Props) {
             </Form.Item>
           </Col>
         </Row>
-        {/* <Form.Item hidden name="createAt" />
-        <Form.Item hidden name="createBy" /> */}
       </Form>
     </Modal>
   );

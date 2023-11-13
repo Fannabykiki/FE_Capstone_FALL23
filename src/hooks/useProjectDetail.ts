@@ -1,3 +1,4 @@
+import { iterationApi } from "@/utils/api/iteration";
 import { projectApi } from "@/utils/api/project";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
@@ -10,6 +11,17 @@ export default function useProjectDetail(projectId: string | undefined) {
     queryKey: [projectApi.getInfoKey, projectId],
     queryFn: ({ signal }) => projectApi.getInfo(signal, projectId!),
     enabled: Boolean(projectId),
+  });
+
+  const {
+    data: iterations,
+    refetch: refetchIterations,
+    isLoading: isGettingIterations,
+  } = useQuery({
+    queryKey: [iterationApi.getListKey, projectId],
+    queryFn: ({ signal }) => iterationApi.getList(signal, projectId!),
+    enabled: Boolean(projectId),
+    placeholderData: [],
   });
 
   const { mutate: remove, isLoading: isRemoving } = useMutation({
@@ -25,13 +37,16 @@ export default function useProjectDetail(projectId: string | undefined) {
 
   return {
     detail,
-    isGettingDetail,
+    iterations,
     actions: {
+      isGettingDetail,
       remove,
       isRemoving,
       updatePrivacyStatus,
       isUpdatingPrivacyStatus,
       refetchDetail,
+      refetchIterations,
+      isGettingIterations,
     },
   };
 }

@@ -1,8 +1,10 @@
+import { ITask } from "./task";
+
 export interface ICreateIterationPayload {
-  iterationName: string;
+  interationName: string;
   startDate: Date;
   endDate: Date;
-  boardId: string;
+  projectId: string;
 }
 
 export interface IUpdateIterationPayload {
@@ -13,9 +15,9 @@ export interface IUpdateIterationPayload {
 export interface IIteration {
   interationId: string;
   interationName: string;
+  status: string;
   startDate: Date;
   endDate: Date;
   boardId: string;
-  statusId: string;
-  workItemResponses: [];
+  workItemResponses: ITask[];
 }

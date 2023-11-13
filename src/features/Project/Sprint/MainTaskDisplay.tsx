@@ -2,7 +2,6 @@ import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { DATE_FORMAT } from "@/utils/constants";
 import {
   CommentOutlined,
-  DoubleLeftOutlined,
   PaperClipOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -16,12 +15,11 @@ import {
   Droppable,
   DroppableProps,
 } from "react-beautiful-dnd";
-import { Task } from ".";
 import TaskDraggableDisplay from "./TaskDraggableDisplay";
-import { ITaskStatus } from "@/interfaces/task";
+import { ITask, ITaskStatus } from "@/interfaces/task";
 
 interface Props {
-  task: Task;
+  task: ITask;
   isCollapsed?: boolean;
   statusList: ITaskStatus[];
 }
@@ -46,12 +44,12 @@ export default function MainTaskDisplay({
           <div
             className={classNames(
               "w-fit px-2 py-1 rounded-full text-xs",
-              calcTaskDueDateColor(task.dueDate)
+              calcTaskDueDateColor(task.endDate)
             )}
           >
-            <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
+            <span>{dayjs(task.endDate).format(DATE_FORMAT)}</span>
           </div>
-          <p className="mb-0">{task.content}</p>
+          <p className="mb-0">{task.title}</p>
           <div className="flex-grow flex justify-end items-center gap-x-2">
             <div>
               <PaperClipOutlined /> 0
@@ -81,7 +79,7 @@ export default function MainTaskDisplay({
             <div className="flex flex-col">
               <DroppableComponent
                 key={status.boardStatusId}
-                droppableId={`${task.id}-${status.boardStatusId}`}
+                droppableId={`${task.taskId}/${status.boardStatusId}`}
               >
                 {(provided, snapshot) => (
                   <div
@@ -110,18 +108,18 @@ export default function MainTaskDisplay({
 }
 
 interface SubTasksProps {
-  task: Task;
+  task: ITask;
   status: ITaskStatus;
 }
 
 const SubTasks = ({ task, status }: SubTasksProps) => (
   <>
-    {task.subtasks
+    {(task.tasks || [])
       .filter((subtask) => subtask.statusId === status.boardStatusId)
       .map((subtask, index) => (
         <DraggableComponent
-          key={subtask.id}
-          draggableId={subtask.id}
+          key={subtask.taskId}
+          draggableId={subtask.taskId}
           index={index}
         >
           {(provided, snapshot) => (
