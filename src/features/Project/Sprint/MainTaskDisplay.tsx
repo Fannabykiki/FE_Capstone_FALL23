@@ -18,11 +18,12 @@ import {
 } from "react-beautiful-dnd";
 import { Task } from ".";
 import TaskDraggableDisplay from "./TaskDraggableDisplay";
+import { ITaskStatus } from "@/interfaces/task";
 
 interface Props {
   task: Task;
-  taskIndex: number;
   isCollapsed?: boolean;
+  statusList: ITaskStatus[];
 }
 
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
@@ -30,8 +31,8 @@ const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 
 export default function MainTaskDisplay({
   task,
-  taskIndex,
-  isCollapsed = true,
+  isCollapsed = false,
+  statusList,
 }: Props) {
   if (isCollapsed) {
     return (
@@ -69,11 +70,6 @@ export default function MainTaskDisplay({
       <div>
         <div className="flex w-full gap-x-4">
           <div className="p-2">
-            {taskIndex === 0 && (
-              <h4 className="select-none cursor-pointer">
-                <DoubleLeftOutlined className="rotate-90" /> Collapse all
-              </h4>
-            )}
             <div className={classNames("w-56 h-fit")}>
               <TaskDraggableDisplay task={task} />
             </div>
@@ -81,12 +77,11 @@ export default function MainTaskDisplay({
               New task
             </Button>
           </div>
-          {["todo", "inProgress", "review", "done"].map((status, index) => (
+          {statusList.map((status) => (
             <div className="flex flex-col">
-              {taskIndex === 0 && <h4 className="ml-2">{status}</h4>}
               <DroppableComponent
-                key={index}
-                droppableId={`${task.id}-${status}`}
+                key={status.boardStatusId}
+                droppableId={`${task.id}-${status.boardStatusId}`}
               >
                 {(provided, snapshot) => (
                   <div
@@ -116,13 +111,13 @@ export default function MainTaskDisplay({
 
 interface SubTasksProps {
   task: Task;
-  status: string;
+  status: ITaskStatus;
 }
 
 const SubTasks = ({ task, status }: SubTasksProps) => (
   <>
     {task.subtasks
-      .filter((subtask) => subtask.status === status)
+      .filter((subtask) => subtask.statusId === status.boardStatusId)
       .map((subtask, index) => (
         <DraggableComponent
           key={subtask.id}

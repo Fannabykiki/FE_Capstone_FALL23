@@ -6,6 +6,11 @@ import {
   DragDropContextProps,
 } from "react-beautiful-dnd";
 import MainTaskDisplay from "./MainTaskDisplay";
+import { DoubleLeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { taskApi } from "@/utils/api/task";
+import { Button, Typography } from "antd";
 
 // Helper functions to reorder and move subtasks
 const reorderSubtasks = (
@@ -113,6 +118,19 @@ const TaskBoard = () => {
   ];
 
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const { projectId } = useParams();
+
+  const { data: statusList } = useQuery({
+    queryKey: [taskApi.getTaskStatusesKey, projectId],
+    queryFn: ({ signal }) => taskApi.getTaskStatuses(signal, projectId!),
+    initialData: [],
+  });
+
+  const { data } = useQuery({
+    queryKey: [taskApi.getKanbanTasksKey, projectId],
+    queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
+  });
+  console.log(data);
 
   const onDragEnd: OnDragEndResponder = (result) => {
     const { source, destination, draggableId } = result;
@@ -161,11 +179,36 @@ const TaskBoard = () => {
   };
 
   return (
-    <DragDropContextComponent onDragEnd={onDragEnd}>
-      {tasks.map((task, idx) => (
-        <MainTaskDisplay task={task} taskIndex={idx} key={task.id} />
-      ))}
-    </DragDropContextComponent>
+    <>
+      <div className="flex items-center justify-between">
+        <Typography.Title>Sprints</Typography.Title>
+        <Button icon={<PlusOutlined />} type="primary">
+          New Sprint
+        </Button>
+      </div>
+      <DragDropContextComponent onDragEnd={onDragEnd}>
+        <div>
+          <div className="flex w-full gap-x-4">
+            <div className="p-2">
+              <h4 className="select-none cursor-pointer w-56">
+                <DoubleLeftOutlined className="rotate-90" /> Collapse all
+              </h4>
+            </div>
+            {statusList.map((status) => (
+              <div
+                className="basis-[250px] rounded p-2 shrink-0"
+                key={status.boardStatusId}
+              >
+                <h4>{status.title}</h4>
+              </div>
+            ))}
+          </div>
+        </div>
+        {tasks.map((task) => (
+          <MainTaskDisplay task={task} key={task.id} statusList={statusList} />
+        ))}
+      </DragDropContextComponent>
+    </>
   );
 };
 

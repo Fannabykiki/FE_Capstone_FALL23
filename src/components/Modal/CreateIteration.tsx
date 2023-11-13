@@ -5,15 +5,7 @@ import {
 } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useMutation } from "@tanstack/react-query";
-import {
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Switch,
-} from "antd";
+import { Col, DatePicker, Form, Input, Modal, Row, Switch } from "antd";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
@@ -25,11 +17,9 @@ interface Props {
 export default function CreateIteration({ open, onClose }: Props) {
   const [form] = Form.useForm();
   const initialValues = {
-    projectName: "",
-    description: "",
+    interationName: "",
     startDate: dayjs(),
     endDate: dayjs(),
-    privacyStatus: true,
   };
 
   const { refetchProjects } = useListProjectOfUser();
