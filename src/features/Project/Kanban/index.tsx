@@ -13,7 +13,7 @@ export enum TaskType {
   Bug = "Bug",
   Task = "Task",
 }
-const TaskBoard = () => {
+const Kanban = () => {
   const [selectedIteration, setSelectedIteration] = useState<
     IIteration | undefined
   >(undefined);
@@ -77,4 +77,4 @@ const TaskBoard = () => {
   );
 };
 
-export default TaskBoard;
+export default Kanban;

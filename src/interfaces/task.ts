@@ -1,5 +1,22 @@
 export interface ITask {
-  // Define the properties of a task
+  taskId: string;
+  title: string;
+  decription: string;
+  startDate: Date;
+  dueDate: Date;
+  expireTime: Date | null;
+  createTime: Date;
+  deleteAt: string | null;
+  isDelete: boolean | null;
+  assignTo: string;
+  createBy: string;
+  typeName: string;
+  statusName: string;
+  statusId: string;
+  typeId: string;
+  priorityName: string;
+  interationName: string;
+  subTask?: ITask[];
 }
 
 export interface ITaskStatus {
@@ -7,10 +24,6 @@ export interface ITaskStatus {
   title: string;
   boardId: string;
   baseResponse: string | null;
-}
-
-export interface ISubtask {
-  // Define the properties of a subtask
 }
 
 export interface ICreateTaskRequest {
@@ -44,4 +57,9 @@ export interface IGetStatusListResponse {
 export interface IGetTypeListResponse {
   typeId: string;
   title: string;
+}
+
+export interface IUpdateTaskPayload {
+  id: string;
+  data: ITask;
 }

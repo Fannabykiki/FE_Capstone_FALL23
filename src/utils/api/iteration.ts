@@ -1,5 +1,6 @@
 import {
   ICreateIterationPayload,
+  IIteration,
   IUpdateIterationPayload,
 } from "@/interfaces/iteration";
 import { HTTP_METHODS } from "../constants";
@@ -7,7 +8,7 @@ import axiosClient from "./axios-client";
 
 const create = async (data: ICreateIterationPayload) =>
   axiosClient({
-    url: `/api/Iteration-management`,
+    url: `/api/Iteration-management/Iteration`,
     method: HTTP_METHODS.POST,
     data,
   }).then((resp) => resp.data);
@@ -21,10 +22,10 @@ const update = ({ id, data }: IUpdateIterationPayload): Promise<any[]> =>
 
 const getList = (
   signal: AbortSignal | undefined,
-  boardId: string
-): Promise<any[]> =>
+  projectId: string
+): Promise<IIteration[]> =>
   axiosClient({
-    url: `/api/Iteration-management/Iteration/${boardId}`,
+    url: `/api/Iteration-management/Iteration/${projectId}`,
     method: HTTP_METHODS.GET,
     signal,
   }).then((resp) => resp.data);
@@ -32,7 +33,7 @@ const getList = (
 const getDetail = (
   signal: AbortSignal | undefined,
   iterationId: string
-): Promise<any[]> =>
+): Promise<IIteration> =>
   axiosClient({
     url: `/api/Iteration-management/Iteration`,
     method: HTTP_METHODS.GET,
@@ -40,9 +41,9 @@ const getDetail = (
     params: {
       iterationId,
     },
-  }).then((resp) => resp.data);
+  }).then((resp) => resp.data?.[0]);
 
-export const projectApi = {
+export const iterationApi = {
   create,
   createKey: "iterationCreate",
   update,

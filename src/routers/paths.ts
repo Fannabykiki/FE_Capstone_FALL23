@@ -18,6 +18,7 @@ export const paths = {
     trash: `/project/:projectId/trash`,
     report: `/project/:projectId/report`,
     settings: `/project/:projectId/settings`,
+    kanban: `/project/:projectId/kanban`,
   },
   admin: {
     index: "/admin",
@@ -60,6 +61,7 @@ export const userPaths = Object.assign(
       "trash",
       "report",
       "settings",
+      "kanban",
     ]),
   },
   {}

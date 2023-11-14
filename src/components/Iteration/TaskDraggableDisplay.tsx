@@ -1,20 +1,21 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { Avatar } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
-import { Task, SubTask, TaskType } from ".";
 import { faker } from "@faker-js/faker";
 import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
+import { ITask } from "@/interfaces/task";
+import { TaskType } from "./display";
 
 interface Props {
   snapshot?: DraggableStateSnapshot;
-  task: Task | SubTask;
+  task: ITask;
 }
 
 export default function TaskDraggableDisplay({ snapshot, task }: Props) {
   let taskTypeBorderColor = "border-blue-400";
-  switch (task.type) {
+  switch (task.typeName) {
     case TaskType.Main:
       taskTypeBorderColor = "border-blue-400";
       break;
@@ -45,7 +46,7 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
         >
           <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
         </div>
-        <p>{task.content}</p>
+        <p>{task.title}</p>
         <div className="flex justify-between items-center">
           <div className="flex gap-x-2">
             <div>

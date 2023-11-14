@@ -2,7 +2,6 @@ import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { DATE_FORMAT } from "@/utils/constants";
 import {
   CommentOutlined,
-  DoubleLeftOutlined,
   PaperClipOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -16,13 +15,13 @@ import {
   Droppable,
   DroppableProps,
 } from "react-beautiful-dnd";
-import { Task } from ".";
 import TaskDraggableDisplay from "./TaskDraggableDisplay";
+import { ITask, ITaskStatus } from "@/interfaces/task";
 
 interface Props {
-  task: Task;
-  taskIndex: number;
+  task: ITask;
   isCollapsed?: boolean;
+  statusList: ITaskStatus[];
 }
 
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
@@ -30,8 +29,8 @@ const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 
 export default function MainTaskDisplay({
   task,
-  taskIndex,
-  isCollapsed = true,
+  isCollapsed = false,
+  statusList,
 }: Props) {
   if (isCollapsed) {
     return (
@@ -50,7 +49,7 @@ export default function MainTaskDisplay({
           >
             <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
           </div>
-          <p className="mb-0">{task.content}</p>
+          <p className="mb-0">{task.title}</p>
           <div className="flex-grow flex justify-end items-center gap-x-2">
             <div>
               <PaperClipOutlined /> 0
@@ -69,11 +68,6 @@ export default function MainTaskDisplay({
       <div>
         <div className="flex w-full gap-x-4">
           <div className="p-2">
-            {taskIndex === 0 && (
-              <h4 className="select-none cursor-pointer">
-                <DoubleLeftOutlined className="rotate-90" /> Collapse all
-              </h4>
-            )}
             <div className={classNames("w-56 h-fit")}>
               <TaskDraggableDisplay task={task} />
             </div>
@@ -81,12 +75,11 @@ export default function MainTaskDisplay({
               New task
             </Button>
           </div>
-          {["todo", "inProgress", "review", "done"].map((status, index) => (
+          {statusList.map((status) => (
             <div className="flex flex-col">
-              {taskIndex === 0 && <h4 className="ml-2">{status}</h4>}
               <DroppableComponent
-                key={index}
-                droppableId={`${task.id}-${status}`}
+                key={status.boardStatusId}
+                droppableId={`${task.taskId}/${status.boardStatusId}`}
               >
                 {(provided, snapshot) => (
                   <div
@@ -99,7 +92,10 @@ export default function MainTaskDisplay({
                   >
                     <>
                       <div className="flex flex-col gap-y-4">
-                        <SubTasks task={task} status={status} />
+                        <SubTasks
+                          subTasks={task.subTask || []}
+                          status={status}
+                        />
                       </div>
                       {provided.placeholder}
                     </>
@@ -115,33 +111,35 @@ export default function MainTaskDisplay({
 }
 
 interface SubTasksProps {
-  task: Task;
-  status: string;
+  subTasks: ITask[];
+  status: ITaskStatus;
 }
 
-const SubTasks = ({ task, status }: SubTasksProps) => (
-  <>
-    {task.subtasks
-      .filter((subtask) => subtask.status === status)
-      .map((subtask, index) => (
-        <DraggableComponent
-          key={subtask.id}
-          draggableId={subtask.id}
-          index={index}
-        >
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              style={{
-                ...provided.draggableProps.style,
-              }}
-            >
-              <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
-            </div>
-          )}
-        </DraggableComponent>
-      ))}
-  </>
-);
+const SubTasks = ({ subTasks, status }: SubTasksProps) => {
+  return (
+    <>
+      {subTasks
+        .filter((subtask) => subtask.statusName === status.title) // TODO: change statusName to statusId
+        .map((subtask, index) => (
+          <DraggableComponent
+            key={subtask.taskId}
+            draggableId={subtask.taskId}
+            index={index}
+          >
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                style={{
+                  ...provided.draggableProps.style,
+                }}
+              >
+                <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
+              </div>
+            )}
+          </DraggableComponent>
+        ))}
+    </>
+  );
+};
