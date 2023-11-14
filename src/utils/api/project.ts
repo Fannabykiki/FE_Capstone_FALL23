@@ -7,6 +7,7 @@ import {
   IUpdateInfoProjectPayload,
   IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
+  IUpdateProjectPayload,
 } from "@/interfaces/project";
 import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
@@ -69,6 +70,13 @@ const getInfo = (
 const updateInfo = async ({ id, data }: IUpdateInfoProjectPayload) =>
   axiosClient({
     url: `/api/project-management/projects/privacy/${id}`,
+    method: HTTP_METHODS.PUT,
+    data: data,
+  }).then((resp) => resp.data);
+
+const updateProject = async ({ id, data }: IUpdateProjectPayload) =>
+  axiosClient({
+    url: `/api/project-management/projects/info/${id}`,
     method: HTTP_METHODS.PUT,
     data: data,
   }).then((resp) => resp.data);
@@ -172,6 +180,8 @@ export const projectApi = {
   getPermissionKey: "projectGetPermission",
   getDetail,
   getDetailKey: "projectGetDetail",
+  updateProject,
+  updateProjectKey: "updateProject",
   remove,
   removeKey: "projectRemove",
   getInfo,
