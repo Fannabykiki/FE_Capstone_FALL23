@@ -1,7 +1,6 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { Avatar } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
-import { faker } from "@faker-js/faker";
 import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
@@ -41,10 +40,10 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
         <div
           className={classNames(
             "w-fit px-2 py-1 rounded-full text-xs",
-            calcTaskDueDateColor(task.endDate)
+            calcTaskDueDateColor(task.dueDate)
           )}
         >
-          <span>{dayjs(task.endDate).format(DATE_FORMAT)}</span>
+          <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
         </div>
         <p>{task.title}</p>
         <div className="flex justify-between items-center">
@@ -56,7 +55,7 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
               <CommentOutlined /> 0
             </div>
           </div>
-          <Avatar src={faker.image.avatarGitHub()} />
+          <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
         </div>
       </div>
     </div>

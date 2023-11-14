@@ -52,16 +52,18 @@ const TaskBoard = () => {
           New Sprint
         </Button>
       </div>
-      <Select
-        options={(iterations || []).map((iteration) => ({
-          label: iteration.interationName,
-          value: iteration.interationId,
-        }))}
-        loading={actions.isGettingIterations}
-        value={selectedIteration?.interationId || null}
-        onChange={onChangeIteration}
-        className="mb-4"
-      />
+      <div className="flex gap-x-2 items-center mb-4">
+        <label>Select sprint:</label>
+        <Select
+          options={(iterations || []).map((iteration) => ({
+            label: iteration.interationName,
+            value: iteration.interationId,
+          }))}
+          loading={actions.isGettingIterations}
+          value={selectedIteration?.interationId || null}
+          onChange={onChangeIteration}
+        />
+      </div>
       {selectedIteration ? (
         <IterationDisplay iterationId={selectedIteration.interationId} />
       ) : (

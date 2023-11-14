@@ -2,6 +2,8 @@ import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { DATE_FORMAT } from "@/utils/constants";
 import {
   CommentOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
   PaperClipOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -44,10 +46,10 @@ export default function MainTaskDisplay({
           <div
             className={classNames(
               "w-fit px-2 py-1 rounded-full text-xs",
-              calcTaskDueDateColor(task.endDate)
+              calcTaskDueDateColor(task.dueDate)
             )}
           >
-            <span>{dayjs(task.endDate).format(DATE_FORMAT)}</span>
+            <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
           </div>
           <p className="mb-0">{task.title}</p>
           <div className="flex-grow flex justify-end items-center gap-x-2">
@@ -65,17 +67,27 @@ export default function MainTaskDisplay({
   }
   return (
     <>
-      <div>
+      <div className="border-b border-solid border-neutral-500 border-0 mb-4 pb-4">
+        <Button
+          type="text"
+          className="font-semibold"
+          icon={
+            isCollapsed ? (
+              <DoubleRightOutlined className="rotate-90" />
+            ) : (
+              <DoubleLeftOutlined className="rotate-90" />
+            )
+          }
+        >
+          {task.title}
+        </Button>
         <div className="flex w-full gap-x-4">
           <div className="p-2">
             <div className={classNames("w-56 h-fit")}>
               <TaskDraggableDisplay task={task} />
             </div>
-            <Button icon={<PlusOutlined />} className="mt-4" type="text">
-              New task
-            </Button>
           </div>
-          {statusList.map((status) => (
+          {statusList.map((status, index) => (
             <div className="flex flex-col">
               <DroppableComponent
                 key={status.boardStatusId}
@@ -102,6 +114,13 @@ export default function MainTaskDisplay({
                   </div>
                 )}
               </DroppableComponent>
+              {index === 0 && (
+                <div className="flex-grow flex flex-col items-start">
+                  <Button type="text" icon={<PlusOutlined />} className="w-fit">
+                    New sub task
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
         </div>

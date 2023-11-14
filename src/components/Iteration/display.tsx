@@ -6,14 +6,18 @@ import {
   DragDropContextProps,
 } from "react-beautiful-dnd";
 import MainTaskDisplay from "./MainTaskDisplay";
-import { DoubleLeftOutlined, DoubleRightOutlined } from "@ant-design/icons";
+import {
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { taskApi } from "@/utils/api/task";
-import { IIteration } from "@/interfaces/iteration";
 import { ITask } from "@/interfaces/task";
 import { iterationApi } from "@/utils/api/iteration";
 import useTaskActions from "@/hooks/useTaskActions";
+import { Button, Input, Select } from "antd";
 
 // Helper functions to reorder and move subtasks
 const reorderSubtasks = (
@@ -148,6 +152,22 @@ const IterationDisplay = ({ iterationId }: Props) => {
       <>
         <DragDropContextComponent onDragEnd={onDragEnd}>
           <div>
+            <div className="flex gap-x-2 mb-2">
+              <Input placeholder="Filter by task name" className="w-[200px]" />
+              <Select
+                options={statusList.map((status) => ({
+                  label: status.title,
+                  value: status.boardStatusId,
+                }))}
+                placeholder="Filter by status"
+                className="min-w-[200px]"
+              />
+              <div className="flex flex-grow justify-end">
+                <Button icon={<PlusOutlined />} className="bg-green-600 text-white">
+                  New task
+                </Button>
+              </div>
+            </div>
             <div className="flex w-full gap-x-4">
               <div className="p-2">
                 <h4
