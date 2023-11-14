@@ -51,6 +51,8 @@ export interface IProject {
   deleteAt: string | null;
   expireAt: string | null;
   privacyStatus: boolean;
+  totalTaskCreated: number;
+  totalTaskCompleted: number;
   projectMembers: IProjectMember[];
 }
 
