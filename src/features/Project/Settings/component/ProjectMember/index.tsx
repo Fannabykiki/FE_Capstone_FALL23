@@ -1,24 +1,36 @@
+import { projectApi } from "@/utils/api/project";
 import { randomBgColor } from "@/utils/random";
 import { UserDeleteOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import {
   Avatar,
   Button,
   Card,
   Col,
   Divider,
-  List,
   Row,
   Space,
   Table,
   Typography,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { useParams } from "react-router-dom";
 
 export default function ProjectMember() {
+  const { projectId } = useParams();
+
+  const { data: memberList } = useQuery({
+    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+    queryFn: async ({ signal }) =>
+      projectApi.getListUserInProjectByProjectId(signal, projectId),
+  });
+
+  const managerProject = memberList?.find((member) => member.isOwner);
+
   const columns: ColumnsType<any> = [
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "fullname",
       width: "40%",
       render: (name, record) => (
         <Row>
@@ -39,8 +51,8 @@ export default function ProjectMember() {
       ),
     },
     {
-      title: "Type",
-      dataIndex: "type",
+      title: "Role",
+      dataIndex: "roleName",
       width: "20%",
     },
     {
@@ -73,62 +85,37 @@ export default function ProjectMember() {
     },
   ];
 
-  const data = [
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-  ];
-
   return (
     <Card className="min-h-screen">
       <Typography className="text-xl font-medium">Project Manager</Typography>
-      <Space className="mt-3">
-        <Row gutter={16}>
-          <Col span={6} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>N</Avatar>
+      <div className="mt-3">
+        <Row>
+          <Col span={1} className="flex justify-center items-center">
+            {managerProject ? (
+              <Avatar style={{ backgroundColor: randomBgColor() }}>
+                {managerProject.fullname.charAt(0).toUpperCase()}
+              </Avatar>
+            ) : null}
           </Col>
-          <Col span={18}>
-            <Typography.Title level={5} className="!m-0 min-h-[24px]">
-              Phan Luong Nam
-            </Typography.Title>
-            <Typography.Text className="min-h-[19px]">
-              nam@gmail.com
-            </Typography.Text>
+          <Col className="ml-3" span={19}>
+            {managerProject ? (
+              <>
+                <Typography.Title level={5} className="!m-0 min-h-[24px]">
+                  {managerProject.fullname}
+                </Typography.Title>
+                <Typography.Text className="min-h-[19px]">
+                  {managerProject.email}
+                </Typography.Text>
+              </>
+            ) : null}
           </Col>
         </Row>
-      </Space>
+      </div>
       <Divider />
       <Typography className="text-xl font-medium mb-5">
         Project Member
       </Typography>
-      <Table dataSource={data} columns={columns} />
+      <Table dataSource={memberList} columns={columns} />
     </Card>
   );
 }

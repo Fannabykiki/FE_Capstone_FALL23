@@ -27,6 +27,13 @@ export interface IUpdateInfoProjectPayload {
   data: Partial<ICreateProjectPayload>;
 }
 
+export interface IUpdateProject
+  extends Pick<IProject, "projectName" | "description"> {}
+export interface IUpdateProjectPayload {
+  id: string;
+  data: IUpdateProject;
+}
+
 export interface ICreateMemberRolePayload {
   roleName: string;
   description: string;

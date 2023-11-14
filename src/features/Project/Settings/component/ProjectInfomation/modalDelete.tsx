@@ -10,7 +10,7 @@ interface Props {
 
 export default function DeleteProject({ isOpen, handleClose }: Props) {
   const { projectId } = useParams();
-  const { detail, actions } = useProjectDetail(projectId);
+  const { detail } = useProjectDetail(projectId);
 
   console.log(detail);
 
