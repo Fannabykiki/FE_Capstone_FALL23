@@ -171,6 +171,13 @@ const getLisInterationInProjectByProjectId = (
     signal,
   }).then((resp) => resp.data);
 
+const sendEmailInvite = (data: { email: string[]; projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/invitation",
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -203,6 +210,8 @@ export const projectApi = {
   getLisInterationInProjectByProjectId,
   getLisInterationInProjectByProjectIdKey:
     "getLisInterationInProjectByProjectIdKey",
+  sendEmailInvite,
+  sendEmailInviteKey: "sendEmailInviteKey",
   //Admin
   getAdminProjects,
   getAdminProjectsKey: "getAdminProjectsKey",
