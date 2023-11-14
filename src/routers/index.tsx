@@ -19,6 +19,7 @@ import ProjectDetail from "@/features/Project/Detail";
 import ProjectTrashBin from "@/features/Project/Trash";
 import ProjectReport from "@/features/Project/Report";
 import ProjectSprint from "@/features/Project/Sprint";
+import ProjectKanban from "@/features/Project/Kanban";
 import ProjectSettings from "@/features/Project/Settings";
 import ProjectCalendar from "@/features/Project/Calendar";
 import WorkItem from "@/features/Project/WorkItem";
@@ -60,6 +61,12 @@ export default function Routers() {
             path={paths.project.sprint}
             element={
               <PageContainer Component={ProjectSprint} title="Project Sprint" />
+            }
+          />
+          <Route
+            path={paths.project.kanban}
+            element={
+              <PageContainer Component={ProjectKanban} title="Project Kanban" />
             }
           />
           <Route

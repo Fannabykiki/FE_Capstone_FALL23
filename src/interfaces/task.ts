@@ -1,12 +1,22 @@
 export interface ITask {
   taskId: string;
   title: string;
-  taskType: string;
-  taskTypeId: string;
+  decription: string;
+  startDate: Date;
+  dueDate: Date;
+  expireTime: Date | null;
+  createTime: Date;
+  deleteAt: string | null;
+  isDelete: boolean | null;
+  assignTo: string;
+  createBy: string;
+  typeName: string;
+  statusName: string;
   statusId: string;
-  taskStatus: string;
-  endDate: Date;
-  tasks?: ITask[];
+  typeId: string;
+  priorityName: string;
+  interationName: string;
+  subTask?: ITask[];
 }
 
 export interface ITaskStatus {
@@ -47,4 +57,9 @@ export interface IGetStatusListResponse {
 export interface IGetTypeListResponse {
   typeId: string;
   title: string;
+}
+
+export interface IUpdateTaskPayload {
+  id: string;
+  data: ITask;
 }

@@ -1,5 +1,6 @@
 import { iterationApi } from "@/utils/api/iteration";
 import { projectApi } from "@/utils/api/project";
+import { taskApi } from "@/utils/api/task";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export default function useProjectDetail(projectId: string | undefined) {
@@ -23,6 +24,14 @@ export default function useProjectDetail(projectId: string | undefined) {
     enabled: Boolean(projectId),
     placeholderData: [],
   });
+
+  const { data } = useQuery({
+    queryKey: [taskApi.getKanbanTasksKey],
+    queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
+    enabled: Boolean(projectId),
+  });
+
+  console.log(data);
 
   const { mutate: remove, isLoading: isRemoving } = useMutation({
     mutationKey: [projectApi.removeKey],

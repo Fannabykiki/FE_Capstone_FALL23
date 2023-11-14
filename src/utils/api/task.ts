@@ -7,6 +7,7 @@ import {
   IGetTypeListResponse,
   IGetStatusListResponse,
   IGetPriorityListResponse,
+  IUpdateTaskPayload,
 } from "@/interfaces/task";
 import { sortBy } from "lodash";
 
@@ -15,7 +16,7 @@ const getKanbanTasks = (
   projectId: string
 ): Promise<ITask[]> => {
   return axiosClient({
-    url: "/api/task-management/kanban-task",
+    url: "/api/task-management/tasks/kanban",
     method: HTTP_METHODS.GET,
     params: { projectId },
     signal,
@@ -66,23 +67,23 @@ const createTask = (task: ICreateTaskRequest): Promise<ITask> => {
 
 const createSubtask = (subtask: ITask): Promise<ITask> => {
   return axiosClient({
-    url: "/api/task-management/subtask",
+    url: "/api/task-management/tasks/subtask",
     method: HTTP_METHODS.POST,
     data: subtask,
   }).then((resp) => resp.data);
 };
 
-const updateTask = (taskId: string, task: ITask): Promise<ITask> => {
+const updateTask = ({ id, data }: IUpdateTaskPayload): Promise<ITask> => {
   return axiosClient({
-    url: `/api/task-management/task/${taskId}`,
+    url: `/api/task-management/tasks/${id}`,
     method: HTTP_METHODS.PUT,
-    data: task,
+    data,
   }).then((resp) => resp.data);
 };
 
 const deleteTask = (taskId: string): Promise<void> => {
   return axiosClient({
-    url: `/api/task-management/task/delete/${taskId}`,
+    url: `/api/task-management/task/deletion/${taskId}`,
     method: HTTP_METHODS.PUT, // This should be DELETE if you are actually deleting the resource
   }).then((resp) => resp.data);
 };
