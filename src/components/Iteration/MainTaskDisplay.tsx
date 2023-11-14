@@ -92,7 +92,10 @@ export default function MainTaskDisplay({
                   >
                     <>
                       <div className="flex flex-col gap-y-4">
-                        <SubTasks task={task} status={status} />
+                        <SubTasks
+                          subTasks={task.subTask || []}
+                          status={status}
+                        />
                       </div>
                       {provided.placeholder}
                     </>
@@ -108,33 +111,35 @@ export default function MainTaskDisplay({
 }
 
 interface SubTasksProps {
-  task: ITask;
+  subTasks: ITask[];
   status: ITaskStatus;
 }
 
-const SubTasks = ({ task, status }: SubTasksProps) => (
-  <>
-    {(task.tasks || [])
-      .filter((subtask) => subtask.statusId === status.boardStatusId)
-      .map((subtask, index) => (
-        <DraggableComponent
-          key={subtask.taskId}
-          draggableId={subtask.taskId}
-          index={index}
-        >
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              style={{
-                ...provided.draggableProps.style,
-              }}
-            >
-              <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
-            </div>
-          )}
-        </DraggableComponent>
-      ))}
-  </>
-);
+const SubTasks = ({ subTasks, status }: SubTasksProps) => {
+  return (
+    <>
+      {subTasks
+        .filter((subtask) => subtask.statusName === status.title) // TODO: change statusName to statusId
+        .map((subtask, index) => (
+          <DraggableComponent
+            key={subtask.taskId}
+            draggableId={subtask.taskId}
+            index={index}
+          >
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                style={{
+                  ...provided.draggableProps.style,
+                }}
+              >
+                <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
+              </div>
+            )}
+          </DraggableComponent>
+        ))}
+    </>
+  );
+};

@@ -19,5 +19,5 @@ export interface IIteration {
   startDate: Date;
   endDate: Date;
   boardId: string;
-  workItemResponses: ITask[];
+  tasks: ITask[];
 }

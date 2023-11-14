@@ -1,6 +1,14 @@
 import axiosClient from "./axios-client";
 import { HTTP_METHODS } from "../constants";
-import { ITask, ITaskStatus } from "@/interfaces/task";
+import {
+  ITask,
+  ICreateTaskRequest,
+  ITaskStatus,
+  IGetTypeListResponse,
+  IGetStatusListResponse,
+  IGetPriorityListResponse,
+  IUpdateTaskPayload,
+} from "@/interfaces/task";
 import { sortBy } from "lodash";
 
 const getKanbanTasks = (
@@ -8,7 +16,7 @@ const getKanbanTasks = (
   projectId: string
 ): Promise<ITask[]> => {
   return axiosClient({
-    url: "/api/task-management/kanban-task",
+    url: "/api/task-management/tasks/kanban",
     method: HTTP_METHODS.GET,
     params: { projectId },
     signal,
@@ -49,9 +57,9 @@ const getTaskTypes = (): Promise<any[]> => {
   }).then((resp) => resp.data);
 };
 
-const createTask = (task: ITask): Promise<ITask> => {
+const createTask = (task: ICreateTaskRequest): Promise<ITask> => {
   return axiosClient({
-    url: "/api/task-management/task",
+    url: "/api/task-management/tasks",
     method: HTTP_METHODS.POST,
     data: task,
   }).then((resp) => resp.data);
@@ -59,24 +67,58 @@ const createTask = (task: ITask): Promise<ITask> => {
 
 const createSubtask = (subtask: ITask): Promise<ITask> => {
   return axiosClient({
-    url: "/api/task-management/subtask",
+    url: "/api/task-management/tasks/subtask",
     method: HTTP_METHODS.POST,
     data: subtask,
   }).then((resp) => resp.data);
 };
 
-const updateTask = (taskId: string, task: ITask): Promise<ITask> => {
+const updateTask = ({ id, data }: IUpdateTaskPayload): Promise<ITask> => {
   return axiosClient({
-    url: `/api/task-management/task/${taskId}`,
+    url: `/api/task-management/tasks/${id}`,
     method: HTTP_METHODS.PUT,
-    data: task,
+    data,
   }).then((resp) => resp.data);
 };
 
 const deleteTask = (taskId: string): Promise<void> => {
   return axiosClient({
-    url: `/api/task-management/task/delete/${taskId}`,
+    url: `/api/task-management/task/deletion/${taskId}`,
     method: HTTP_METHODS.PUT, // This should be DELETE if you are actually deleting the resource
+  }).then((resp) => resp.data);
+};
+
+const getTaskPriority = (
+  signal: AbortSignal | undefined
+): Promise<IGetPriorityListResponse[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/priority",
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+};
+
+const getTaskStatus = (
+  signal: AbortSignal | undefined,
+  projectId: string | undefined
+): Promise<IGetStatusListResponse[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/status",
+    method: HTTP_METHODS.GET,
+    signal,
+    params: {
+      projectId,
+    },
+  }).then((resp) => resp.data);
+};
+
+const getTaskType = (
+  signal: AbortSignal | undefined
+): Promise<IGetTypeListResponse[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/type",
+    method: HTTP_METHODS.GET,
+    signal,
   }).then((resp) => resp.data);
 };
 
@@ -99,4 +141,10 @@ export const taskApi = {
   updateTaskKey: "taskUpdateTask",
   deleteTask,
   deleteTaskKey: "taskDeleteTask",
+  getTaskPriority,
+  getTaskPriorityKey: "taskgetTaskPriorityKey",
+  getTaskStatus,
+  getTaskStatusKey: "taskgetTaskStatusKey",
+  getTaskType,
+  getTaskTypeKey: "taskgetTaskTypeKey",
 };

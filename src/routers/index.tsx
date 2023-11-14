@@ -19,10 +19,12 @@ import ProjectDetail from "@/features/Project/Detail";
 import ProjectTrashBin from "@/features/Project/Trash";
 import ProjectReport from "@/features/Project/Report";
 import ProjectSprint from "@/features/Project/Sprint";
+import ProjectKanban from "@/features/Project/Kanban";
 import ProjectSettings from "@/features/Project/Settings";
 import ProjectCalendar from "@/features/Project/Calendar";
 import WorkItem from "@/features/Project/WorkItem";
 import InviteMember from "@/features/InviteMember";
+import Notifications from "@/features/Notifications";
 
 export default function Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
@@ -59,6 +61,12 @@ export default function Routers() {
             path={paths.project.sprint}
             element={
               <PageContainer Component={ProjectSprint} title="Project Sprint" />
+            }
+          />
+          <Route
+            path={paths.project.kanban}
+            element={
+              <PageContainer Component={ProjectKanban} title="Project Kanban" />
             }
           />
           <Route
@@ -198,6 +206,16 @@ export default function Routers() {
               requireAuth={false}
               Component={InviteMember}
               title="Invite Member"
+            />
+          }
+        />
+        <Route
+          path={paths.notification}
+          element={
+            <PageContainer
+              requireAuth={false}
+              Component={Notifications}
+              title="Notifications"
             />
           }
         />

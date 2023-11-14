@@ -129,3 +129,50 @@ export interface IAdminUserProjectList {
   };
   startDate: Date;
 }
+
+export interface IWorkItemList {
+  taskId: string;
+  title: string;
+  decription: string;
+  startDate: Date;
+  dueDate: Date;
+  createTime: Date;
+  deleteAt: Date;
+  assignTo: {
+    userId: string;
+    userName: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: boolean;
+    address: string;
+    dob: Date;
+    avatarColor?: string;
+  };
+  createBy: {
+    userId: string;
+    userName: string;
+    email: string;
+    phoneNumber: string;
+    statusName: string;
+    isAdmin: boolean;
+    address: string;
+    dob: Date;
+  };
+  taskType: string;
+  prevId: string;
+  statusId: string;
+  taskStatus: string;
+  priority: string;
+  interation: string;
+}
+
+export interface IInteration {
+  interationId: string;
+  interationName: string;
+  startDate: Date;
+  endDate: Date;
+  boardId: string;
+  statusId: string;
+  statusName: string;
+}

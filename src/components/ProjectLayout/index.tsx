@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 
 import Header from "../Layout/Header";
 import ProjectSider from "./Sider";
+import Footer from "../Layout/Footer";
 
 export default function ProjectLayout() {
   return (
@@ -15,6 +16,7 @@ export default function ProjectLayout() {
             <div className="p-8 flex-1 overflow-y-auto">
               <Outlet />
             </div>
+            <Footer />
           </Layout.Content>
         </Layout>
       </Layout>

@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Col, Row, Space, Table, Typography } from "antd";
-import { useQuery } from "@tanstack/react-query";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 
 import RevokePermission from "./RevokePermission";
 import GrantPermission from "./GrantPermission";
 import { useAuthContext } from "@/context/Auth";
 import { schemaApi } from "@/utils/api/schema";
 import { ISchema } from "@/interfaces/schema";
+import { roleApi } from "@/utils/api/role";
 
 const ProjectPermission = () => {
   const [isOpenRvkPermModal, setOpenRvkPermModal] = useState<boolean>(false);
@@ -22,10 +24,50 @@ const ProjectPermission = () => {
 
   const { schemaId } = useParams();
 
+  const queryClient = useQueryClient();
+
   const { data: schema, isLoading } = useQuery<ISchema>({
     queryKey: [schemaApi.getAdminSchemaDetailKey, userInfo?.id, schemaId],
     queryFn: ({ signal }) => schemaApi.getAdminSchemaDetail(signal, schemaId!),
     enabled: Boolean(userInfo) && Boolean(schemaId),
+  });
+
+  const {
+    mutate: getGrantList,
+    isLoading: isLoadingGetGrantList,
+    variables,
+  } = useMutation({
+    mutationKey: [roleApi.getGrantListBySchemaIdKey],
+    mutationFn: roleApi.getGrantListBySchemaId,
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(
+        ["grant-list", { id: variables.schemaId }],
+        data
+      );
+      setOpenGrantPermModal(true);
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data);
+    },
+  });
+
+  const {
+    mutate: getRevokeList,
+    isLoading: isLoadingGetRevokeList,
+    variables: variablesGetRevokeList,
+  } = useMutation({
+    mutationKey: [roleApi.getRevokeListBySchemaIdKey],
+    mutationFn: roleApi.getRevokeListBySchemaId,
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(
+        ["revoke-list", { id: variables.schemaId }],
+        data
+      );
+      setOpenRvkPermModal(true);
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data);
+    },
   });
 
   const handleClose = () => {
@@ -66,22 +108,62 @@ const ProjectPermission = () => {
       className: "align-top",
       align: "center",
       render: (_, record) => (
-        <Row justify="space-evenly">
-          <EditOutlined
-            className="text-xl cursor-pointer"
+        <Space direction="horizontal">
+          <Button
+            type="text"
+            ghost
+            className="hover:!bg-transparent p-1"
+            loading={
+              isLoadingGetGrantList &&
+              record.permissionId === variables?.data.permissionIds[0]
+            }
             onClick={() => {
+              if (!schema) return;
+              getGrantList({
+                schemaId: schema.schemaId,
+                data: {
+                  permissionIds: [record.permissionId],
+                },
+              });
               setPermissionSelected(record);
-              setOpenGrantPermModal(true);
             }}
+            icon={
+              <EditOutlined
+                style={{
+                  fontSize: 22,
+                }}
+              />
+            }
           />
-          <DeleteOutlined
-            className="text-red-500 text-xl cursor-pointer"
+          <Button
+            type="text"
+            ghost
+            className="hover:!bg-transparent"
+            loading={
+              isLoadingGetRevokeList &&
+              record.permissionId ===
+                variablesGetRevokeList?.data.permissionIds[0]
+            }
             onClick={() => {
+              if (!schema) return;
+              getRevokeList({
+                schemaId: schema.schemaId,
+                data: {
+                  permissionIds: [record.permissionId],
+                },
+              });
               setPermissionSelected(record);
-              setOpenRvkPermModal(true);
             }}
+            icon={
+              <DeleteOutlined
+                style={{
+                  color: "red",
+                  fontSize: 22,
+                }}
+              />
+            }
           />
-        </Row>
+        </Space>
       ),
     },
   ];
