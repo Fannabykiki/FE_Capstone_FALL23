@@ -46,6 +46,7 @@ const InviteMemberModal = ({ isOpen, handleClose }: Props) => {
   });
 
   const onCancel = () => {
+    form.resetFields();
     handleClose();
   };
 
@@ -115,7 +116,6 @@ const InviteMemberModal = ({ isOpen, handleClose }: Props) => {
         <Divider />
         <Space direction="vertical" className="w-full">
           <Typography.Title level={4}>Invite your teammate</Typography.Title>
-
           <Form
             layout="vertical"
             className="w-full"
