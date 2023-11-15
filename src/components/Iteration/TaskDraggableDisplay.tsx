@@ -1,7 +1,16 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
-import { Avatar } from "antd";
+import { Avatar, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
-import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
+import {
+  CommentOutlined,
+  DoubleLeftOutlined,
+  DoubleRightOutlined,
+  DownOutlined,
+  PaperClipOutlined,
+  PauseOutlined,
+  QuestionCircleOutlined,
+  UpOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
@@ -46,14 +55,17 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
           <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
         </div>
         <p>{task.title}</p>
-        <div className="flex justify-between items-center">
-          <div className="flex gap-x-2">
-            <div>
-              <PaperClipOutlined /> 0
-            </div>
-            <div>
-              <CommentOutlined /> 0
-            </div>
+        <div className="flex gap-x-2 items-center">
+          <div>
+            <PaperClipOutlined /> 0
+          </div>
+          <div>
+            <CommentOutlined /> 0
+          </div>
+          <div className="flex-grow text-right">
+            <Tooltip title={`Priority: ${task.priorityName}`}>
+              {calcPriorityStatus(task.priorityName)}
+            </Tooltip>
           </div>
           <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
         </div>
@@ -61,3 +73,26 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
     </div>
   );
 }
+
+const calcPriorityStatus = (priorityName: string) => {
+  switch (priorityName) {
+    case "Very High":
+      return (
+        <DoubleLeftOutlined className="font-bold text-lg rotate-90 text-red-500" />
+      );
+    case "High":
+      return <UpOutlined className="font-bold text-lg text-red-500" />;
+    case "Medium":
+      return (
+        <PauseOutlined className="font-bold text-lg rotate-90 text-yellow-500" />
+      );
+    case "Low":
+      return <DownOutlined className="font-bold text-lg text-blue-500" />;
+    case "Very Low":
+      return (
+        <DoubleRightOutlined className="font-bold text-lg rotate-90 text-blue-500" />
+      );
+    default:
+      return <QuestionCircleOutlined />;
+  }
+};

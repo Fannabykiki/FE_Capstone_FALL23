@@ -34,7 +34,7 @@ export default function Header() {
       routeObject[generatePath(paths.project.detail, { projectId })] =
         "Summary";
       routeObject[generatePath(paths.project.tasks, { projectId })] =
-        "Work Items";
+        "Tasks";
       routeObject[generatePath(paths.project.sprint, { projectId })] =
         "Sprints";
       routeObject[generatePath(paths.project.calendar, { projectId })] =

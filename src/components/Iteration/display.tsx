@@ -19,18 +19,6 @@ import { iterationApi } from "@/utils/api/iteration";
 import useTaskActions from "@/hooks/useTaskActions";
 import { Button, Input, Select } from "antd";
 
-// Helper functions to reorder and move subtasks
-const reorderSubtasks = (
-  subtasks: ITask[],
-  startIndex: number,
-  endIndex: number
-) => {
-  const result = Array.from(subtasks);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
-
 const moveSubtask = (
   sourceSubtasks: ITask[],
   droppableDestination: DraggableLocation,
@@ -61,8 +49,8 @@ const IterationDisplay = ({ iterationId }: Props) => {
   const { projectId } = useParams();
 
   const { data: iteration, refetch: refetchIteration } = useQuery({
-    queryKey: [iterationApi.getDetailKey, iterationId],
-    queryFn: ({ signal }) => iterationApi.getDetail(signal, iterationId),
+    queryKey: [iterationApi.getTasksKey, iterationId],
+    queryFn: ({ signal }) => iterationApi.getTasks(signal, iterationId),
   });
 
   const { data: statusList } = useQuery({
@@ -70,6 +58,15 @@ const IterationDisplay = ({ iterationId }: Props) => {
     queryFn: ({ signal }) => taskApi.getTaskStatuses(signal, projectId!),
     initialData: [],
   });
+
+  const onToggleCollapseTask = (taskId: string) => {
+    setCollapsedTasks((c) => {
+      if (c.includes(taskId)) {
+        return c.filter((task) => task !== taskId);
+      }
+      return [...c, taskId];
+    });
+  };
 
   const onToggleCollapseAllTask = () => {
     if (collapsedTasks.length === iteration!.tasks.length) {
@@ -96,21 +93,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
       );
 
       // Moving within the same list
-      if (source.droppableId === destination.droppableId) {
-        const newSubtasks = reorderSubtasks(
-          sourceTask!.subTask || [],
-          source.index,
-          destination.index
-        );
-        // TODO: re-order tasks
-        // const newTasks = tasks.map((task) => {
-        //   if (task.id === sourceTask!.id) {
-        //     return { ...task, subtasks: newSubtasks };
-        //   }
-        //   return task;
-        // });
-        // setTasks(newTasks);
-      } else {
+      if (source.droppableId !== destination.droppableId) {
         // TODO: set new status for task
         // Moving to a different status
         const newStatusId = destination.droppableId.split("/")[1];
@@ -163,9 +146,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
                 className="min-w-[200px]"
               />
               <div className="flex flex-grow justify-end">
-                <Button icon={<PlusOutlined />} className="bg-green-600 text-white">
-                  New task
-                </Button>
+                <Button icon={<PlusOutlined />}>New task</Button>
               </div>
             </div>
             <div className="flex w-full gap-x-4">
@@ -193,12 +174,17 @@ const IterationDisplay = ({ iterationId }: Props) => {
             </div>
           </div>
           {iteration.tasks.map((task) => (
-            <MainTaskDisplay
-              task={task}
+            <div
               key={task.taskId}
-              statusList={statusList}
-              isCollapsed={collapsedTasks.includes(task.taskId)}
-            />
+              className="py-4 border-0 border-b border-solid border-neutral-300"
+            >
+              <MainTaskDisplay
+                task={task}
+                statusList={statusList}
+                isCollapsed={collapsedTasks.includes(task.taskId)}
+                onToggleCollapseTask={() => onToggleCollapseTask(task.taskId)}
+              />
+            </div>
           ))}
         </DragDropContextComponent>
       </>

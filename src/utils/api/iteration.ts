@@ -30,18 +30,15 @@ const getList = (
     signal,
   }).then((resp) => resp.data);
 
-const getDetail = (
+const getTasks = (
   signal: AbortSignal | undefined,
   iterationId: string
 ): Promise<IIteration> =>
   axiosClient({
-    url: `/api/Iteration-management/Iteration`,
+    url: `/api/Iteration-management/Iteration/tasks/${iterationId}`,
     method: HTTP_METHODS.GET,
     signal,
-    params: {
-      iterationId,
-    },
-  }).then((resp) => resp.data?.[0]);
+  }).then((resp) => resp.data);
 
 export const iterationApi = {
   create,
@@ -50,6 +47,6 @@ export const iterationApi = {
   updateKey: "iterationUpdate",
   getList,
   getListKey: "iterationGetList",
-  getDetail,
-  getDetailKey: "iterationGetDetail",
+  getTasks,
+  getTasksKey: "iterationGetTasks",
 };

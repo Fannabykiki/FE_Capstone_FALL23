@@ -24,6 +24,7 @@ interface Props {
   task: ITask;
   isCollapsed?: boolean;
   statusList: ITaskStatus[];
+  onToggleCollapseTask: VoidFunction;
 }
 
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
@@ -33,16 +34,21 @@ export default function MainTaskDisplay({
   task,
   isCollapsed = false,
   statusList,
+  onToggleCollapseTask,
 }: Props) {
   if (isCollapsed) {
     return (
       <div className="p-2">
         <div
           className={classNames(
-            "border-0 border-l-4 border-solid border-blue-400",
+            "border-0 border-l-4 border-solid border-blue-400 shadow",
             "bg-white p-2 rounded flex gap-x-4 items-center"
           )}
         >
+          <DoubleRightOutlined
+            className="rotate-90 cursor-pointer"
+            onClick={onToggleCollapseTask}
+          />
           <div
             className={classNames(
               "w-fit px-2 py-1 rounded-full text-xs",
@@ -67,17 +73,12 @@ export default function MainTaskDisplay({
   }
   return (
     <>
-      <div className="border-b border-solid border-neutral-500 border-0 mb-4 pb-4">
+      <div>
         <Button
           type="text"
           className="font-semibold"
-          icon={
-            isCollapsed ? (
-              <DoubleRightOutlined className="rotate-90" />
-            ) : (
-              <DoubleLeftOutlined className="rotate-90" />
-            )
-          }
+          onClick={onToggleCollapseTask}
+          icon={<DoubleLeftOutlined className="rotate-90" />}
         >
           {task.title}
         </Button>
@@ -88,7 +89,7 @@ export default function MainTaskDisplay({
             </div>
           </div>
           {statusList.map((status, index) => (
-            <div className="flex flex-col">
+            <div className="flex flex-col" key={status.boardStatusId}>
               <DroppableComponent
                 key={status.boardStatusId}
                 droppableId={`${task.taskId}/${status.boardStatusId}`}
