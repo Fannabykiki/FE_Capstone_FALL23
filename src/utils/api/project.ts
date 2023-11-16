@@ -111,8 +111,6 @@ const restore = async (id: string) =>
     method: HTTP_METHODS.PUT,
   }).then((resp) => resp.data);
 
-// ======================================= Admin =======================================
-
 const getAdminProjects = async (
   signal: AbortSignal | undefined,
   params: { [key: string]: string | undefined }
@@ -178,6 +176,20 @@ const sendEmailInvite = (data: { email: string[]; projectId: string }) =>
     data,
   }).then((resp) => resp.data);
 
+const acceptEmailInvite = (params: { email: string; projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/accept-invitation",
+    method: HTTP_METHODS.POST,
+    params,
+  }).then((resp) => resp.data);
+
+const declineEmailInvite = (params: { email: string; projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/decline-invitation",
+    method: HTTP_METHODS.POST,
+    params,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -212,11 +224,14 @@ export const projectApi = {
     "getLisInterationInProjectByProjectIdKey",
   sendEmailInvite,
   sendEmailInviteKey: "sendEmailInviteKey",
-  //Admin
   getAdminProjects,
   getAdminProjectsKey: "getAdminProjectsKey",
   getAdminProjectsAnalyzation,
   getAdminProjectsAnalyzationKey: "getAdminProjectsAnalyzationKey",
   getAdminUsersAnalyzationByUserId,
   getAdminUsersAnalyzationByUserIdKey: "getAdminUsersAnalyzationByUserIdKey",
+  acceptEmailInvite,
+  acceptEmailInviteKey: "acceptEmailInviteKey",
+  declineEmailInvite,
+  declineEmailInviteKey: "declineEmailInviteKey",
 };
