@@ -63,3 +63,8 @@ export interface IUpdateTaskPayload {
   id: string;
   data: ITask;
 }
+
+export interface IChangeTaskStatusPayload {
+  id: string;
+  statusId: string;
+}

@@ -8,6 +8,7 @@ import {
   IGetStatusListResponse,
   IGetPriorityListResponse,
   IUpdateTaskPayload,
+  IChangeTaskStatusPayload,
 } from "@/interfaces/task";
 import { sortBy } from "lodash";
 
@@ -122,6 +123,17 @@ const getTaskType = (
   }).then((resp) => resp.data);
 };
 
+const changeTaskStatus = ({
+  id,
+  statusId,
+}: IChangeTaskStatusPayload): Promise<any> => {
+  return axiosClient({
+    url: `/api/task-management/tasks/change-status/${id}`,
+    method: HTTP_METHODS.PUT,
+    data: { statusId },
+  }).then((resp) => resp.data);
+};
+
 export const taskApi = {
   getKanbanTasks,
   getKanbanTasksKey: "taskGetKanbanTasks",
@@ -147,4 +159,6 @@ export const taskApi = {
   getTaskStatusKey: "taskgetTaskStatusKey",
   getTaskType,
   getTaskTypeKey: "taskgetTaskTypeKey",
+  changeTaskStatus,
+  changeTaskStatusKey: "taskChangeTaskStatus",
 };

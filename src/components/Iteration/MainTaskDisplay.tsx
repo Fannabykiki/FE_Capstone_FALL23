@@ -98,7 +98,7 @@ export default function MainTaskDisplay({
                   <div
                     ref={provided.innerRef}
                     className={classNames(
-                      "w-[250px] rounded p-2",
+                      "w-[250px] rounded p-2 flex-grow",
                       snapshot.isDraggingOver && "bg-neutral-200"
                     )}
                     {...provided.droppableProps}
@@ -112,16 +112,20 @@ export default function MainTaskDisplay({
                       </div>
                       {provided.placeholder}
                     </>
+                    {index === 0 && (
+                      <div className="flex-grow   flex flex-col items-start">
+                        <Button
+                          type="text"
+                          icon={<PlusOutlined />}
+                          className="w-fit"
+                        >
+                          New sub task
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </DroppableComponent>
-              {index === 0 && (
-                <div className="flex-grow flex flex-col items-start">
-                  <Button type="text" icon={<PlusOutlined />} className="w-fit">
-                    New sub task
-                  </Button>
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -139,7 +143,7 @@ const SubTasks = ({ subTasks, status }: SubTasksProps) => {
   return (
     <>
       {subTasks
-        .filter((subtask) => subtask.statusName === status.title) // TODO: change statusName to statusId
+        .filter((subtask) => subtask.statusId === status.boardStatusId)
         .map((subtask, index) => (
           <DraggableComponent
             key={subtask.taskId}
