@@ -42,6 +42,15 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
           toast.success("Update profile succeed");
           refetchProfile();
         },
+        onError: (error: any) => {
+          if (typeof error.response?.data?.errors === "object") {
+            Object.keys(error.response?.data?.errors).forEach((key) => {
+              toast.error(error.response?.data?.errors[key]?.[0]);
+            });
+          } else {
+            toast.error("Has an error, please try again");
+          }
+        },
       }
     );
   };

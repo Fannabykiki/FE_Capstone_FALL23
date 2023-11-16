@@ -1,17 +1,36 @@
 import useListProjectOfUser from "@/hooks/useListProjectOfUser";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { faker } from "@faker-js/faker";
-import { Avatar, Typography } from "antd";
+import { Avatar, Col, Dropdown, Modal, Row, Space, Typography } from "antd";
 import { useAuthContext } from "@/context/Auth";
 import { IProject } from "@/interfaces/project";
 import { generatePath, useNavigate } from "react-router-dom";
 import { paths } from "@/routers/paths";
+import { classNames } from "@/utils/common";
+import { MoreOutlined } from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
+import { projectApi } from "@/utils/api/project";
+import { toast } from "react-toastify";
 
 export default function UserDashboard() {
-  const { projects } = useListProjectOfUser();
+  const { projects, refetchProjects } = useListProjectOfUser();
   const { userInfo } = useAuthContext();
+
+  const [modal, contextHolder] = Modal.useModal();
+
   const navigate = useNavigate();
 
+  const { mutate: restoreProject } = useMutation({
+    mutationKey: [projectApi.restoreProjectKey],
+    mutationFn: projectApi.restoreProject,
+    onSuccess: async () => {
+      await refetchProjects();
+      toast.success("Restore project successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data || "Restore project failed");
+    },
+  });
   const navigateToProject = (projectId: string) => {
     navigate(
       generatePath(paths.project.detail, {
@@ -67,32 +86,61 @@ export default function UserDashboard() {
           ))}
         </div>
         {projects?.map((project) => (
-          <div
+          <Row
             key={project.projectId}
-            onClick={() => navigateToProject(project.projectId)}
-            className="cursor-pointer bg-white rounded p-4 flex items-center gap-4 shadow hover:shadow-lg"
+            onClick={() =>
+              !project.deleteAt && navigateToProject(project.projectId)
+            }
+            className={classNames(
+              "cursor-pointer bg-white rounded p-4 flex items-center shadow hover:shadow-lg",
+              project.deleteAt ? "opacity-50" : ""
+            )}
           >
-            <Avatar
-              shape="square"
-              style={{ backgroundColor: faker.color.rgb() }}
-            >
-              <span className="text-white select-none font-semibold uppercase">
-                {project.projectName?.slice(0, 1)}
-              </span>
-            </Avatar>
-            <div>
-              <div>
+            <Col span={22} className="flex gap-4">
+              <Avatar
+                shape="square"
+                style={{ backgroundColor: faker.color.rgb() }}
+              >
+                <span className="text-white select-none font-semibold uppercase">
+                  {project.projectName?.slice(0, 1)}
+                </span>
+              </Avatar>
+              <Space direction="vertical" className="gap-0">
                 <span className="font-semibold">{project.projectName}</span>
-              </div>
-              <div>
                 <span className="font-light text-xs">
                   {project.description}
                 </span>
-              </div>
-            </div>
-          </div>
+              </Space>
+            </Col>
+            {project.deleteAt ? (
+              <Col span={2} className="flex justify-end">
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: project.projectId,
+                        label: "Restore",
+                      },
+                    ],
+                    onClick: ({ key }) =>
+                      modal.confirm({
+                        title: "Warning",
+                        content: "Are you sure to restore this project?",
+                        onOk: () => restoreProject(key),
+                      }),
+                  }}
+                  placement="bottom"
+                  arrow
+                  trigger={["click"]}
+                >
+                  <MoreOutlined className="cursor-pointer" />
+                </Dropdown>
+              </Col>
+            ) : null}
+          </Row>
         ))}
       </div>
+      {contextHolder}
     </div>
   );
 }
