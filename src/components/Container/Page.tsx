@@ -37,7 +37,7 @@ export default function PageContainer({
     queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId!),
     initialData: [],
     enabled: Boolean(projectId),
-    staleTime: Infinity,
+    staleTime: 60000,
   });
 
   useEffect(() => {

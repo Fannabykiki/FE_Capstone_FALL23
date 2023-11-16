@@ -192,6 +192,13 @@ const declineEmailInvite = (params: { email: string; projectId: string }) =>
     params,
   }).then((resp) => resp.data);
 
+const removeMember = (params: { memberId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/remove-member",
+    method: HTTP_METHODS.POST,
+    params,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -236,4 +243,6 @@ export const projectApi = {
   acceptEmailInviteKey: "acceptEmailInviteKey",
   declineEmailInvite,
   declineEmailInviteKey: "declineEmailInviteKey",
+  removeMember,
+  removeMemberKey: "removeMemberKey",
 };
