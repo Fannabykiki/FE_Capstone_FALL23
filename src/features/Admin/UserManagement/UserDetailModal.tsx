@@ -36,16 +36,22 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
   const { userInfo } = useAuthContext();
 
   const { data, isLoading } = useQuery<IAdminUserProjectList[]>({
-    queryKey: [projectApi.getAdminUsersAnalyzationByUserIdKey, userInfo?.id],
+    queryKey: [
+      projectApi.getAdminUsersAnalyzationByUserIdKey,
+      userDetail?.userId,
+    ],
     queryFn: async ({ signal }) => {
       const data: IAdminUserProjectList[] =
-        await projectApi.getAdminUsersAnalyzationByUserId(signal, userInfo?.id);
+        await projectApi.getAdminUsersAnalyzationByUserId(
+          signal,
+          userDetail?.userId
+        );
       return data.map((user) => ({
         ...user,
         manager: { ...user.manager, avatarColor: randomBgColor() },
       }));
     },
-    enabled: Boolean(userInfo) && !!userDetail,
+    enabled: Boolean(userInfo) && Boolean(userDetail),
   });
 
   const onCancel = () => {

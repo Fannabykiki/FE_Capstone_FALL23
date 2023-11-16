@@ -10,6 +10,7 @@ import {
   Select,
   Space,
   Table,
+  Tooltip,
   Typography,
 } from "antd";
 import {
@@ -194,10 +195,16 @@ const AdminDashboard = () => {
           maxCount={4}
           maxStyle={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
         >
-          {record.member?.map((member, index) => (
-            <Avatar key={index} style={{ backgroundColor: member.avatarColor }}>
-              {member.userName?.charAt(0).toUpperCase()}
-            </Avatar>
+          {record.member?.map((member) => (
+            <Tooltip
+              key={member.userId}
+              title={member.userName}
+              placement="top"
+            >
+              <Avatar style={{ backgroundColor: member.avatarColor }}>
+                {member.userName?.charAt(0).toUpperCase()}
+              </Avatar>
+            </Tooltip>
           ))}
         </Avatar.Group>
       ),
