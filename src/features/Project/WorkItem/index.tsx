@@ -1,5 +1,9 @@
-import { pagination } from "@/utils/pagination";
-import { randomBgColor } from "@/utils/random";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams, useSearchParams } from "react-router-dom";
+import { ColumnsType } from "antd/es/table";
+import { debounce } from "lodash";
+import dayjs from "dayjs";
 import {
   BugFilled,
   CheckSquareFilled,
@@ -19,14 +23,15 @@ import {
   Input,
   Select,
 } from "antd";
-import { ColumnsType } from "antd/es/table";
-import dayjs from "dayjs";
-import { useParams, useSearchParams } from "react-router-dom";
+
 import CreateWorkitem from "@/features/Project/WorkItem/Modal/CreateWorkitem";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { projectApi } from "@/utils/api/project";
+import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
+import { convertToODataParams } from "@/utils/convertToODataParams";
 import { IWorkItemList } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { pagination } from "@/utils/pagination";
+import { randomBgColor } from "@/utils/random";
+import { taskApi } from "@/utils/api/task";
 
 export default function WorkItem() {
   const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
@@ -34,13 +39,47 @@ export default function WorkItem() {
 
   const { projectId } = useParams();
 
-  const { data, isLoading } = useQuery<IWorkItemList[]>({
-    queryKey: [projectApi.getWorkItemListByProjectIdKey],
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: "1",
+    limit: "10",
+  });
 
+  const queryClient = useQueryClient();
+
+  const typeList = queryClient.getQueryData<IGetTypeListResponse[]>([
+    taskApi.getTaskTypeKey,
+  ]);
+
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
+
+  const { data, isLoading } = useQuery<IWorkItemList[]>({
+    queryKey: [
+      projectApi.getWorkItemListByProjectIdKey,
+      searchParams.get("type"),
+      searchParams.get("status"),
+      searchParams.get("interation"),
+      searchParams.get("search"),
+    ],
     queryFn: async ({ signal }) => {
       const data: IWorkItemList[] = await projectApi.getWorkItemListByProjectId(
         signal,
-        projectId
+        projectId,
+        {
+          $filter: convertToODataParams(
+            {
+              taskType: searchParams.get("type"),
+              taskStatus: searchParams.get("status"),
+              interation: searchParams.get("interation"),
+            },
+            {
+              title: searchParams.get("search"),
+            }
+          ),
+        }
       );
       return data.map((user) => ({
         ...user,
@@ -49,6 +88,17 @@ export default function WorkItem() {
     },
     enabled: Boolean(projectId),
   });
+
+  const handleChange = (fieldName: string) => (value: string) => {
+    setSearchParams((prev) => {
+      if (!value) {
+        prev.delete(fieldName);
+      } else {
+        prev.set(fieldName, value);
+      }
+      return prev;
+    });
+  };
 
   const handleOpenModalCreate = () => {
     setIsModalCreateOpen(true);
@@ -62,11 +112,6 @@ export default function WorkItem() {
     setIsCardVisible((prev) => !prev);
   };
 
-  const [searchParams, setSearchParams] = useSearchParams({
-    page: "1",
-    limit: "10",
-  });
-
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
       prev.set("page", page.toString());
@@ -74,6 +119,17 @@ export default function WorkItem() {
       return prev;
     });
   };
+
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (!e.target.value) {
+        prev.delete("search");
+      } else {
+        prev.set("search", e.target.value);
+      }
+      return prev;
+    });
+  }, 1000);
 
   return (
     <>
@@ -112,24 +168,43 @@ export default function WorkItem() {
                 placeholder="Filter By Title"
                 prefix={<SearchOutlined />}
                 width={150}
+                className="w-full"
+                defaultValue={searchParams.get("search") || ""}
+                onChange={handleSearch}
+                allowClear
               />
             </Col>
-            <Col className="text-right" span={12}>
+            <Col className="flex justify-end gap-4" span={12}>
               <Select
                 bordered
-                options={TYPE_OPTION}
-                className="mr-3 w-24"
+                options={typeList?.map((type) => ({
+                  label: type.title,
+                  value: type.title,
+                }))}
+                className="w-20 text-center"
                 placeholder="Type"
+                defaultValue={searchParams.get("type")}
+                onChange={handleChange("type")}
+                allowClear
               />
               <Select
-                options={STATE_OPTION}
-                className="mr-3 w-20"
+                options={statusList.map((status) => ({
+                  label: status.title,
+                  value: status.title,
+                }))}
+                className="w-32 text-center"
                 placeholder="State"
+                defaultValue={searchParams.get("status")}
+                onChange={handleChange("status")}
+                allowClear
               />
               <Select
-                options={ITERATION_OPTION}
-                className="w-28"
-                placeholder="Iteration"
+                options={INTERATION_OPTION}
+                className="w-36 text-center"
+                placeholder="Interation"
+                defaultValue={searchParams.get("interation")}
+                onChange={handleChange("interation")}
+                allowClear
               />
             </Col>
           </Row>
@@ -264,59 +339,21 @@ const columns: ColumnsType<IWorkItemList> = [
   },
 ];
 
-const TYPE_OPTION = [
+const INTERATION_OPTION = [
   {
-    label: (
-      <>
-        <CheckSquareFilled className="text-yellow-600 mr-2" /> Task
-      </>
-    ),
-    value: "task",
+    label: "Interation 1",
+    value: "Interation 1",
   },
   {
-    label: (
-      <>
-        <BugFilled className="text-red-500 mr-2" /> Bug
-      </>
-    ),
-    value: "bug",
-  },
-];
-
-const STATE_OPTION = [
-  {
-    label: "To do",
-    value: "todo",
+    label: "Interation 2",
+    value: "Interation 2",
   },
   {
-    label: "Doing",
-    value: "doing",
+    label: "Interation 3",
+    value: "Interation 3",
   },
   {
-    label: "Done",
-    value: "done",
-  },
-  {
-    label: "Close",
-    value: "close",
-  },
-];
-
-const ITERATION_OPTION = [
-  {
-    label: "Iteration 1",
-    value: "1",
-  },
-  {
-    label: "Iteration 2",
-    value: "2",
-  },
-  {
-    label: "Iteration 3",
-    value: "3",
-  },
-  {
-    label: "Iteration 4",
-    value: "4",
+    label: "Interation 4",
+    value: "Interation 4",
   },
 ];

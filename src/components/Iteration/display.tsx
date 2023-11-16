@@ -8,10 +8,10 @@ import {
 import MainTaskDisplay from "./MainTaskDisplay";
 import { DoubleLeftOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "@/utils/api/task";
 import { IIteration } from "@/interfaces/iteration";
-import { ITask } from "@/interfaces/task";
+import { ITask, ITaskStatus } from "@/interfaces/task";
 import { iterationApi } from "@/utils/api/iteration";
 import useTaskActions from "@/hooks/useTaskActions";
 
@@ -54,17 +54,20 @@ interface Props {
 
 const IterationDisplay = ({ iterationId }: Props) => {
   const [collapsedTasks, setCollapsedTasks] = useState<string[]>([]);
+
+  const queryClient = useQueryClient();
+
   const { projectId } = useParams();
+
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
 
   const { data: iteration, refetch: refetchIteration } = useQuery({
     queryKey: [iterationApi.getDetailKey, iterationId],
     queryFn: ({ signal }) => iterationApi.getDetail(signal, iterationId),
-  });
-
-  const { data: statusList } = useQuery({
-    queryKey: [taskApi.getTaskStatusesKey, projectId],
-    queryFn: ({ signal }) => taskApi.getTaskStatuses(signal, projectId!),
-    initialData: [],
   });
 
   const onToggleCollapseAllTask = () => {

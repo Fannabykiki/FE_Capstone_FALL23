@@ -141,12 +141,14 @@ const getAdminUsersAnalyzationByUserId = async (
 
 const getWorkItemListByProjectId = async (
   signal: AbortSignal | undefined,
-  projectId: string | undefined
+  projectId: string | undefined,
+  params: { [key: string]: string | undefined }
 ) =>
   axiosClient({
     url: `/api/project-management/projects/tasks/${projectId}`,
     method: HTTP_METHODS.GET,
     signal,
+    params,
   }).then((resp) => resp.data);
 
 const getListUserInProjectByProjectId = (
