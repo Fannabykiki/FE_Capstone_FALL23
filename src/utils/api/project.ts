@@ -51,9 +51,9 @@ const getDetail = (
     signal,
   }).then((resp) => resp.data);
 
-const remove = async (id: string) =>
+const deleteProject = async (projectId: string) =>
   axiosClient({
-    url: `/api/project-management/projects/${id}`,
+    url: `/api/project-management/projects/${projectId}`,
     method: HTTP_METHODS.DELETE,
   }).then((resp) => resp.data);
 
@@ -105,9 +105,9 @@ const updatePrivacy = async ({
     data: { privacyStatus },
   }).then((resp) => resp.data);
 
-const restore = async (id: string) =>
+const restoreProject = async (projectId: string) =>
   axiosClient({
-    url: `/api/project-management/project/restoration/${id}`,
+    url: `/api/project-management/project/restoration/${projectId}`,
     method: HTTP_METHODS.PUT,
   }).then((resp) => resp.data);
 
@@ -203,8 +203,8 @@ export const projectApi = {
   getDetailKey: "projectGetDetail",
   updateProject,
   updateProjectKey: "updateProject",
-  remove,
-  removeKey: "projectRemove",
+  deleteProject,
+  deleteProjectKey: "deleteProjectKey",
   getInfo,
   getInfoKey: "projectGetInfo",
   updateInfo,
@@ -215,8 +215,8 @@ export const projectApi = {
   updateMemberRoleKey: "projectUpdateMemberRole",
   updatePrivacy,
   updatePrivacyKey: "projectUpdatePrivacy",
-  restore,
-  restoreKey: "projectRestore",
+  restoreProject,
+  restoreProjectKey: "restoreProjectKey",
   getWorkItemListByProjectId,
   getWorkItemListByProjectIdKey: "getWorkItemListByProjectIdKey",
   getListUserInProjectByProjectId,
