@@ -9,6 +9,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Form, Input, Modal } from "antd";
 import { RuleObject } from "antd/es/form";
+import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -34,6 +35,10 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
       onSuccess: () => {
         toast.success("Change Password Successfully!");
         onCancel();
+      },
+      onError: (err: AxiosError<any>) => {
+        console.error(err);
+        toast.error(err.response?.data);
       },
     }
   );
