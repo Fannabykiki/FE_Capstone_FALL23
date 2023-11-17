@@ -1,5 +1,6 @@
+import useTaskActions from "@/hooks/useTaskActions";
 import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -18,33 +19,25 @@ const { TextArea } = Input;
 interface Props {
   isOpen: boolean;
   handleClose: VoidFunction;
+  initTaskData?: Partial<ICreateTaskRequest>;
+  onSuccess: VoidFunction;
 }
 
-export default function CreateWorkitem({ isOpen, handleClose }: Props) {
+export default function CreateTask({
+  isOpen,
+  handleClose,
+  initTaskData = {},
+  onSuccess,
+}: Props) {
   const [form] = Form.useForm();
-
   const queryClient = useQueryClient();
 
   const { projectId } = useParams();
 
-  const { mutate: createWorkItem, isLoading } = useMutation({
-    mutationKey: [taskApi.createTaskKey],
-    mutationFn: taskApi.createTask,
-    onSuccess: async () => {
-      await queryClient.refetchQueries([
-        projectApi.getWorkItemListByProjectIdKey,
-      ]);
-      toast.success("Create work item successfully");
-      handleClose();
-    },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Create work item failed");
-    },
-  });
+  const { createTaskMutation, createSubtaskMutation } = useTaskActions();
 
   const { data: priorityList } = useQuery({
-    queryKey: [taskApi.getTaskPriorityKey],
+    queryKey: [taskApi.getTaskPriorityKey, projectId],
     queryFn: async ({ signal }) => taskApi.getTaskPriority(signal),
     enabled: Boolean(isOpen) && Boolean(projectId),
   });
@@ -66,7 +59,7 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
     enabled: Boolean(isOpen) && Boolean(projectId),
   });
 
-  const { data: interationList } = useQuery({
+  const { data: interationList, isLoading: isLoadingIterations } = useQuery({
     queryKey: [projectApi.getLisInterationInProjectByProjectIdKey, projectId],
     queryFn: async ({ signal }) =>
       projectApi.getLisInterationInProjectByProjectId(signal, projectId),
@@ -80,7 +73,40 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
 
   const onSubmit = (values: ICreateTaskRequest) => {
     if (!projectId) return;
-    createWorkItem({ ...values, projectId, prevId: null });
+    if (initTaskData.taskId) {
+      createSubtaskMutation.mutate(
+        {
+          ...values,
+          taskId: initTaskData.taskId,
+        },
+        {
+          onSuccess: async () => {
+            onSuccess();
+            toast.success("Create subtask successfully");
+            handleClose();
+          },
+          onError: (err) => {
+            console.error(err);
+            toast.error("Create subtask failed");
+          },
+        }
+      );
+    } else {
+      createTaskMutation.mutate(
+        { ...values, projectId, prevId: null },
+        {
+          onSuccess: async () => {
+            onSuccess();
+            toast.success("Create task successfully");
+            handleClose();
+          },
+          onError: (err) => {
+            console.error(err);
+            toast.error("Create task failed");
+          },
+        }
+      );
+    }
   };
 
   useEffect(() => {
@@ -102,7 +128,8 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
       open={isOpen}
       onOk={form.submit}
       okButtonProps={{
-        loading: isLoading,
+        loading:
+          createTaskMutation.isLoading || createSubtaskMutation.isLoading,
       }}
       okText="Create"
       width="80vw"
@@ -112,6 +139,7 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
         layout="vertical"
         form={form}
         onFinish={onSubmit}
+        initialValues={initTaskData}
       >
         <Form.Item
           label="Title"
@@ -132,6 +160,8 @@ export default function CreateWorkitem({ isOpen, handleClose }: Props) {
                   label: interation.interationName,
                   value: interation.interationId,
                 }))}
+                disabled={Boolean(initTaskData.interationId)}
+                loading={isLoadingIterations}
               />
             </Form.Item>
           </Col>

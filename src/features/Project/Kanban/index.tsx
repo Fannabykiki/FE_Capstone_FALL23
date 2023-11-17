@@ -17,13 +17,8 @@ const Kanban = () => {
   const [selectedIteration, setSelectedIteration] = useState<
     IIteration | undefined
   >(undefined);
-  const {
-    openView: openCreateIterationModal,
-    onOpenView: onOpenCreateIterationModal,
-    onCloseView: onCloseCreateIterationModal,
-  } = useDetailView();
   const { projectId } = useParams();
-  const { iterations, actions } = useProjectDetail(projectId);
+  const { iterations } = useProjectDetail(projectId);
 
   useEffect(() => {
     if (iterations && iterations.length > 0) {
@@ -34,44 +29,13 @@ const Kanban = () => {
     }
   }, [iterations]);
 
-  const onChangeIteration = (interationId: string) => {
-    setSelectedIteration(
-      iterations?.find((iteration) => iteration.interationId === interationId)
-    );
-  };
-
   return (
     <>
-      <div className="flex items-center justify-between">
-        <Typography.Title>Sprints</Typography.Title>
-        <Button
-          icon={<PlusOutlined />}
-          type="primary"
-          onClick={() => onOpenCreateIterationModal()}
-        >
-          New Sprint
-        </Button>
-      </div>
-      <Select
-        options={(iterations || []).map((iteration) => ({
-          label: iteration.interationName,
-          value: iteration.interationId,
-        }))}
-        loading={actions.isGettingIterations}
-        value={selectedIteration?.interationId || null}
-        onChange={onChangeIteration}
-        className="mb-4"
-      />
+      <Typography.Title>Kanban</Typography.Title>
       {selectedIteration ? (
         <IterationDisplay iterationId={selectedIteration.interationId} />
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
-      )}
-      {openCreateIterationModal && (
-        <CreateIteration
-          open={openCreateIterationModal}
-          onClose={onCloseCreateIterationModal}
-        />
       )}
     </>
   );

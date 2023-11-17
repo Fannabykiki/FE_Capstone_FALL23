@@ -50,4 +50,4 @@ export const REGEX_CHARACTER = /(?=.*[a-z])(?=.*[A-Z])/;
 export const AVATAR_BG_COLOR = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
 
 export const SAFE_DAY_TIL_DUE_DATE = -7;
-export const WARNING_DAY_TIL_DUE_DATE = -1;
+export const WARNING_DAY_TIL_DUE_DATE = -2;

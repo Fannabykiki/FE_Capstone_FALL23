@@ -38,6 +38,7 @@ export interface ICreateTaskRequest {
   prevId: string | null;
   statusId: string;
   typeId: string;
+  taskId?: string;
 }
 
 export interface IGetPriorityListResponse {
@@ -56,6 +57,10 @@ export interface IUpdateTaskPayload {
   data: ITask;
 }
 
+export interface IChangeTaskStatusPayload {
+  id: string;
+  statusId: string;
+}
 export interface ITrashBinRecord {
   taskId: string;
   title: string;

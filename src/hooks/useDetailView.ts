@@ -4,8 +4,8 @@ export default function useDetailView<T>(initialDetail: T | null = null) {
   const [detail, setDetail] = useState(initialDetail);
   const [openView, setOpenView] = useState(false);
 
-  const onOpenView = (_detail = null) => {
-    setDetail(_detail);
+  const onOpenView = (_detail?: T) => {
+    setDetail(_detail || null);
     setOpenView(true);
   };
 
