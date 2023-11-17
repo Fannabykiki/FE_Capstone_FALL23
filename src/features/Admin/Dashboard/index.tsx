@@ -127,15 +127,11 @@ const AdminDashboard = () => {
         let bg = "";
 
         switch (status) {
-          case "Active":
+          case "Doing":
             color = "#6ED99F";
             bg = "#E5F8ED";
             break;
-          case "Close":
-            color = "#4AD8EC";
-            bg = "#E0F9FC";
-            break;
-          case "Inactive":
+          case "Done":
             color = "#968EF3";
             bg = "#EEEDFD";
             break;
