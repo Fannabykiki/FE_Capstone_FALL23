@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   DragDropContext,
   OnDragEndResponder,
-  DraggableLocation,
   DragDropContextProps,
 } from "react-beautiful-dnd";
 import MainTaskDisplay from "./MainTaskDisplay";
@@ -19,6 +18,9 @@ import useTaskActions from "@/hooks/useTaskActions";
 import { Button, Input, Select } from "antd";
 import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
+import useDetailView from "@/hooks/useDetailView";
+import { CreateTask } from "../Modal";
+import { ICreateTaskRequest } from "@/interfaces/task";
 
 export enum TaskType {
   Main = "Work Item",
@@ -35,7 +37,26 @@ interface Props {
 const IterationDisplay = ({ iterationId }: Props) => {
   const [collapsedTasks, setCollapsedTasks] = useState<string[]>([]);
   const [selectedIteration, setSelectedIteration] = useState<IIteration>();
+  const [filterData, setFilterData] = useState({
+    name: "",
+    statusId: "",
+  });
   const { projectId } = useParams();
+  const {
+    openView: isModalCreateTaskOpen,
+    onCloseView: onCloseCreateTaskModal,
+    onOpenView: onOpenCreateTaskModal,
+    detail: initTaskData,
+  } = useDetailView<Partial<ICreateTaskRequest>>();
+
+  const handleOpenCreateTaskModal = (
+    initData: Partial<ICreateTaskRequest> = {}
+  ) => {
+    onOpenCreateTaskModal({
+      ...initData,
+      interationId: iterationId,
+    });
+  };
 
   const { data: iteration, refetch: refetchIteration } = useQuery({
     queryKey: [iterationApi.getTasksKey, iterationId],
@@ -131,7 +152,11 @@ const IterationDisplay = ({ iterationId }: Props) => {
                 .invalidateQueries({
                   queryKey: [iterationApi.getTasksKey, iterationId],
                 })
-                .then(() => refetchIteration());
+                .then(() =>
+                  queryClient.refetchQueries({
+                    queryKey: [iterationApi.getTasksKey, iterationId],
+                  })
+                );
             },
           }
         );
@@ -143,7 +168,14 @@ const IterationDisplay = ({ iterationId }: Props) => {
       <>
         <DragDropContextComponent onDragEnd={onDragEnd}>
           <div className="flex gap-x-2 mb-2">
-            <Input placeholder="Filter by task name" className="w-[200px]" />
+            <Input
+              placeholder="Filter by task name"
+              className="w-[200px]"
+              value={filterData.name}
+              onChange={(e) =>
+                setFilterData((c) => ({ ...c, name: e.target.value }))
+              }
+            />
             <Select
               options={statusList.map((status) => ({
                 label: status.title,
@@ -151,9 +183,19 @@ const IterationDisplay = ({ iterationId }: Props) => {
               }))}
               placeholder="Filter by status"
               className="min-w-[200px]"
+              onChange={(statusId) =>
+                setFilterData((c) => ({ ...c, statusId }))
+              }
+              allowClear
+              value={filterData.statusId}
             />
             <div className="flex flex-grow justify-end">
-              <Button icon={<PlusOutlined />}>New task</Button>
+              <Button
+                icon={<PlusOutlined />}
+                onClick={() => handleOpenCreateTaskModal()}
+              >
+                New task
+              </Button>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -190,11 +232,21 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   statusList={statusList}
                   isCollapsed={collapsedTasks.includes(task.taskId)}
                   onToggleCollapseTask={() => onToggleCollapseTask(task.taskId)}
+                  onOpenCreateTaskModal={handleOpenCreateTaskModal}
+                  filterData={filterData}
                 />
               </div>
             ))}
           </div>
         </DragDropContextComponent>
+        {isModalCreateTaskOpen && (
+          <CreateTask
+            isOpen={isModalCreateTaskOpen}
+            handleClose={onCloseCreateTaskModal}
+            initTaskData={initTaskData || undefined}
+            onSuccess={() => refetchIteration()}
+          />
+        )}
       </>
     );
   return null;

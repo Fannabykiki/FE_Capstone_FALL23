@@ -18,13 +18,16 @@ import {
   DroppableProps,
 } from "react-beautiful-dnd";
 import TaskDraggableDisplay from "./TaskDraggableDisplay";
-import { ITask, ITaskStatus } from "@/interfaces/task";
+import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
+import useDebounceValue from "@/hooks/useDebounceValue";
 
 interface Props {
   task: ITask;
   isCollapsed?: boolean;
   statusList: ITaskStatus[];
   onToggleCollapseTask: VoidFunction;
+  onOpenCreateTaskModal: (_: Partial<ICreateTaskRequest> | undefined) => void;
+  filterData: { name: string; statusId: string };
 }
 
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
@@ -35,7 +38,10 @@ export default function MainTaskDisplay({
   isCollapsed = false,
   statusList,
   onToggleCollapseTask,
+  onOpenCreateTaskModal,
+  filterData,
 }: Props) {
+  const filterTaskName = useDebounceValue(filterData.name, 1000);
   if (isCollapsed) {
     return (
       <div className="p-2">
@@ -106,18 +112,34 @@ export default function MainTaskDisplay({
                     <>
                       <div className="flex flex-col gap-y-4">
                         <SubTasks
-                          subTasks={task.subTask || []}
+                          subTasks={
+                            task.subTask?.filter(
+                              (subtask) =>
+                                subtask.statusId === status.boardStatusId &&
+                                (!filterTaskName ||
+                                  subtask.title
+                                    .toLowerCase()
+                                    .includes(filterTaskName.toLowerCase())) &&
+                                (!filterData.statusId ||
+                                  filterData.statusId === subtask.statusId)
+                            ) || []
+                          }
                           status={status}
                         />
                       </div>
                       {provided.placeholder}
                     </>
                     {index === 0 && (
-                      <div className="flex-grow   flex flex-col items-start">
+                      <div className="flex-grow flex flex-col items-start">
                         <Button
                           type="text"
                           icon={<PlusOutlined />}
                           className="w-fit"
+                          onClick={() =>
+                            onOpenCreateTaskModal({
+                              taskId: task.taskId,
+                            })
+                          }
                         >
                           New sub task
                         </Button>
@@ -142,28 +164,26 @@ interface SubTasksProps {
 const SubTasks = ({ subTasks, status }: SubTasksProps) => {
   return (
     <>
-      {subTasks
-        .filter((subtask) => subtask.statusId === status.boardStatusId)
-        .map((subtask, index) => (
-          <DraggableComponent
-            key={subtask.taskId}
-            draggableId={subtask.taskId}
-            index={index}
-          >
-            {(provided, snapshot) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.draggableProps}
-                {...provided.dragHandleProps}
-                style={{
-                  ...provided.draggableProps.style,
-                }}
-              >
-                <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
-              </div>
-            )}
-          </DraggableComponent>
-        ))}
+      {subTasks.map((subtask, index) => (
+        <DraggableComponent
+          key={subtask.taskId}
+          draggableId={subtask.taskId}
+          index={index}
+        >
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              style={{
+                ...provided.draggableProps.style,
+              }}
+            >
+              <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
+            </div>
+          )}
+        </DraggableComponent>
+      ))}
     </>
   );
 };

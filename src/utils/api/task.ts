@@ -66,7 +66,7 @@ const createTask = (task: ICreateTaskRequest): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const createSubtask = (subtask: ITask): Promise<ITask> => {
+const createSubtask = (subtask: ICreateTaskRequest): Promise<ITask> => {
   return axiosClient({
     url: "/api/task-management/tasks/subtask",
     method: HTTP_METHODS.POST,

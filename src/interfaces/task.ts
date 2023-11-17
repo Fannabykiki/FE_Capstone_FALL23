@@ -38,6 +38,7 @@ export interface ICreateTaskRequest {
   prevId: string | null;
   statusId: string;
   typeId: string;
+  taskId?: string;
 }
 
 export interface IGetPriorityListResponse {

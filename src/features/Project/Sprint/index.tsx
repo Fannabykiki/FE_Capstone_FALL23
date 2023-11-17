@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
-import { Button, Select, Typography } from "antd";
+import { Select, Typography } from "antd";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateIteration } from "@/components/Modal";
 import useProjectDetail from "@/hooks/useProjectDetail";
@@ -34,31 +34,43 @@ const TaskBoard = () => {
     }
   }, [iterations]);
 
-  const onChangeIteration = (interationId: string) => {
-    setSelectedIteration(
-      iterations?.find((iteration) => iteration.interationId === interationId)
-    );
+  const onChangeIteration = (value: string) => {
+    if (value === "new") {
+      onOpenCreateIterationModal();
+    } else {
+      setSelectedIteration(
+        iterations?.find((iteration) => iteration.interationId === value)
+      );
+    }
   };
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <Typography.Title>Sprints</Typography.Title>
-        <Button
-          icon={<PlusOutlined />}
-          type="primary"
-          onClick={() => onOpenCreateIterationModal()}
-        >
-          New Sprint
-        </Button>
-      </div>
+      <Typography.Title>Sprints</Typography.Title>
       <div className="flex gap-x-2 items-center mb-4">
         <label>Select sprint:</label>
         <Select
-          options={(iterations || []).map((iteration) => ({
-            label: iteration.interationName,
-            value: iteration.interationId,
-          }))}
+          className="min-w-[400px]"
+          options={[
+            {
+              label: (
+                <div className="flex gap-x-2">
+                  <PlusOutlined />
+                  <span>New sprint</span>
+                </div>
+              ),
+              value: "new",
+            },
+            ...(iterations || []).map((iteration) => ({
+              label: (
+                <div className="flex items-center justify-between">
+                  <span>{iteration.interationName}</span>
+                  <span className="text-xs bg-neutral-100 px-2 rounded-full">{iteration.status}</span>
+                </div>
+              ),
+              value: iteration.interationId,
+            })),
+          ]}
           loading={actions.isGettingIterations}
           value={selectedIteration?.interationId || null}
           onChange={onChangeIteration}
