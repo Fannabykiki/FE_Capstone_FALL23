@@ -76,11 +76,6 @@ export default function ProjectSider() {
             icon: <LayoutOutlined width={iconSize} height={iconSize} />,
           },
           {
-            label: "Tasks",
-            key: generatePath(paths.project.tasks, { projectId }),
-            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
-          },
-          {
             label: "Sprints",
             key: generatePath(paths.project.sprint, { projectId }),
             icon: (
@@ -90,6 +85,11 @@ export default function ProjectSider() {
                 height={iconSize}
               />
             ),
+          },
+          {
+            label: "Tasks",
+            key: generatePath(paths.project.tasks, { projectId }),
+            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
           },
           {
             label: "Calendar",
