@@ -1,13 +1,18 @@
 import useTaskActions from "@/hooks/useTaskActions";
-import { ICreateTaskRequest } from "@/interfaces/task";
-import { projectApi } from "@/utils/api/project";
-import { taskApi } from "@/utils/api/task";
-import { useQuery } from "@tanstack/react-query";
-import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
-import dayjs from "dayjs";
 import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+
+import { projectApi } from "@/utils/api/project";
+import { taskApi } from "@/utils/api/task";
+import {
+  ICreateTaskRequest,
+  IGetTypeListResponse,
+  ITaskStatus,
+} from "@/interfaces/task";
 
 const { TextArea } = Input;
 
@@ -25,6 +30,7 @@ export default function CreateTask({
   onSuccess,
 }: Props) {
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
 
   const { projectId } = useParams();
 
@@ -36,24 +42,15 @@ export default function CreateTask({
     enabled: Boolean(isOpen) && Boolean(projectId),
   });
 
-  const { data: statusList } = useQuery({
-    queryKey: [taskApi.getTaskStatusKey, projectId],
-    queryFn: async ({ signal }) => {
-      const data = await taskApi.getTaskStatus(signal, projectId);
-      form.setFieldValue(
-        "statusId",
-        data.find((status) => status.title === "To do")?.boardStatusId
-      );
-      return data.sort((a, b) => a.order - b.order);
-    },
-    enabled: Boolean(isOpen) && Boolean(projectId),
-  });
+  const typeList = queryClient.getQueryData<IGetTypeListResponse[]>([
+    taskApi.getTaskTypeKey,
+  ]);
 
-  const { data: typeList } = useQuery({
-    queryKey: [taskApi.getTaskTypeKey],
-    queryFn: async ({ signal }) => taskApi.getTaskType(signal),
-    enabled: Boolean(isOpen) && Boolean(projectId),
-  });
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
 
   const { data: memberList } = useQuery({
     queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
@@ -113,10 +110,16 @@ export default function CreateTask({
   };
 
   useEffect(() => {
-    if (!isOpen) return;
-    form.resetFields();
+    if (isOpen) {
+      form.setFieldValue(
+        "statusId",
+        statusList.find((status) => status.title === "To do")?.boardStatusId
+      );
+    } else {
+      form.resetFields();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, statusList]);
 
   return (
     <Modal

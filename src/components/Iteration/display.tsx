@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateTask } from "../Modal";
-import { ICreateTaskRequest } from "@/interfaces/task";
+import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
 
 export enum TaskType {
   Main = "Work Item",
@@ -41,6 +41,9 @@ const IterationDisplay = ({ iterationId }: Props) => {
     name: "",
     statusId: "",
   });
+
+  const queryClient = useQueryClient();
+
   const { projectId } = useParams();
   const {
     openView: isModalCreateTaskOpen,
@@ -58,6 +61,12 @@ const IterationDisplay = ({ iterationId }: Props) => {
     });
   };
 
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
+
   const { data: iteration, refetch: refetchIteration } = useQuery({
     queryKey: [iterationApi.getTasksKey, iterationId],
     queryFn: ({ signal }) => iterationApi.getTasks(signal, iterationId),
@@ -68,12 +77,6 @@ const IterationDisplay = ({ iterationId }: Props) => {
       setSelectedIteration(iteration);
     }
   }, [iteration]);
-
-  const { data: statusList } = useQuery({
-    queryKey: [taskApi.getTaskStatusesKey, projectId],
-    queryFn: ({ signal }) => taskApi.getTaskStatuses(signal, projectId!),
-    initialData: [],
-  });
 
   const onToggleCollapseTask = (taskId: string) => {
     setCollapsedTasks((c) => {
@@ -93,7 +96,6 @@ const IterationDisplay = ({ iterationId }: Props) => {
   };
 
   const { changeTaskStatusMutation } = useTaskActions();
-  const queryClient = useQueryClient();
 
   const onDragEnd: OnDragEndResponder = (result) => {
     if (selectedIteration) {

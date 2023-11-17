@@ -47,14 +47,6 @@ export interface IGetPriorityListResponse {
   title: string;
 }
 
-export interface IGetStatusListResponse {
-  boardStatusId: string;
-  title: string;
-  boardId: string;
-  order: number;
-  baseResponse: string | null;
-}
-
 export interface IGetTypeListResponse {
   typeId: string;
   title: string;
@@ -68,4 +60,24 @@ export interface IUpdateTaskPayload {
 export interface IChangeTaskStatusPayload {
   id: string;
   statusId: string;
+}
+export interface ITrashBinRecord {
+  taskId: string;
+  title: string;
+  description: string;
+  startDate: Date;
+  dueDate: Date;
+  expireTime: Date;
+  createTime: Date;
+  deleteAt: Date;
+  isDelete: boolean;
+  assignTo: string;
+  createBy: string;
+  typeName: string;
+  statusName: string;
+  statusId: string;
+  typeId: string;
+  priorityName: string;
+  interationName: string;
+  subTask: string[];
 }

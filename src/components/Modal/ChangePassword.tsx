@@ -9,6 +9,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Form, Input, Modal } from "antd";
 import { RuleObject } from "antd/es/form";
+import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -34,6 +35,10 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
       onSuccess: () => {
         toast.success("Change Password Successfully!");
         onCancel();
+      },
+      onError: (err: AxiosError<any>) => {
+        console.error(err);
+        toast.error(err.response?.data);
       },
     }
   );
@@ -90,7 +95,18 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
             rules={[
               {
                 required: true,
-                validator: (_, password) => handleValidatePassword(password),
+                validator: async (_, password) => {
+                  const currentPassword = form.getFieldValue("currentPassword");
+                  if (password === currentPassword) {
+                    return Promise.reject(
+                      "New password must be different from the Current Password"
+                    );
+                  }
+                  return (
+                    handleValidatePassword(password) ||
+                    Promise.reject("Invalid password")
+                  );
+                },
               },
             ]}
           >

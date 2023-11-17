@@ -2,12 +2,14 @@ import pick from "lodash/pick";
 
 export const paths = {
   dashboard: "/",
+  accessDenied: "/access-denied",
+  notFound: "/not-found",
   login: "/login",
   register: "/register",
   forgotPassword: "/forgot-password",
   verifyAccount: "/verify-account",
   user: "/user",
-  joinProject: "/user/invite",
+  joinProject: "/invitation",
   notification: "/user/notifications",
   project: {
     index: "/project",

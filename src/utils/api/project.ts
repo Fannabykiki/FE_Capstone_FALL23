@@ -7,6 +7,7 @@ import {
   IUpdateInfoProjectPayload,
   IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
+  IUpdateProjectPayload,
 } from "@/interfaces/project";
 import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
@@ -50,9 +51,9 @@ const getDetail = (
     signal,
   }).then((resp) => resp.data);
 
-const remove = async (id: string) =>
+const deleteProject = async (projectId: string) =>
   axiosClient({
-    url: `/api/project-management/projects/${id}`,
+    url: `/api/project-management/projects/${projectId}`,
     method: HTTP_METHODS.DELETE,
   }).then((resp) => resp.data);
 
@@ -69,6 +70,13 @@ const getInfo = (
 const updateInfo = async ({ id, data }: IUpdateInfoProjectPayload) =>
   axiosClient({
     url: `/api/project-management/projects/privacy/${id}`,
+    method: HTTP_METHODS.PUT,
+    data: data,
+  }).then((resp) => resp.data);
+
+const updateProject = async ({ id, data }: IUpdateProjectPayload) =>
+  axiosClient({
+    url: `/api/project-management/projects/info/${id}`,
     method: HTTP_METHODS.PUT,
     data: data,
   }).then((resp) => resp.data);
@@ -97,13 +105,11 @@ const updatePrivacy = async ({
     data: { privacyStatus },
   }).then((resp) => resp.data);
 
-const restore = async (id: string) =>
+const restoreProject = async (projectId: string) =>
   axiosClient({
-    url: `/api/project-management/project/restoration/${id}`,
+    url: `/api/project-management/project/restoration/${projectId}`,
     method: HTTP_METHODS.PUT,
   }).then((resp) => resp.data);
-
-// ======================================= Admin =======================================
 
 const getAdminProjects = async (
   signal: AbortSignal | undefined,
@@ -135,12 +141,14 @@ const getAdminUsersAnalyzationByUserId = async (
 
 const getWorkItemListByProjectId = async (
   signal: AbortSignal | undefined,
-  projectId: string | undefined
+  projectId: string | undefined,
+  params: { [key: string]: string | undefined }
 ) =>
   axiosClient({
     url: `/api/project-management/projects/tasks/${projectId}`,
     method: HTTP_METHODS.GET,
     signal,
+    params,
   }).then((resp) => resp.data);
 
 const getListUserInProjectByProjectId = (
@@ -163,6 +171,34 @@ const getLisInterationInProjectByProjectId = (
     signal,
   }).then((resp) => resp.data);
 
+const sendEmailInvite = (data: { email: string[]; projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/invitation",
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
+const acceptEmailInvite = (params: { email: string; projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/accept-invitation",
+    method: HTTP_METHODS.POST,
+    params,
+  }).then((resp) => resp.data);
+
+const declineEmailInvite = (params: { email: string; projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/decline-invitation",
+    method: HTTP_METHODS.POST,
+    params,
+  }).then((resp) => resp.data);
+
+const removeMember = (params: { memberId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/remove-member",
+    method: HTTP_METHODS.POST,
+    params,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -172,8 +208,10 @@ export const projectApi = {
   getPermissionKey: "projectGetPermission",
   getDetail,
   getDetailKey: "projectGetDetail",
-  remove,
-  removeKey: "projectRemove",
+  updateProject,
+  updateProjectKey: "updateProject",
+  deleteProject,
+  deleteProjectKey: "deleteProjectKey",
   getInfo,
   getInfoKey: "projectGetInfo",
   updateInfo,
@@ -184,8 +222,8 @@ export const projectApi = {
   updateMemberRoleKey: "projectUpdateMemberRole",
   updatePrivacy,
   updatePrivacyKey: "projectUpdatePrivacy",
-  restore,
-  restoreKey: "projectRestore",
+  restoreProject,
+  restoreProjectKey: "restoreProjectKey",
   getWorkItemListByProjectId,
   getWorkItemListByProjectIdKey: "getWorkItemListByProjectIdKey",
   getListUserInProjectByProjectId,
@@ -193,11 +231,18 @@ export const projectApi = {
   getLisInterationInProjectByProjectId,
   getLisInterationInProjectByProjectIdKey:
     "getLisInterationInProjectByProjectIdKey",
-  //Admin
+  sendEmailInvite,
+  sendEmailInviteKey: "sendEmailInviteKey",
   getAdminProjects,
   getAdminProjectsKey: "getAdminProjectsKey",
   getAdminProjectsAnalyzation,
   getAdminProjectsAnalyzationKey: "getAdminProjectsAnalyzationKey",
   getAdminUsersAnalyzationByUserId,
   getAdminUsersAnalyzationByUserIdKey: "getAdminUsersAnalyzationByUserIdKey",
+  acceptEmailInvite,
+  acceptEmailInviteKey: "acceptEmailInviteKey",
+  declineEmailInvite,
+  declineEmailInviteKey: "declineEmailInviteKey",
+  removeMember,
+  removeMemberKey: "removeMemberKey",
 };

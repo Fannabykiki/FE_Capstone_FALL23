@@ -24,6 +24,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
 import { paths } from "@/routers/paths";
 import Brand from "../Layout/Brand";
+import { randomBgColor } from "@/utils/random";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -167,7 +168,12 @@ export default function ProjectSider() {
               <Brand menuCollapse={menuCollapse} />
             </div>
             <div className="px-2 flex gap-x-4 items-center">
-              <Avatar shape="square">T</Avatar>
+              <Avatar
+                style={{ backgroundColor: randomBgColor() }}
+                shape="square"
+              >
+                {detail?.projectName.charAt(0).toUpperCase()}
+              </Avatar>
               {!menuCollapse && (
                 <span className="font-semibold text-lg">
                   {detail?.projectName}

@@ -1,9 +1,15 @@
-import { useState } from "react";
-import { HeaderRender } from "antd/es/calendar/generateCalendar";
-import dayjs, { Dayjs } from "dayjs";
+import React, { useState } from "react";
+import {
+  Calendar,
+  CalendarProps,
+  ToolbarProps,
+  dayjsLocalizer,
+} from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { RangePickerProps } from "antd/es/date-picker";
+import dayjs from "dayjs";
 import {
   Button,
-  Calendar,
   Card,
   Col,
   Input,
@@ -11,6 +17,7 @@ import {
   Select,
   Space,
   Typography,
+  DatePicker,
 } from "antd";
 import {
   LeftOutlined,
@@ -22,17 +29,15 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 
+const localizer = dayjsLocalizer(dayjs);
+const { RangePicker } = DatePicker;
+
+const WrapperCalendar = Calendar as unknown as React.FC<
+  CalendarProps<(typeof fakeData)[number]>
+>;
+
 const ProjectCalendar = () => {
-  const [value, setValue] = useState(dayjs());
   const [isCardVisible, setIsCardVisible] = useState(false);
-
-  const onSelect = (newValue: Dayjs) => {
-    setValue(newValue);
-  };
-
-  const onPanelChange = (newValue: Dayjs) => {
-    setValue(newValue);
-  };
 
   const handleToggleCardVisibility = () => {
     setIsCardVisible((prev) => !prev);
@@ -91,39 +96,68 @@ const ProjectCalendar = () => {
           </Row>
         </Card>
       )}
-      <Calendar
-        headerRender={HeaderCalendar}
-        value={value}
-        onSelect={onSelect}
-        onPanelChange={onPanelChange}
-      />
+      <div className="bg-white shadow-custom">
+        <WrapperCalendar
+          localizer={localizer}
+          events={fakeData}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: "75vh" }}
+          views={["month"]}
+          components={{ toolbar: CustomToolbar }}
+          onSelectEvent={(event) => console.log("event", event)}
+          // onShowMore={onShowMore}
+          eventPropGetter={(myEventsList) => {
+            const backgroundColor =
+              myEventsList.status === "bug"
+                ? "#F5B7B1"
+                : myEventsList.status === "subTask"
+                ? "#ABEBC6"
+                : "#F9E79F";
+            const color =
+              myEventsList.colorText === "bug"
+                ? "#E74C3C"
+                : myEventsList.colorText === "subTask"
+                ? "#28B463"
+                : "#D4AC0D";
+            return { style: { backgroundColor, color } };
+          }}
+        />
+      </div>
     </Space>
   );
 };
 
-const HeaderCalendar: HeaderRender<Dayjs> = (params) => (
-  <Row gutter={12} className="flex items-center p-4">
-    <Col span={1}>
-      <LeftOutlined
-        className="text-3xl"
-        onClick={() =>
-          params.onChange(dayjs(params.value).subtract(1, "month"))
-        }
-      />
-    </Col>
-    <Col span={1}>
-      <RightOutlined
-        className="text-3xl"
-        onClick={() => params.onChange(dayjs(params.value).add(1, "month"))}
-      />
-    </Col>
-    <Col span={10}>
-      <Typography.Text className="text-3xl font-medium select-none">
-        {params.value.format("MMMM YYYY")}
-      </Typography.Text>
-    </Col>
-  </Row>
-);
+const CustomToolbar = (toolbar: ToolbarProps) => {
+  const handleChange = (values: RangePickerProps["value"]) => {
+    console.log("values", values);
+  };
+
+  return (
+    <Row gutter={12} className="flex items-center p-4">
+      <Col span={1}>
+        <LeftOutlined
+          className="text-3xl"
+          onClick={() => toolbar.onNavigate("PREV")}
+        />
+      </Col>
+      <Col span={1}>
+        <RightOutlined
+          className="text-3xl"
+          onClick={() => toolbar.onNavigate("NEXT")}
+        />
+      </Col>
+      <Col span={10}>
+        <Typography.Text className="text-3xl font-medium select-none">
+          {dayjs(toolbar.label).format("MMMM YYYY")}
+        </Typography.Text>
+      </Col>
+      <Col span={12} className="flex justify-end">
+        <RangePicker onChange={handleChange} />
+      </Col>
+    </Row>
+  );
+};
 
 const TYPE_OPTION = [
   {
@@ -172,6 +206,126 @@ const STATUS_OPTION = [
   {
     label: "Close",
     value: "close",
+  },
+];
+
+const fakeData = [
+  {
+    title: "All Day Event very long title",
+    allDay: true,
+    start: new Date(2023, 11, 1),
+    end: new Date(2023, 11, 2),
+    status: "bug",
+    colorText: "bug",
+  },
+  {
+    title: "Long Event",
+    start: new Date(2023, 11, 7),
+    end: new Date(2023, 11, 10),
+    status: "subTask",
+    colorText: "subTask",
+  },
+  {
+    title: "DTS STARTS",
+    start: new Date(2023, 11, 13, 0, 0, 0),
+    end: new Date(2023, 11, 20, 0, 0, 0),
+    status: "subTask",
+    colorText: "subTask",
+  },
+  {
+    title: "DTS ENDS",
+    start: new Date(2023, 11, 6, 0, 0, 0),
+    end: new Date(2023, 11, 13, 0, 0, 0),
+    status: "bug",
+    colorText: "bug",
+  },
+  {
+    title: "Some Event",
+    start: new Date(2023, 11, 9, 0, 0, 0),
+    end: new Date(2023, 11, 9, 0, 0, 0),
+    status: "subTask",
+    colorText: "subTask",
+  },
+  {
+    title: "Conference",
+    start: new Date(2023, 11, 11),
+    end: new Date(2023, 11, 13),
+    desc: "Big conference for important people",
+    status: "subTask",
+    colorText: "subTask",
+  },
+  {
+    title: "Meeting",
+    start: new Date(2023, 11, 12, 10, 30, 0, 0),
+    end: new Date(2023, 11, 12, 12, 30, 0, 0),
+    desc: "Pre-meeting meeting, to prepare for the meeting",
+    status: "subTask",
+    colorText: "subTask",
+  },
+  {
+    title: "Lunch",
+    start: new Date(2023, 11, 12, 12, 0, 0, 0),
+    end: new Date(2023, 11, 12, 13, 0, 0, 0),
+    desc: "Power lunch",
+    status: "task",
+    colorText: "task",
+  },
+  {
+    title: "Meeting",
+    start: new Date(2023, 11, 12, 14, 0, 0, 0),
+    end: new Date(2023, 11, 12, 15, 0, 0, 0),
+    status: "task",
+    colorText: "task",
+  },
+  {
+    title: "Happy Hour",
+    start: new Date(2023, 11, 13, 17, 0, 0, 0),
+    end: new Date(2023, 11, 15, 17, 30, 0, 0),
+    desc: "Most important meal of the day",
+    status: "bug",
+    colorText: "bug",
+  },
+  {
+    title: "Dinner",
+    start: new Date(2023, 11, 17, 20, 0, 0, 0),
+    end: new Date(2023, 11, 19, 21, 0, 0, 0),
+    status: "task",
+    colorText: "task",
+  },
+  {
+    title: "Birthday Party",
+    start: new Date(2023, 11, 13, 7, 0, 0),
+    end: new Date(2023, 11, 13, 10, 30, 0),
+    status: "task",
+    colorText: "task",
+  },
+  {
+    title: "Birthday Party 2",
+    start: new Date(2023, 11, 13, 7, 0, 0),
+    end: new Date(2023, 11, 13, 10, 30, 0),
+    status: "bug",
+    colorText: "bug",
+  },
+  {
+    title: "Birthday Party 3",
+    start: new Date(2023, 11, 13, 7, 0, 0),
+    end: new Date(2023, 11, 13, 10, 30, 0),
+    status: "task",
+    colorText: "task",
+  },
+  {
+    title: "Late Night Event",
+    start: new Date(2023, 11, 17, 19, 30, 0),
+    end: new Date(2023, 11, 18, 2, 0, 0),
+    status: "task",
+    colorText: "task",
+  },
+  {
+    title: "Multi-day Event",
+    start: new Date(2023, 11, 20, 19, 30, 0),
+    end: new Date(2023, 11, 22, 2, 0, 0),
+    status: "task",
+    colorText: "task",
   },
 ];
 

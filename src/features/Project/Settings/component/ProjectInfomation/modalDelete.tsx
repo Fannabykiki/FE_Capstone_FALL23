@@ -1,7 +1,13 @@
-import useProjectDetail from "@/hooks/useProjectDetail";
-import { Button, Form, Input, Modal, Space, Typography } from "antd";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Button, Input, Modal, Space, Typography } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+
+import useProjectDetail from "@/hooks/useProjectDetail";
+import { projectApi } from "@/utils/api/project";
+import { useAuthContext } from "@/context/Auth";
+import { paths } from "@/routers/paths";
 
 interface Props {
   isOpen: boolean;
@@ -9,15 +15,38 @@ interface Props {
 }
 
 export default function DeleteProject({ isOpen, handleClose }: Props) {
-  const { projectId } = useParams();
-  const { detail, actions } = useProjectDetail(projectId);
+  const { userInfo } = useAuthContext();
 
-  console.log(detail);
+  const { projectId } = useParams();
+
+  const { detail } = useProjectDetail(projectId);
+
+  const queryClient = useQueryClient();
 
   const [inputValue, setInputValue] = useState("");
   const [isInputValid, setIsInputValid] = useState(false);
 
+  const navigate = useNavigate();
+
+  const { mutate: deleteProject, isLoading: isRemoving } = useMutation({
+    mutationKey: [projectApi.deleteProjectKey],
+    mutationFn: projectApi.deleteProject,
+    onSuccess: async () => {
+      await queryClient.refetchQueries([
+        projectApi.getListByUserKey,
+        userInfo?.id,
+      ]);
+      toast.success("Delete project successfully!");
+      navigate(paths.user);
+    },
+    onError: () => {
+      toast.error("Has an error, please try again");
+    },
+  });
+
   const onCancel = () => {
+    setIsInputValid(false);
+    setInputValue("");
     handleClose();
   };
 
@@ -25,6 +54,11 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
     const value = e.target.value;
     setInputValue(value);
     setIsInputValid(value === detail?.projectName);
+  };
+
+  const handleSubmit = () => {
+    if (!projectId) return;
+    deleteProject(projectId);
   };
 
   return (
@@ -40,10 +74,9 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
           key="save"
           type="primary"
           danger
+          loading={isRemoving}
           disabled={!isInputValid}
-          onClick={() => {
-            handleClose();
-          }}
+          onClick={handleSubmit}
         >
           Delete
         </Button>,

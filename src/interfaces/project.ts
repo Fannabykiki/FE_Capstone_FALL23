@@ -27,6 +27,13 @@ export interface IUpdateInfoProjectPayload {
   data: Partial<ICreateProjectPayload>;
 }
 
+export interface IUpdateProject
+  extends Pick<IProject, "projectName" | "description"> {}
+export interface IUpdateProjectPayload {
+  id: string;
+  data: IUpdateProject;
+}
+
 export interface ICreateMemberRolePayload {
   roleName: string;
   description: string;
@@ -51,6 +58,8 @@ export interface IProject {
   deleteAt: string | null;
   expireAt: string | null;
   privacyStatus: boolean;
+  totalTaskCreated: number;
+  totalTaskCompleted: number;
   projectMembers: IProjectMember[];
 }
 

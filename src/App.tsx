@@ -1,11 +1,12 @@
 import { AuthContext } from "@/context/Auth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import { IAuthState } from "./interfaces/shared/state";
 import { JwtTokenInfo } from "./interfaces/user";
 import Routers from "./routers";
 import { userApi } from "./utils/api/user";
+import { taskApi } from "./utils/api/task";
 
 const checkTokenValid = () => {
   const token = localStorage.getItem("token");
@@ -38,6 +39,12 @@ function App() {
     },
   });
 
+  useQuery({
+    queryKey: [taskApi.getTaskTypeKey],
+    queryFn: async ({ signal }) => taskApi.getTaskType(signal),
+    staleTime: Infinity,
+  });
+
   useEffect(() => {
     const isTokenValid = checkTokenValid();
     setAuthenticate({ isAuthenticated: isTokenValid, userInfo: null });
@@ -50,13 +57,11 @@ function App() {
   }, [authenticate.isAuthenticated, getProfile]);
 
   return (
-    <div>
-      <AuthContext.Provider
-        value={{ ...authenticate, setAuthenticate, refetchProfile: getProfile }}
-      >
-        <Routers />
-      </AuthContext.Provider>
-    </div>
+    <AuthContext.Provider
+      value={{ ...authenticate, setAuthenticate, refetchProfile: getProfile }}
+    >
+      <Routers />
+    </AuthContext.Provider>
   );
 }
 

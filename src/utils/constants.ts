@@ -38,6 +38,11 @@ export const DATETIME_FORMAT = "DD/MM/YYYY HH:mm";
 
 export const REGEX_NUMBER = /\d/;
 
+export const REGEX_PHONE = /^[0-9]+$/;
+
+export const REGEXT_PHONE_VIETNAM =
+  /^(0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/;
+
 export const REGEX_SPECIAL_CHARACTER = /[~`!@#$%^&*()\-_+={}\[\]|\/:;"'<>,.?]/;
 
 export const REGEX_CHARACTER = /(?=.*[a-z])(?=.*[A-Z])/;

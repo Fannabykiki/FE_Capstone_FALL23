@@ -25,9 +25,11 @@ export default function useProjectDetail(projectId: string | undefined) {
     placeholderData: [],
   });
 
-  const { mutate: remove, isLoading: isRemoving } = useMutation({
-    mutationKey: [projectApi.removeKey],
-    mutationFn: projectApi.remove,
+  // const { data } = useQuery({
+  useQuery({
+    queryKey: [taskApi.getKanbanTasksKey],
+    queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
+    enabled: Boolean(projectId),
   });
 
   const { mutate: updatePrivacyStatus, isLoading: isUpdatingPrivacyStatus } =
@@ -41,8 +43,6 @@ export default function useProjectDetail(projectId: string | undefined) {
     iterations,
     actions: {
       isGettingDetail,
-      remove,
-      isRemoving,
       updatePrivacyStatus,
       isUpdatingPrivacyStatus,
       refetchDetail,

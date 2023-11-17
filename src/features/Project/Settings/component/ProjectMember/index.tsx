@@ -1,24 +1,66 @@
-import { randomBgColor } from "@/utils/random";
+import { useMemo } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserDeleteOutlined } from "@ant-design/icons";
+import { useParams } from "react-router-dom";
+import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 import {
   Avatar,
   Button,
   Card,
   Col,
   Divider,
-  List,
+  Modal,
   Row,
   Space,
   Table,
   Typography,
 } from "antd";
-import { ColumnsType } from "antd/es/table";
+
+import { IProjectMember } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { randomBgColor } from "@/utils/random";
 
 export default function ProjectMember() {
-  const columns: ColumnsType<any> = [
+  const { projectId } = useParams();
+
+  const [modal, contextHolder] = Modal.useModal();
+
+  const { data: memberList, refetch: refetchMemberList } = useQuery({
+    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+    queryFn: async ({ signal }) =>
+      projectApi.getListUserInProjectByProjectId(signal, projectId),
+    enabled: Boolean(projectId),
+  });
+
+  const { mutate: removeMember } = useMutation({
+    mutationKey: [projectApi.removeMemberKey],
+    mutationFn: projectApi.removeMember,
+    onSuccess: async () => {
+      await refetchMemberList();
+      toast.success("Delete member successfully");
+    },
+    onError: (err) => {
+      toast.error("Delete member failed");
+    },
+  });
+  const managerProject = useMemo(
+    () => memberList?.find((member) => member.isOwner),
+    [memberList]
+  );
+
+  const handleDelete = (memberId: string) => {
+    modal.confirm({
+      title: "Warning",
+      content: "Are you sure to delete this member?",
+      onOk: () => removeMember({ memberId }),
+    });
+  };
+
+  const columns: ColumnsType<IProjectMember> = [
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "fullname",
       width: "40%",
       render: (name, record) => (
         <Row>
@@ -39,19 +81,19 @@ export default function ProjectMember() {
       ),
     },
     {
-      title: "Type",
-      dataIndex: "type",
+      title: "Role",
+      dataIndex: "roleName",
       width: "20%",
     },
     {
       title: "Status",
-      dataIndex: "status",
+      dataIndex: "statusName",
       width: "20%",
       render: (status) => (
         <Row align="middle" className="gap-2">
           <Typography.Text
             className={`px-2 py-1 rounded font-medium ${
-              status === "Active"
+              status === "In Team"
                 ? "text-green-500 bg-[#43ff641a]"
                 : "text-red-500 bg-[#ef44441a]"
             }`}
@@ -65,70 +107,51 @@ export default function ProjectMember() {
       dataIndex: "action",
       width: "20%",
       align: "center",
-      render: () => (
+      render: (_, record) => (
         <Space size="middle">
-          <Button icon={<UserDeleteOutlined />}>Remove</Button>
+          <Button
+            icon={<UserDeleteOutlined />}
+            onClick={() => handleDelete(record.memberId)}
+          >
+            Remove
+          </Button>
         </Space>
       ),
-    },
-  ];
-
-  const data = [
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
-    },
-    {
-      name: "Phan Luong Nam",
-      email: "nam@gmail.com",
-      type: "Member",
-      status: "Active",
     },
   ];
 
   return (
     <Card className="min-h-screen">
       <Typography className="text-xl font-medium">Project Manager</Typography>
-      <Space className="mt-3">
-        <Row gutter={16}>
-          <Col span={6} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>N</Avatar>
+      <div className="mt-3">
+        <Row>
+          <Col span={1} className="flex justify-center items-center">
+            {managerProject ? (
+              <Avatar style={{ backgroundColor: randomBgColor() }}>
+                {managerProject.fullname.charAt(0).toUpperCase()}
+              </Avatar>
+            ) : null}
           </Col>
-          <Col span={18}>
-            <Typography.Title level={5} className="!m-0 min-h-[24px]">
-              Phan Luong Nam
-            </Typography.Title>
-            <Typography.Text className="min-h-[19px]">
-              nam@gmail.com
-            </Typography.Text>
+          <Col className="ml-3" span={19}>
+            {managerProject ? (
+              <>
+                <Typography.Title level={5} className="!m-0 min-h-[24px]">
+                  {managerProject.fullname}
+                </Typography.Title>
+                <Typography.Text className="min-h-[19px]">
+                  {managerProject.email}
+                </Typography.Text>
+              </>
+            ) : null}
           </Col>
         </Row>
-      </Space>
+      </div>
       <Divider />
       <Typography className="text-xl font-medium mb-5">
         Project Member
       </Typography>
-      <Table dataSource={data} columns={columns} />
+      <Table dataSource={memberList} columns={columns} />
+      {contextHolder}
     </Card>
   );
 }

@@ -1,10 +1,11 @@
 import { useAuthContext } from "@/context/Auth";
 import { Gender, IUpdateProfile } from "@/interfaces/user";
 import { userApi } from "@/utils/api/user";
-import { classNames } from "@/utils/common";
+import { classNames, handleValidatePhoneNumber } from "@/utils/common";
 import { DATE_FORMAT } from "@/utils/constants";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker, Form, Input, Modal, Radio, Typography } from "antd";
+import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -15,14 +16,13 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
   const [form] = Form.useForm<IUpdateProfile>();
 
   const { userInfo, refetchProfile } = useAuthContext();
-
   const initialValues = {
-    address: "",
-    doB: null,
-    fullname: "",
-    gender: Gender.Male,
-    phoneNumber: "",
-    userName: "",
+    address: userInfo?.address,
+    doB: userInfo?.doB ? dayjs(userInfo?.doB) : null,
+    fullname: userInfo?.fullname,
+    gender: userInfo?.gender,
+    phoneNumber: userInfo?.phoneNumber,
+    userName: userInfo?.userName,
   };
 
   const { mutate: updateProfile, isLoading } = useMutation({
@@ -41,6 +41,15 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
         onSuccess: () => {
           toast.success("Update profile succeed");
           refetchProfile();
+        },
+        onError: (error: any) => {
+          if (typeof error.response?.data?.errors === "object") {
+            Object.keys(error.response?.data?.errors).forEach((key) => {
+              toast.error(error.response?.data?.errors[key]?.[0]);
+            });
+          } else {
+            toast.error("Has an error, please try again");
+          }
         },
       }
     );
@@ -79,6 +88,7 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
             rules={[
               {
                 required: true,
+                max: 32,
               },
             ]}
           >
@@ -90,6 +100,7 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
             rules={[
               {
                 required: true,
+                max: 64,
               },
             ]}
           >
@@ -101,6 +112,7 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
             rules={[
               {
                 required: true,
+                max: 100,
               },
             ]}
           >
@@ -112,6 +124,8 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
             rules={[
               {
                 required: true,
+                validator: (_, phoneNumber) =>
+                  handleValidatePhoneNumber(phoneNumber),
               },
             ]}
           >

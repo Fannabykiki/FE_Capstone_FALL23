@@ -4,8 +4,10 @@ import jwtDecode from "jwt-decode";
 import {
   DATETIME_FORMAT,
   DATE_FORMAT,
+  REGEXT_PHONE_VIETNAM,
   REGEX_CHARACTER,
   REGEX_NUMBER,
+  REGEX_PHONE,
   REGEX_SPECIAL_CHARACTER,
   SAFE_DAY_TIL_DUE_DATE,
   WARNING_DAY_TIL_DUE_DATE,
@@ -93,6 +95,23 @@ const handleValidatePassword = async (password: string) => {
   }
 };
 
+const handleValidatePhoneNumber = async (phoneNumber: string) => {
+  switch (true) {
+    case phoneNumber.length < 10:
+      return Promise.reject(
+        new Error("Phone number must be at least 10 characters")
+      );
+    case !REGEX_PHONE.test(phoneNumber):
+      return Promise.reject(
+        new Error("Phone number must contain only numbers")
+      );
+    case !REGEXT_PHONE_VIETNAM.test(phoneNumber):
+      return Promise.reject(new Error("Invalid phone number"));
+    default:
+      break;
+  }
+};
+
 export {
   classNames,
   makePath,
@@ -102,4 +121,5 @@ export {
   defaultFormatDateTime,
   calcTaskDueDateColor,
   handleValidatePassword,
+  handleValidatePhoneNumber,
 };

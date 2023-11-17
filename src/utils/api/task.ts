@@ -5,7 +5,7 @@ import {
   ICreateTaskRequest,
   ITaskStatus,
   IGetTypeListResponse,
-  IGetStatusListResponse,
+  ITrashBinRecord,
   IGetPriorityListResponse,
   IUpdateTaskPayload,
   IChangeTaskStatusPayload,
@@ -29,18 +29,6 @@ const getTaskById = (taskId: string): Promise<ITask> => {
     url: `/api/task-management/task/${taskId}`,
     method: HTTP_METHODS.GET,
   }).then((resp) => resp.data);
-};
-
-const getTaskStatuses = (
-  signal: AbortSignal | undefined,
-  projectId: string
-): Promise<ITaskStatus[]> => {
-  return axiosClient({
-    url: "/api/task-management/tasks/status",
-    method: HTTP_METHODS.GET,
-    params: { projectId },
-    signal,
-  }).then((resp) => sortBy(resp.data || [], "order"));
 };
 
 const postTaskStatus = (status: ITaskStatus): Promise<ITaskStatus> => {
@@ -102,7 +90,7 @@ const getTaskPriority = (
 const getTaskStatus = (
   signal: AbortSignal | undefined,
   projectId: string | undefined
-): Promise<IGetStatusListResponse[]> => {
+): Promise<ITaskStatus[]> => {
   return axiosClient({
     url: "/api/task-management/tasks/status",
     method: HTTP_METHODS.GET,
@@ -110,7 +98,7 @@ const getTaskStatus = (
     params: {
       projectId,
     },
-  }).then((resp) => resp.data);
+  }).then((resp) => sortBy(resp.data || [], "order"));
 };
 
 const getTaskType = (
@@ -131,6 +119,17 @@ const changeTaskStatus = ({
     url: `/api/task-management/tasks/change-status/${id}`,
     method: HTTP_METHODS.PUT,
     data: { statusId },
+  });
+};
+const getAllTaskInTrashBin = (
+  signal: AbortSignal | undefined,
+  params: { [key: string]: string | undefined }
+): Promise<ITrashBinRecord[]> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/bin",
+    method: HTTP_METHODS.GET,
+    signal,
+    params,
   }).then((resp) => resp.data);
 };
 
@@ -139,8 +138,6 @@ export const taskApi = {
   getKanbanTasksKey: "taskGetKanbanTasks",
   getTaskById,
   getTaskByIdKey: "taskGetTaskById",
-  getTaskStatuses,
-  getTaskStatusesKey: "taskGetTaskStatuses",
   postTaskStatus,
   postTaskStatusKey: "taskPostTaskStatus",
   getTaskTypes,
@@ -161,4 +158,6 @@ export const taskApi = {
   getTaskTypeKey: "taskgetTaskTypeKey",
   changeTaskStatus,
   changeTaskStatusKey: "taskChangeTaskStatus",
+  getAllTaskInTrashBin,
+  getAllTaskInTrashBinKey: "taskgetAllTaskInTrashBinKey",
 };
