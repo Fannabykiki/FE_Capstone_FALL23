@@ -1,33 +1,63 @@
-import { projectApi } from "@/utils/api/project";
-import { randomBgColor } from "@/utils/random";
+import { useMemo } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserDeleteOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 import {
   Avatar,
   Button,
   Card,
   Col,
   Divider,
+  Modal,
   Row,
   Space,
   Table,
   Typography,
 } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { useParams } from "react-router-dom";
+
+import { IProjectMember } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { randomBgColor } from "@/utils/random";
 
 export default function ProjectMember() {
   const { projectId } = useParams();
 
-  const { data: memberList } = useQuery({
+  const [modal, contextHolder] = Modal.useModal();
+
+  const { data: memberList, refetch: refetchMemberList } = useQuery({
     queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
     queryFn: async ({ signal }) =>
       projectApi.getListUserInProjectByProjectId(signal, projectId),
+    enabled: Boolean(projectId),
   });
 
-  const managerProject = memberList?.find((member) => member.isOwner);
+  const { mutate: removeMember } = useMutation({
+    mutationKey: [projectApi.removeMemberKey],
+    mutationFn: projectApi.removeMember,
+    onSuccess: async () => {
+      await refetchMemberList();
+      toast.success("Delete member successfully");
+    },
+    onError: (err) => {
+      toast.error("Delete member failed");
+    },
+  });
+  const managerProject = useMemo(
+    () => memberList?.find((member) => member.isOwner),
+    [memberList]
+  );
 
-  const columns: ColumnsType<any> = [
+  const handleDelete = (memberId: string) => {
+    modal.confirm({
+      title: "Warning",
+      content: "Are you sure to delete this member?",
+      onOk: () => removeMember({ memberId }),
+    });
+  };
+
+  const columns: ColumnsType<IProjectMember> = [
     {
       title: "Name",
       dataIndex: "fullname",
@@ -77,9 +107,14 @@ export default function ProjectMember() {
       dataIndex: "action",
       width: "20%",
       align: "center",
-      render: () => (
+      render: (_, record) => (
         <Space size="middle">
-          <Button icon={<UserDeleteOutlined />}>Remove</Button>
+          <Button
+            icon={<UserDeleteOutlined />}
+            onClick={() => handleDelete(record.memberId)}
+          >
+            Remove
+          </Button>
         </Space>
       ),
     },
@@ -116,6 +151,7 @@ export default function ProjectMember() {
         Project Member
       </Typography>
       <Table dataSource={memberList} columns={columns} />
+      {contextHolder}
     </Card>
   );
 }

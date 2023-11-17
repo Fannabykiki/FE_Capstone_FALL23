@@ -9,7 +9,7 @@ export const paths = {
   forgotPassword: "/forgot-password",
   verifyAccount: "/verify-account",
   user: "/user",
-  joinProject: "/user/invite",
+  joinProject: "/invitation",
   notification: "/user/notifications",
   project: {
     index: "/project",
