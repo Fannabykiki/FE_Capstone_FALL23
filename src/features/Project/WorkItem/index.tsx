@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { debounce } from "lodash";
 import dayjs from "dayjs";
 import {
   BugFilled,
@@ -23,18 +22,19 @@ import {
   Input,
   Select,
 } from "antd";
+import { projectApi } from "@/utils/api/project";
+import { IWorkItemList } from "@/interfaces/project";
+import useDetailView from "@/hooks/useDetailView";
+import { CreateTask } from "@/components";
 
-import CreateWorkitem from "@/features/Project/WorkItem/Modal/CreateWorkitem";
 import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
 import { convertToODataParams } from "@/utils/convertToODataParams";
-import { IWorkItemList } from "@/interfaces/project";
-import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
 import { taskApi } from "@/utils/api/task";
+import { debounce } from "lodash";
 
 export default function WorkItem() {
-  const [isModalCreateOpen, setIsModalCreateOpen] = useState(false);
   const [isCardVisible, setIsCardVisible] = useState(false);
 
   const { projectId } = useParams();
@@ -89,6 +89,11 @@ export default function WorkItem() {
     enabled: Boolean(projectId),
   });
 
+  const {
+    onOpenView: handleOpenModalCreate,
+    onCloseView: handleCloseModalCreate,
+    openView: isModalCreateOpen,
+  } = useDetailView();
   const handleChange = (fieldName: string) => (value: string) => {
     setSearchParams((prev) => {
       if (!value) {
@@ -98,14 +103,6 @@ export default function WorkItem() {
       }
       return prev;
     });
-  };
-
-  const handleOpenModalCreate = () => {
-    setIsModalCreateOpen(true);
-  };
-
-  const handleCloseModalCreate = () => {
-    setIsModalCreateOpen(false);
   };
 
   const handleToggleCardVisibility = () => {
@@ -133,9 +130,12 @@ export default function WorkItem() {
 
   return (
     <>
-      <CreateWorkitem
+      <CreateTask
         isOpen={isModalCreateOpen}
         handleClose={handleCloseModalCreate}
+        onSuccess={() =>
+          queryClient.refetchQueries([projectApi.getWorkItemListByProjectIdKey])
+        }
       />
 
       <div className="flex justify-between items-center">

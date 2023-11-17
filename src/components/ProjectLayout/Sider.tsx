@@ -7,6 +7,7 @@ import {
   DoubleLeftOutlined,
   DoubleRightOutlined,
   InboxOutlined,
+  LayoutOutlined,
   LineChartOutlined,
   SettingOutlined,
   SnippetsOutlined,
@@ -70,9 +71,9 @@ export default function ProjectSider() {
         icon: <TableOutlined width={iconSize} height={iconSize} />,
         children: [
           {
-            label: "Work Items",
-            key: generatePath(paths.project.tasks, { projectId }),
-            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
+            label: "Kanban",
+            key: generatePath(paths.project.kanban, { projectId }),
+            icon: <LayoutOutlined width={iconSize} height={iconSize} />,
           },
           {
             label: "Sprints",
@@ -84,6 +85,11 @@ export default function ProjectSider() {
                 height={iconSize}
               />
             ),
+          },
+          {
+            label: "Tasks",
+            key: generatePath(paths.project.tasks, { projectId }),
+            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
           },
           {
             label: "Calendar",

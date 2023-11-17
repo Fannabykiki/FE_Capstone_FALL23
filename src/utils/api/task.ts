@@ -8,6 +8,7 @@ import {
   ITrashBinRecord,
   IGetPriorityListResponse,
   IUpdateTaskPayload,
+  IChangeTaskStatusPayload,
 } from "@/interfaces/task";
 import { sortBy } from "lodash";
 
@@ -53,7 +54,7 @@ const createTask = (task: ICreateTaskRequest): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const createSubtask = (subtask: ITask): Promise<ITask> => {
+const createSubtask = (subtask: ICreateTaskRequest): Promise<ITask> => {
   return axiosClient({
     url: "/api/task-management/tasks/subtask",
     method: HTTP_METHODS.POST,
@@ -110,6 +111,16 @@ const getTaskType = (
   }).then((resp) => resp.data);
 };
 
+const changeTaskStatus = ({
+  id,
+  statusId,
+}: IChangeTaskStatusPayload): Promise<any> => {
+  return axiosClient({
+    url: `/api/task-management/tasks/change-status/${id}`,
+    method: HTTP_METHODS.PUT,
+    data: { statusId },
+  });
+};
 const getAllTaskInTrashBin = (
   signal: AbortSignal | undefined,
   params: { [key: string]: string | undefined }
@@ -145,6 +156,8 @@ export const taskApi = {
   getTaskStatusKey: "taskgetTaskStatusKey",
   getTaskType,
   getTaskTypeKey: "taskgetTaskTypeKey",
+  changeTaskStatus,
+  changeTaskStatusKey: "taskChangeTaskStatus",
   getAllTaskInTrashBin,
   getAllTaskInTrashBinKey: "taskgetAllTaskInTrashBinKey",
 };

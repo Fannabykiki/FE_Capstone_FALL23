@@ -26,10 +26,16 @@ export default function useTaskActions() {
     mutationFn: taskApi.deleteTask,
   });
 
+  const changeTaskStatusMutation = useMutation({
+    mutationKey: [taskApi.changeTaskStatusKey],
+    mutationFn: taskApi.changeTaskStatus,
+  });
+
   return {
     createTaskMutation,
     createSubtaskMutation,
     updateTaskMutation,
     deleteTaskMutation,
+    changeTaskStatusMutation,
   };
 }
