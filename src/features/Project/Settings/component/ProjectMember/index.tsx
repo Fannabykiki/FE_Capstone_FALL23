@@ -57,13 +57,13 @@ export default function ProjectMember() {
     },
     {
       title: "Status",
-      dataIndex: "status",
+      dataIndex: "statusName",
       width: "20%",
       render: (status) => (
         <Row align="middle" className="gap-2">
           <Typography.Text
             className={`px-2 py-1 rounded font-medium ${
-              status === "Active"
+              status === "In Team"
                 ? "text-green-500 bg-[#43ff641a]"
                 : "text-red-500 bg-[#ef44441a]"
             }`}
