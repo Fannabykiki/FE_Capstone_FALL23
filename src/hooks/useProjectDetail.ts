@@ -25,14 +25,6 @@ export default function useProjectDetail(projectId: string | undefined) {
     placeholderData: [],
   });
 
-  const kanbanIteration = useQuery({
-    queryKey: [taskApi.getKanbanTasksKey],
-    queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
-    enabled: Boolean(projectId),
-  });
-
-  console.log(kanbanIteration);
-
   const { mutate: updatePrivacyStatus, isLoading: isUpdatingPrivacyStatus } =
     useMutation({
       mutationKey: [projectApi.updatePrivacyKey],
