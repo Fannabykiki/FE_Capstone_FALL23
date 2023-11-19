@@ -1,13 +1,17 @@
 import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useParams, useSearchParams } from "react-router-dom";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { RangePickerProps } from "antd/es/date-picker";
+import debounce from "lodash/debounce";
+import buildQuery from "odata-query";
+import dayjs from "dayjs";
 import {
   Calendar,
   CalendarProps,
   ToolbarProps,
   dayjsLocalizer,
 } from "react-big-calendar";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import { RangePickerProps } from "antd/es/date-picker";
-import dayjs from "dayjs";
 import {
   Button,
   Card,
@@ -29,11 +33,17 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 
+import { IWorkItemList } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { STATUS_COLOR } from "@/utils/constants";
+import { ITaskStatus } from "@/interfaces/task";
+import { taskApi } from "@/utils/api/task";
+
 const localizer = dayjsLocalizer(dayjs);
 const { RangePicker } = DatePicker;
 
 const WrapperCalendar = Calendar as unknown as React.FC<
-  CalendarProps<(typeof fakeData)[number]>
+  CalendarProps<IWorkItemList>
 >;
 
 const ProjectCalendar = () => {
@@ -42,6 +52,92 @@ const ProjectCalendar = () => {
   const handleToggleCardVisibility = () => {
     setIsCardVisible((prev) => !prev);
   };
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const { projectId } = useParams();
+
+  const queryClient = useQueryClient();
+
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
+
+  const handleChange = (fieldName: string) => (value: string) => {
+    setSearchParams((prev) => {
+      if (!value) {
+        prev.delete(fieldName);
+      } else {
+        prev.set(fieldName, value);
+      }
+      return prev;
+    });
+  };
+
+  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchParams((prev) => {
+      if (!e.target.value) {
+        prev.delete("search");
+      } else {
+        prev.set("search", e.target.value);
+      }
+      return prev;
+    });
+  }, 1000);
+
+  const { data } = useQuery<IWorkItemList[]>({
+    queryKey: [
+      projectApi.getWorkItemListByProjectIdKey,
+      // searchParams.get("type"),
+      searchParams.get("status"),
+      // searchParams.get("interation"),
+      searchParams.get("startDate"),
+      searchParams.get("endDate"),
+      searchParams.get("search"),
+    ],
+    queryFn: async ({ signal }) =>
+      projectApi.getWorkItemListByProjectId(
+        signal,
+        projectId,
+        buildQuery({
+          filter: {
+            taskStatus: searchParams.get("status") || undefined,
+            "tolower(title)": {
+              contains: searchParams.get("search")?.toLowerCase(),
+            },
+            or: [
+              {
+                startDate: {
+                  ge: searchParams.get("startDate")
+                    ? dayjs(searchParams.get("startDate"))
+                        .startOf("day")
+                        .toDate()
+                    : undefined,
+                  le: searchParams.get("endDate")
+                    ? dayjs(searchParams.get("endDate")).endOf("day").toDate()
+                    : undefined,
+                },
+              },
+              {
+                dueDate: {
+                  ge: searchParams.get("startDate")
+                    ? dayjs(searchParams.get("startDate"))
+                        .startOf("day")
+                        .toDate()
+                    : undefined,
+                  le: searchParams.get("endDate")
+                    ? dayjs(searchParams.get("endDate")).endOf("day").toDate()
+                    : undefined,
+                },
+              },
+            ],
+          },
+        })
+      ),
+    enabled: Boolean(projectId),
+  });
 
   return (
     <Space direction="vertical" className="w-full gap-5">
@@ -69,9 +165,11 @@ const ProjectCalendar = () => {
             <Col span={8}>
               <Input
                 bordered={false}
-                placeholder="Filter by Task"
+                placeholder="Filter by title"
                 prefix={<SearchOutlined />}
                 className="w-full"
+                defaultValue={searchParams.get("search") || ""}
+                onChange={handleSearch}
               />
             </Col>
             <Col span={6}>
@@ -80,17 +178,21 @@ const ProjectCalendar = () => {
                 options={TYPE_OPTION}
                 className="w-full"
                 placeholder="Filter by Role"
+                disabled
               />
             </Col>
             <Col span={10}>
               <Select
-                allowClear
-                mode="multiple"
+                options={statusList.map((status) => ({
+                  label: status.title,
+                  value: status.title,
+                }))}
                 className="w-full"
                 placeholder="Filter by Status"
-                // onChange={handleChange}
-                options={STATUS_OPTION}
+                defaultValue={searchParams.get("status")}
+                onChange={handleChange("status")}
                 bordered={false}
+                allowClear
               />
             </Col>
           </Row>
@@ -99,28 +201,22 @@ const ProjectCalendar = () => {
       <div className="bg-white shadow-custom">
         <WrapperCalendar
           localizer={localizer}
-          events={fakeData}
-          startAccessor="start"
-          endAccessor="end"
+          events={data}
+          startAccessor="startDate"
+          endAccessor="dueDate"
           style={{ height: "75vh" }}
           views={["month"]}
           components={{ toolbar: CustomToolbar }}
           onSelectEvent={(event) => console.log("event", event)}
           // onShowMore={onShowMore}
           eventPropGetter={(myEventsList) => {
-            const backgroundColor =
-              myEventsList.status === "bug"
-                ? "#F5B7B1"
-                : myEventsList.status === "subTask"
-                ? "#ABEBC6"
-                : "#F9E79F";
-            const color =
-              myEventsList.colorText === "bug"
-                ? "#E74C3C"
-                : myEventsList.colorText === "subTask"
-                ? "#28B463"
-                : "#D4AC0D";
-            return { style: { backgroundColor, color } };
+            const { backgroundColor, color } = STATUS_COLOR[
+              myEventsList.taskStatus as keyof typeof STATUS_COLOR
+            ] || {
+              backgroundColor: "blue",
+              color: "green",
+            };
+            return { style: { backgroundColor, color, borderRadius: 3 } };
           }}
         />
       </div>
@@ -129,8 +225,19 @@ const ProjectCalendar = () => {
 };
 
 const CustomToolbar = (toolbar: ToolbarProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const handleChange = (values: RangePickerProps["value"]) => {
-    console.log("values", values);
+    setSearchParams((prev) => {
+      if (!values) {
+        prev.delete("startDate");
+        prev.delete("endDate");
+      } else {
+        values[0] && prev.set("startDate", values[0].toISOString());
+        values[1] && prev.set("endDate", values[1].toISOString());
+      }
+      return prev;
+    });
   };
 
   return (
@@ -153,7 +260,17 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
         </Typography.Text>
       </Col>
       <Col span={12} className="flex justify-end">
-        <RangePicker onChange={handleChange} />
+        <RangePicker
+          onChange={handleChange}
+          defaultValue={
+            searchParams.get("startDate") && searchParams.get("endDate")
+              ? [
+                  dayjs(searchParams.get("startDate")),
+                  dayjs(searchParams.get("endDate")),
+                ]
+              : undefined
+          }
+        />
       </Col>
     </Row>
   );
@@ -183,149 +300,6 @@ const TYPE_OPTION = [
       </>
     ),
     value: "assignee",
-  },
-];
-
-const STATUS_OPTION = [
-  {
-    label: "View all",
-    value: "all",
-  },
-  {
-    label: "Todo",
-    value: "todo",
-  },
-  {
-    label: "Doing",
-    value: "doing",
-  },
-  {
-    label: "Reviewing",
-    value: "reviewing",
-  },
-  {
-    label: "Close",
-    value: "close",
-  },
-];
-
-const fakeData = [
-  {
-    title: "All Day Event very long title",
-    allDay: true,
-    start: new Date(2023, 11, 1),
-    end: new Date(2023, 11, 2),
-    status: "bug",
-    colorText: "bug",
-  },
-  {
-    title: "Long Event",
-    start: new Date(2023, 11, 7),
-    end: new Date(2023, 11, 10),
-    status: "subTask",
-    colorText: "subTask",
-  },
-  {
-    title: "DTS STARTS",
-    start: new Date(2023, 11, 13, 0, 0, 0),
-    end: new Date(2023, 11, 20, 0, 0, 0),
-    status: "subTask",
-    colorText: "subTask",
-  },
-  {
-    title: "DTS ENDS",
-    start: new Date(2023, 11, 6, 0, 0, 0),
-    end: new Date(2023, 11, 13, 0, 0, 0),
-    status: "bug",
-    colorText: "bug",
-  },
-  {
-    title: "Some Event",
-    start: new Date(2023, 11, 9, 0, 0, 0),
-    end: new Date(2023, 11, 9, 0, 0, 0),
-    status: "subTask",
-    colorText: "subTask",
-  },
-  {
-    title: "Conference",
-    start: new Date(2023, 11, 11),
-    end: new Date(2023, 11, 13),
-    desc: "Big conference for important people",
-    status: "subTask",
-    colorText: "subTask",
-  },
-  {
-    title: "Meeting",
-    start: new Date(2023, 11, 12, 10, 30, 0, 0),
-    end: new Date(2023, 11, 12, 12, 30, 0, 0),
-    desc: "Pre-meeting meeting, to prepare for the meeting",
-    status: "subTask",
-    colorText: "subTask",
-  },
-  {
-    title: "Lunch",
-    start: new Date(2023, 11, 12, 12, 0, 0, 0),
-    end: new Date(2023, 11, 12, 13, 0, 0, 0),
-    desc: "Power lunch",
-    status: "task",
-    colorText: "task",
-  },
-  {
-    title: "Meeting",
-    start: new Date(2023, 11, 12, 14, 0, 0, 0),
-    end: new Date(2023, 11, 12, 15, 0, 0, 0),
-    status: "task",
-    colorText: "task",
-  },
-  {
-    title: "Happy Hour",
-    start: new Date(2023, 11, 13, 17, 0, 0, 0),
-    end: new Date(2023, 11, 15, 17, 30, 0, 0),
-    desc: "Most important meal of the day",
-    status: "bug",
-    colorText: "bug",
-  },
-  {
-    title: "Dinner",
-    start: new Date(2023, 11, 17, 20, 0, 0, 0),
-    end: new Date(2023, 11, 19, 21, 0, 0, 0),
-    status: "task",
-    colorText: "task",
-  },
-  {
-    title: "Birthday Party",
-    start: new Date(2023, 11, 13, 7, 0, 0),
-    end: new Date(2023, 11, 13, 10, 30, 0),
-    status: "task",
-    colorText: "task",
-  },
-  {
-    title: "Birthday Party 2",
-    start: new Date(2023, 11, 13, 7, 0, 0),
-    end: new Date(2023, 11, 13, 10, 30, 0),
-    status: "bug",
-    colorText: "bug",
-  },
-  {
-    title: "Birthday Party 3",
-    start: new Date(2023, 11, 13, 7, 0, 0),
-    end: new Date(2023, 11, 13, 10, 30, 0),
-    status: "task",
-    colorText: "task",
-  },
-  {
-    title: "Late Night Event",
-    start: new Date(2023, 11, 17, 19, 30, 0),
-    end: new Date(2023, 11, 18, 2, 0, 0),
-    status: "task",
-    colorText: "task",
-  },
-  {
-    title: "Multi-day Event",
-    start: new Date(2023, 11, 20, 19, 30, 0),
-    end: new Date(2023, 11, 22, 2, 0, 0),
-    status: "task",
-    colorText: "task",
   },
 ];
 

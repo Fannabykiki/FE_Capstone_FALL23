@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import buildQuery from "odata-query";
+import { debounce } from "lodash";
 import dayjs from "dayjs";
 import {
   BugFilled,
@@ -22,17 +24,15 @@ import {
   Input,
   Select,
 } from "antd";
-import { projectApi } from "@/utils/api/project";
-import { IWorkItemList } from "@/interfaces/project";
-import useDetailView from "@/hooks/useDetailView";
-import { CreateTask } from "@/components";
 
 import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
-import { convertToODataParams } from "@/utils/convertToODataParams";
+import { IWorkItemList } from "@/interfaces/project";
+import useDetailView from "@/hooks/useDetailView";
+import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { randomBgColor } from "@/utils/random";
 import { taskApi } from "@/utils/api/task";
-import { debounce } from "lodash";
+import { CreateTask } from "@/components";
 
 export default function WorkItem() {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -68,18 +68,16 @@ export default function WorkItem() {
       const data: IWorkItemList[] = await projectApi.getWorkItemListByProjectId(
         signal,
         projectId,
-        {
-          $filter: convertToODataParams(
-            {
-              taskType: searchParams.get("type"),
-              taskStatus: searchParams.get("status"),
-              interation: searchParams.get("interation"),
+        buildQuery({
+          filter: {
+            taskType: searchParams.get("type") || undefined,
+            taskStatus: searchParams.get("status") || undefined,
+            interation: searchParams.get("interation") || undefined,
+            "tolower(title)": {
+              contains: searchParams.get("search")?.toLowerCase(),
             },
-            {
-              title: searchParams.get("search"),
-            }
-          ),
-        }
+          },
+        })
       );
       return data.map((user) => ({
         ...user,
@@ -139,15 +137,15 @@ export default function WorkItem() {
       />
 
       <div className="flex justify-between items-center">
-        <Typography.Title level={3}>Work items</Typography.Title>
+        <Typography.Title level={3}>Tasks</Typography.Title>
         <Space>
           <Button
             type="primary"
-            title="New Work Item"
+            title="New Task"
             onClick={() => handleOpenModalCreate()}
             icon={<PlusOutlined />}
           >
-            New Work Item
+            New Task
           </Button>
           <Button
             onClick={handleToggleCardVisibility}
@@ -213,7 +211,7 @@ export default function WorkItem() {
 
       <Space direction="vertical" className="w-full shadow-custom pb-5">
         <Table
-          rowKey="projectId"
+          rowKey="taskId"
           columns={columns}
           loading={isLoading}
           dataSource={pagination(

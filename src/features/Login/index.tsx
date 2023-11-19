@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { Button, Form, Image, Input, Typography } from "antd";
 import { useAuthContext } from "@/context/Auth";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { authApi } from "@/utils/api/auth";
 import { paths } from "@/routers/paths";
@@ -20,6 +20,8 @@ export default function Login() {
   const [form] = Form.useForm();
   const { setAuthenticate } = useAuthContext();
 
+  const location = useLocation();
+
   const { mutate: login, isLoading } = useMutation({
     mutationFn: authApi.login,
     mutationKey: [authApi.loginKey],
@@ -27,11 +29,11 @@ export default function Login() {
       const { token, isAdmin } = data;
       localStorage.setItem("token", token);
       setAuthenticate({ isAuthenticated: true, userInfo: null });
-      if (isAdmin) {
-        navigate(paths.dashboard);
-      } else {
-        navigate(paths.user);
-      }
+      navigate({
+        pathname:
+          location.state?.from || (isAdmin ? paths.dashboard : paths.user),
+        search: location.state?.search,
+      });
     },
     onError: (err: AxiosError<any>) => {
       console.error(err);

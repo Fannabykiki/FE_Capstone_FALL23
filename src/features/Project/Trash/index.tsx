@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
+import buildQuery from "odata-query";
 import dayjs from "dayjs";
 import {
   BugFilled,
@@ -28,7 +29,6 @@ import {
 } from "antd";
 
 import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
-import { convertToODataParams } from "@/utils/convertToODataParams";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
 
@@ -65,19 +65,20 @@ const TrashBin = () => {
       searchParams.get("search"),
     ],
     queryFn: ({ signal }) =>
-      taskApi.getAllTaskInTrashBin(signal, {
+      taskApi.getAllTaskInTrashBin(
+        signal,
         projectId,
-        $filter: convertToODataParams(
-          {
-            taskType: searchParams.get("type"),
-            taskStatus: searchParams.get("status"),
-            interation: searchParams.get("interation"),
+        buildQuery({
+          filter: {
+            typeName: searchParams.get("type") || undefined,
+            statusName: searchParams.get("status") || undefined,
+            interationName: searchParams.get("interation") || undefined,
+            "tolower(title)": {
+              contains: searchParams.get("search")?.toLowerCase(),
+            },
           },
-          {
-            title: searchParams.get("search"),
-          }
-        ),
-      }),
+        })
+      ),
     enabled: Boolean(projectId),
   });
 
@@ -135,7 +136,7 @@ const TrashBin = () => {
     },
     {
       title: "Type",
-      dataIndex: "taskType",
+      dataIndex: "typeName",
       width: "10%",
       render: (type) => {
         let Component = null;
@@ -183,7 +184,7 @@ const TrashBin = () => {
     },
     {
       title: "State",
-      dataIndex: "taskStatus",
+      dataIndex: "statusName",
       width: "10%",
       render: (state) => (
         <Row align="middle" className="gap-2">
@@ -207,12 +208,12 @@ const TrashBin = () => {
     },
     {
       title: "Priority",
-      dataIndex: "priority",
+      dataIndex: "priorityName",
       width: "10%",
     },
     {
       title: "Interation",
-      dataIndex: "interation",
+      dataIndex: "interationName",
       width: "10%",
     },
     {
@@ -220,7 +221,7 @@ const TrashBin = () => {
       dataIndex: "createTime",
       width: "10%",
       render: (createTime) =>
-        createTime ? dayjs(createTime).format("DD/MM/YYYY") : createTime,
+        createTime ? dayjs(createTime).format("DD/MM/YYYY") : null,
     },
     {
       dataIndex: "action",
