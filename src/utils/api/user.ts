@@ -38,13 +38,12 @@ const changePassword = async (data: ChangePassword) =>
 
 const getAdminUsers = async (
   signal: AbortSignal | undefined,
-  params: { [key: string]: string | undefined }
+  queryString: string
 ) =>
   axiosClient({
-    url: "/api/user-management/admin/users",
+    url: "/api/user-management/admin/users" + queryString,
     method: HTTP_METHODS.GET,
     signal,
-    params,
   }).then((resp) => resp.data);
 
 const getAdminUsersAnalyzation = async (signal: AbortSignal | undefined) =>

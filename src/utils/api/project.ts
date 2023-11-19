@@ -114,13 +114,12 @@ const restoreProject = async (projectId: string) =>
 
 const getAdminProjects = async (
   signal: AbortSignal | undefined,
-  params: { [key: string]: string | undefined }
+  queryString: string
 ) =>
   axiosClient({
-    url: "/api/project-management/admin/projects",
+    url: "/api/project-management/admin/projects" + queryString,
     method: HTTP_METHODS.GET,
     signal,
-    params,
   }).then((resp) => resp.data);
 
 const getAdminProjectsAnalyzation = async (signal: AbortSignal | undefined) =>
@@ -143,13 +142,12 @@ const getAdminUsersAnalyzationByUserId = async (
 const getWorkItemListByProjectId = async (
   signal: AbortSignal | undefined,
   projectId: string | undefined,
-  params: { [key: string]: string | undefined }
+  queryString: string
 ) =>
   axiosClient({
-    url: `/api/project-management/projects/tasks/${projectId}`,
+    url: `/api/project-management/projects/tasks/${projectId}` + queryString,
     method: HTTP_METHODS.GET,
     signal,
-    params,
   }).then((resp) => resp.data);
 
 const getListUserInProjectByProjectId = (

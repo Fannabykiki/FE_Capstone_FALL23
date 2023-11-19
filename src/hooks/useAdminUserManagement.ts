@@ -6,7 +6,7 @@ import { randomBgColor } from "@/utils/random";
 import { userApi } from "@/utils/api/user";
 
 interface Params {
-  [key: string]: string | undefined;
+  queryString: string;
 }
 
 export default function useAdminUserManagement(params: Params) {
@@ -15,9 +15,12 @@ export default function useAdminUserManagement(params: Params) {
   const { data: users, isLoading: isLoadingGetAdminUsers } = useQuery<
     IAdminUsers[]
   >({
-    queryKey: [userApi.getAdminUsersKey, userInfo?.id, params],
+    queryKey: [userApi.getAdminUsersKey, userInfo?.id, params.queryString],
     queryFn: async ({ signal }) => {
-      const data: IAdminUsers[] = await userApi.getAdminUsers(signal, params);
+      const data: IAdminUsers[] = await userApi.getAdminUsers(
+        signal,
+        params.queryString
+      );
 
       return data.map((user) => ({
         ...user,

@@ -51,3 +51,22 @@ export const AVATAR_BG_COLOR = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
 
 export const SAFE_DAY_TIL_DUE_DATE = -7;
 export const WARNING_DAY_TIL_DUE_DATE = -2;
+
+export const STATUS_COLOR = {
+  "To do": {
+    backgroundColor: "F5B7B1",
+    color: "E74C3C",
+  },
+  Doing: {
+    backgroundColor: "ABEBC6",
+    color: "28B463",
+  },
+  Done: {
+    backgroundColor: "F9E79F",
+    color: "D4AC0D",
+  },
+  Close: {
+    backgroundColor: "grey",
+    color: "white",
+  },
+};

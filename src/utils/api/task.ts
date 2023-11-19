@@ -123,13 +123,16 @@ const changeTaskStatus = ({
 };
 const getAllTaskInTrashBin = (
   signal: AbortSignal | undefined,
-  params: { [key: string]: string | undefined }
+  projectId: string | undefined,
+  queryString: string
 ): Promise<ITrashBinRecord[]> => {
   return axiosClient({
-    url: "/api/task-management/tasks/bin",
+    url: "/api/task-management/tasks/task-bin" + queryString,
     method: HTTP_METHODS.GET,
     signal,
-    params,
+    params: {
+      projectId,
+    },
   }).then((resp) => resp.data);
 };
 
