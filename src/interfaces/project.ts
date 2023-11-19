@@ -185,3 +185,14 @@ export interface IInteration {
   statusId: string;
   statusName: string;
 }
+
+export interface IInvitationInfo {
+  createAt: Date;
+  invitationId: string;
+  inviteBy: string;
+  inviteTo: string;
+  projectId: string;
+  projectName: string;
+  statusId: string;
+  statusName: string;
+}

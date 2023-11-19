@@ -20,6 +20,7 @@ import {
 
 import { projectApi } from "@/utils/api/project";
 import Header from "@/components/Layout/Header";
+import { useAuthContext } from "@/context/Auth";
 import Brand from "@/assets/images/Brand.png";
 import { paths } from "@/routers/paths";
 
@@ -27,23 +28,20 @@ const { Text } = Typography;
 
 export default function InviteMember() {
   const [disabled, setDisabled] = useState<boolean>(false);
+
   const [searchParams] = useSearchParams();
+
+  const { userInfo } = useAuthContext();
 
   const navigate = useNavigate();
 
-  const { data: owner, isError } = useQuery({
-    queryKey: [projectApi.getInfoKey, searchParams.get("projectId")],
-    queryFn: async ({ signal }) => {
-      const data = await projectApi.getInfo(
-        signal,
-        searchParams.get("projectdId")!
-      );
-
-      const owner = data.projectMembers.find((member) => member.isOwner);
-
-      return owner;
-    },
-    enabled: Boolean(searchParams.get("projectId")),
+  const { data, isError } = useQuery({
+    queryKey: [projectApi.checkEmailInviteKey, searchParams.get("invitation")],
+    queryFn: ({ signal }) =>
+      projectApi.checkEmailInvite(signal, {
+        invationId: searchParams.get("invitation")!,
+      }),
+    enabled: Boolean(searchParams.get("invitation")),
     staleTime: Infinity,
   });
 
@@ -53,9 +51,7 @@ export default function InviteMember() {
     onSuccess: () => {
       setDisabled(true);
       toast.success("Accept invitation successfully!");
-      setTimeout(() => {
-        navigate(paths.user);
-      }, 1500);
+      navigate(paths.user);
     },
     onError: () => {
       toast.error("Has an error, please try again");
@@ -68,9 +64,7 @@ export default function InviteMember() {
     onSuccess: () => {
       setDisabled(true);
       toast.success("Decline invitation successfully!");
-      setTimeout(() => {
-        navigate(paths.user);
-      }, 1500);
+      navigate(paths.user);
     },
     onError: () => {
       toast.error("Has an error, please try again");
@@ -79,17 +73,24 @@ export default function InviteMember() {
 
   useEffect(() => {
     if (
-      !searchParams.get("email") ||
-      !searchParams.get("projectId") ||
-      isError
+      isError ||
+      (data &&
+        (data?.statusName !== "Pending" || data.inviteTo !== userInfo?.email))
     ) {
-      toast.error("URL invalid");
-      setTimeout(() => {
-        navigate(paths.user);
-      }, 1500);
+      let message = "";
+      if (isError) {
+        message = "URL invalid";
+      } else if (data.inviteTo !== userInfo?.email) {
+        message = "Email invalid";
+      } else if (data?.statusName === "Accepted") {
+        message = "Invitation accepted";
+      } else if (data?.statusName === "Rejected") {
+        message = "Invitation rejected";
+      }
+      toast.error(message);
+      navigate(paths.user);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, isError]);
+  }, [data, isError, navigate, userInfo?.email]);
 
   return (
     <Layout className="min-h-screen flex flex-1 flex-col">
@@ -107,7 +108,7 @@ export default function InviteMember() {
             </Space>
 
             <Text className="text-3xl font-semibold">
-              {owner?.fullname} invited you to collaborate
+              {data?.inviteBy} invited you to collaborate
             </Text>
 
             <Row className="mt-5" gutter={[48, 48]}>
@@ -120,7 +121,7 @@ export default function InviteMember() {
                   Project
                 </Text>
                 <Tag color="#155e75" className="mt-3 text-xl font-bold">
-                  DevTasker Project
+                  {data?.projectName}
                 </Tag>
               </Col>
               <Col
@@ -141,20 +142,15 @@ export default function InviteMember() {
                 loading={accepting}
                 disabled={disabled}
                 onClick={() => {
-                  if (
-                    !searchParams.get("email") ||
-                    !searchParams.get("projectId")
-                  )
-                    return;
+                  if (!data) return;
                   acceptInvite({
-                    email: searchParams.get("email")!,
-                    projectId: searchParams.get("projectId")!,
+                    email: data.inviteTo,
+                    invitationId: data.invitationId,
+                    projectId: data.projectId,
                   });
                 }}
               >
-                <Text className="text-white font-medium">
-                  Accept Invitation
-                </Text>
+                <Text className="text-white font-medium">Accept</Text>
               </Button>
               <Button
                 type="primary"
@@ -162,14 +158,11 @@ export default function InviteMember() {
                 loading={declining}
                 disabled={disabled}
                 onClick={() => {
-                  if (
-                    !searchParams.get("email") ||
-                    !searchParams.get("projectId")
-                  )
-                    return;
+                  if (!data) return;
                   declineInvite({
-                    email: searchParams.get("email")!,
-                    projectId: searchParams.get("projectId")!,
+                    email: data.inviteTo,
+                    invitationId: data.invitationId,
+                    projectId: data.projectId,
                   });
                 }}
               >

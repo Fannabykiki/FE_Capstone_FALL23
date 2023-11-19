@@ -2,6 +2,7 @@ import {
   ICreateMemberRolePayload,
   ICreateProjectPayload,
   IInteration,
+  IInvitationInfo,
   IProject,
   IProjectMember,
   IUpdateInfoProjectPayload,
@@ -178,17 +179,36 @@ const sendEmailInvite = (data: { email: string[]; projectId: string }) =>
     data,
   }).then((resp) => resp.data);
 
-const acceptEmailInvite = (params: { email: string; projectId: string }) =>
+const acceptEmailInvite = (data: {
+  email: string;
+  invitationId: string;
+  projectId: string;
+}) =>
   axiosClient({
     url: "/api/project-management/projects/accept-invitation",
     method: HTTP_METHODS.POST,
-    params,
+    data,
   }).then((resp) => resp.data);
 
-const declineEmailInvite = (params: { email: string; projectId: string }) =>
+const declineEmailInvite = (data: {
+  email: string;
+  invitationId: string;
+  projectId: string;
+}) =>
   axiosClient({
     url: "/api/project-management/projects/decline-invitation",
     method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
+const checkEmailInvite = (
+  signal: AbortSignal | undefined,
+  params: { invationId: string }
+): Promise<IInvitationInfo> =>
+  axiosClient({
+    url: "/api/project-management/projects/check-invitation",
+    method: HTTP_METHODS.GET,
+    signal,
     params,
   }).then((resp) => resp.data);
 
@@ -245,4 +265,6 @@ export const projectApi = {
   declineEmailInviteKey: "declineEmailInviteKey",
   removeMember,
   removeMemberKey: "removeMemberKey",
+  checkEmailInvite,
+  checkEmailInviteKey: "checkEmailInviteKey",
 };
