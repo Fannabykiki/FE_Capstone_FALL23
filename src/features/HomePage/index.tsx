@@ -10,22 +10,32 @@ import {
 import BrandHeader from "@/assets/images/BrandHeader.png";
 import Page1 from "./Component/Page1";
 import Page2 from "./Component/Page2";
+import { useNavigate } from "react-router-dom";
+import { paths } from "@/routers/paths";
 
 const { Text, Link } = Typography;
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <Space className="w-full" direction="vertical">
       <Layout className="min-h-screen">
         <Header className="bg-teal-50 w-full flex items-center justify-between">
           <Image preview={false} src={BrandHeader} />
           <div className="flex">
-            <Button className="mr-3 rounded-3xl bg-teal-400 h-10 w-24">
+            <Button
+              onClick={() => navigate(paths.login)}
+              className="mr-3 rounded-3xl bg-teal-400 h-10 w-24"
+            >
               <Text className="text-white text-base font-semibold">
                 Sign In
               </Text>
             </Button>
-            <Button className="rounded-3xl bg-teal-700 h-10 w-24">
+            <Button
+              onClick={() => navigate(paths.register)}
+              className="rounded-3xl bg-teal-700 h-10 w-24"
+            >
               <Text className="text-white text-base font-semibold">
                 Register
               </Text>

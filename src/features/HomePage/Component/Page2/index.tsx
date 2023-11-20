@@ -1,9 +1,12 @@
 import { Button, Card, Col, Image, Row, Typography } from "antd";
 import ImgPage2 from "@/assets/images/ImgPage2.png";
+import { useNavigate } from "react-router-dom";
+import { paths } from "@/routers/paths";
 
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 export default function Page2() {
+  const navigate = useNavigate();
   return (
     <div className="bg-slate-100 min-h-screen flex items-center justify-center">
       <Card className="bg-sky-900 min-h-max w-5/6 mt-20 shadow-2xl">
@@ -16,7 +19,10 @@ export default function Page2() {
             <Text className="text-white mt-10 text-lg tracking-wider font-batangas italic">
               Keep everything in one place—even if your team isn't together.
             </Text>
-            <Button className="mt-24 rounded-3xl bg-white shadow-2xl h-16 w-52">
+            <Button
+              onClick={() => navigate(paths.register)}
+              className="mt-24 rounded-3xl bg-white shadow-2xl h-16 w-52"
+            >
               <Text className="text-black text-xl font-bold uppercase">
                 Register Now
               </Text>
