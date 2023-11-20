@@ -107,12 +107,12 @@ export default function ProjectDetail() {
         </div>
       </div>
       <div className="flex gap-4">
-        <div className="bg-white shadow p-4 flex-grow h-fit">
+        <div className="bg-white shadow p-4 flex-grow h-fit rounded-md">
           <p className="font-semibold text-xl">About this project</p>
           <Typography.Paragraph>{detail?.description}</Typography.Paragraph>
         </div>
         <div className="basis-1/3 flex-shrink-0 flex flex-col gap-4">
-          <div className="bg-white shadow p-4">
+          <div className="bg-white shadow p-4 rounded-md">
             <p className="font-semibold text-xl">Project Stats</p>
             <p className="font-semibold text-lg">Boards</p>
             <div className="flex gap-x-4">
@@ -136,7 +136,7 @@ export default function ProjectDetail() {
               </div>
             </div>
           </div>
-          <div className="bg-white shadow p-4">
+          <div className="bg-white shadow p-4 rounded-md">
             <p className="font-semibold text-xl">Members</p>
             <Avatar.Group maxCount={4}>
               {detail?.projectMembers.map((member) => (
