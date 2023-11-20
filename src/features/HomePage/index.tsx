@@ -10,6 +10,7 @@ import {
 import BrandHeader from "@/assets/images/BrandHeader.png";
 import Page1 from "./Component/Page1";
 import Page2 from "./Component/Page2";
+import Page3 from "./Component/Page3";
 
 const { Text, Link } = Typography;
 
@@ -36,7 +37,7 @@ export default function HomePage() {
         <Content className="bg-white">
           <Page1 />
           <Page2 />
-          <div className="bg-white min-h-screen flex items-center justify-center p-4"></div>
+          <Page3 />
         </Content>
 
         <Footer className="flex items-center justify-between bg-teal-50">
