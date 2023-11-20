@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   InfoCircleOutlined,
   LockOutlined,
@@ -10,6 +10,10 @@ import { Content } from "antd/es/layout/layout";
 import ProjectInformation from "./component/ProjectInfomation";
 import ProjectMember from "./component/ProjectMember";
 import PermissionRole from "./component/Permission&Role";
+import useProjectDetail from "@/hooks/useProjectDetail";
+import { generatePath, useNavigate, useParams } from "react-router-dom";
+import { useAuthContext } from "@/context/Auth";
+import { paths } from "@/routers/paths";
 
 interface MenuItem {
   label: string;
@@ -18,6 +22,22 @@ interface MenuItem {
 }
 
 export default function ProjectSettings() {
+  const { projectId } = useParams();
+  const { detail } = useProjectDetail(projectId);
+  const { userInfo } = useAuthContext();
+  const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    if (detail && userInfo) {
+      const owner = detail.projectMembers.find((member) => member.isOwner);
+      if (!userInfo.isAdmin && userInfo.id !== owner?.userId) {
+        navigate(
+          generatePath(paths.project.detail, { projectId: detail.projectId })
+        );
+      }
+    }
+  }, [userInfo, detail, navigate]);
+  
   const items: MenuItem[] = [
     {
       label: "Project Information",

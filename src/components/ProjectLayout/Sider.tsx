@@ -25,6 +25,7 @@ import useMenuCollapse from "@/hooks/useMenuCollapse";
 import { paths } from "@/routers/paths";
 import Brand from "../Layout/Brand";
 import { randomBgColor } from "@/utils/random";
+import { useAuthContext } from "@/context/Auth";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -40,7 +41,7 @@ export default function ProjectSider() {
   const { menuCollapse, onToggleMenu } = useMenuCollapse(
     window.innerWidth < 1200
   );
-
+  const { userInfo } = useAuthContext();
   const { projectId } = useParams();
   const { detail } = useProjectDetail(projectId);
 
@@ -51,71 +52,78 @@ export default function ProjectSider() {
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
 
-  const items: MenuItem[] = useMemo(
-    () => [
-      {
-        label: "Overview",
-        key: "overview",
-        icon: <SolutionOutlined width={iconSize} height={iconSize} />,
-        children: [
-          {
-            label: "Summary",
-            key: generatePath(paths.project.detail, { projectId }),
-            icon: <InboxOutlined width={iconSize} height={iconSize} />,
-          },
-        ],
-      },
-      {
-        label: "Boards",
-        key: "boards",
-        icon: <TableOutlined width={iconSize} height={iconSize} />,
-        children: [
-          {
-            label: "Kanban",
-            key: generatePath(paths.project.kanban, { projectId }),
-            icon: <LayoutOutlined width={iconSize} height={iconSize} />,
-          },
-          {
-            label: "Sprints",
-            key: generatePath(paths.project.sprint, { projectId }),
-            icon: (
-              <ApartmentOutlined
-                className="-rotate-90"
-                width={iconSize}
-                height={iconSize}
-              />
-            ),
-          },
-          {
-            label: "Tasks",
-            key: generatePath(paths.project.tasks, { projectId }),
-            icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
-          },
-          {
-            label: "Calendar",
-            key: generatePath(paths.project.calendar, { projectId }),
-            icon: <CalendarOutlined width={iconSize} height={iconSize} />,
-          },
-          {
-            label: "Trash Bin",
-            key: generatePath(paths.project.trash, { projectId }),
-            icon: <DeleteOutlined width={iconSize} height={iconSize} />,
-          },
-        ],
-      },
-      {
-        label: "Report",
-        key: generatePath(paths.project.report, { projectId }),
-        icon: <LineChartOutlined width={iconSize} height={iconSize} />,
-      },
-      {
-        label: "Settings",
-        key: generatePath(paths.project.settings, { projectId }),
-        icon: <SettingOutlined width={iconSize} height={iconSize} />,
-      },
-    ],
-    [projectId, iconSize]
-  );
+  const items: MenuItem[] = useMemo(() => {
+    if (detail && userInfo) {
+      const projectId = detail.projectId;
+      const menuItems = [
+        {
+          label: "Overview",
+          key: "overview",
+          icon: <SolutionOutlined width={iconSize} height={iconSize} />,
+          children: [
+            {
+              label: "Summary",
+              key: generatePath(paths.project.detail, { projectId }),
+              icon: <InboxOutlined width={iconSize} height={iconSize} />,
+            },
+          ],
+        },
+        {
+          label: "Boards",
+          key: "boards",
+          icon: <TableOutlined width={iconSize} height={iconSize} />,
+          children: [
+            {
+              label: "Kanban",
+              key: generatePath(paths.project.kanban, { projectId }),
+              icon: <LayoutOutlined width={iconSize} height={iconSize} />,
+            },
+            {
+              label: "Sprints",
+              key: generatePath(paths.project.sprint, { projectId }),
+              icon: (
+                <ApartmentOutlined
+                  className="-rotate-90"
+                  width={iconSize}
+                  height={iconSize}
+                />
+              ),
+            },
+            {
+              label: "Tasks",
+              key: generatePath(paths.project.tasks, { projectId }),
+              icon: <SnippetsOutlined width={iconSize} height={iconSize} />,
+            },
+            {
+              label: "Calendar",
+              key: generatePath(paths.project.calendar, { projectId }),
+              icon: <CalendarOutlined width={iconSize} height={iconSize} />,
+            },
+            {
+              label: "Trash Bin",
+              key: generatePath(paths.project.trash, { projectId }),
+              icon: <DeleteOutlined width={iconSize} height={iconSize} />,
+            },
+          ],
+        },
+        {
+          label: "Report",
+          key: generatePath(paths.project.report, { projectId }),
+          icon: <LineChartOutlined width={iconSize} height={iconSize} />,
+        },
+      ];
+      const owner = detail.projectMembers.find((member) => member.isOwner);
+      if (userInfo.isAdmin || userInfo.id === owner?.userId) {
+        menuItems.push({
+          label: "Settings",
+          key: generatePath(paths.project.settings, { projectId }),
+          icon: <SettingOutlined width={iconSize} height={iconSize} />,
+        });
+      }
+      return menuItems;
+    }
+    return [];
+  }, [detail, iconSize, userInfo]);
 
   useEffect(() => {
     const keys = location.pathname;

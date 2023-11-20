@@ -20,7 +20,9 @@ import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateTask } from "../Modal";
-import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
+import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
+import TaskDetail from "../Task/Detail";
+import { classNames } from "@/utils/common";
 
 export enum TaskType {
   Main = "Work Item",
@@ -51,6 +53,12 @@ const IterationDisplay = ({ iterationId }: Props) => {
     onOpenView: onOpenCreateTaskModal,
     detail: initTaskData,
   } = useDetailView<Partial<ICreateTaskRequest>>();
+  const {
+    openView: isModalDetailTaskOpen,
+    onOpenView: onOpenViewDetailTask,
+    onCloseView: onCloseViewDetailTask,
+    detail: taskId,
+  } = useDetailView<string>();
 
   const handleOpenCreateTaskModal = (
     initData: Partial<ICreateTaskRequest> = {}
@@ -227,7 +235,10 @@ const IterationDisplay = ({ iterationId }: Props) => {
             {selectedIteration.tasks.map((task) => (
               <div
                 key={task.taskId}
-                className="py-4 border-0 border-b border-solid border-neutral-300 w-fit"
+                className={classNames(
+                  "py-4 border-0 border-b border-solid border-neutral-300",
+                  !collapsedTasks.includes(task.taskId) && "w-fit"
+                )}
               >
                 <MainTaskDisplay
                   task={task}
@@ -235,6 +246,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   isCollapsed={collapsedTasks.includes(task.taskId)}
                   onToggleCollapseTask={() => onToggleCollapseTask(task.taskId)}
                   onOpenCreateTaskModal={handleOpenCreateTaskModal}
+                  onViewTask={onOpenViewDetailTask}
                   filterData={filterData}
                 />
               </div>
@@ -247,6 +259,13 @@ const IterationDisplay = ({ iterationId }: Props) => {
             handleClose={onCloseCreateTaskModal}
             initTaskData={initTaskData || undefined}
             onSuccess={() => refetchIteration()}
+          />
+        )}
+        {isModalDetailTaskOpen && (
+          <TaskDetail
+            taskId={taskId || ""}
+            isOpen={isModalDetailTaskOpen}
+            onClose={onCloseViewDetailTask}
           />
         )}
       </>
