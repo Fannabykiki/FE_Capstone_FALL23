@@ -24,6 +24,18 @@ const getKanbanTasks = (
   }).then((resp) => resp.data);
 };
 
+const getDetail = (
+  signal: AbortSignal | undefined,
+  taskId: string
+): Promise<ITask> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/detail",
+    method: HTTP_METHODS.GET,
+    params: { taskId },
+    signal,
+  }).then((resp) => resp.data);
+};
+
 const getTaskById = (taskId: string): Promise<ITask> => {
   return axiosClient({
     url: `/api/task-management/task/${taskId}`,
@@ -136,6 +148,8 @@ const getAllTaskInTrashBin = (
 export const taskApi = {
   getKanbanTasks,
   getKanbanTasksKey: "taskGetKanbanTasks",
+  getDetail,
+  getDetailKey: "taskGetDetail",
   getTaskById,
   getTaskByIdKey: "taskGetTaskById",
   postTaskStatus,

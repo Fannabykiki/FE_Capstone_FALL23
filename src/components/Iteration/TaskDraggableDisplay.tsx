@@ -19,9 +19,14 @@ import { TaskType } from "./display";
 interface Props {
   snapshot?: DraggableStateSnapshot;
   task: ITask;
+  onViewTask: (_taskId?: string | undefined) => void;
 }
 
-export default function TaskDraggableDisplay({ snapshot, task }: Props) {
+export default function TaskDraggableDisplay({
+  snapshot,
+  task,
+  onViewTask,
+}: Props) {
   let taskTypeBorderColor = "border-blue-400";
   switch (task.typeName) {
     case TaskType.Main:
@@ -44,6 +49,7 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
         "border-0 border-l-4 border-solid",
         taskTypeBorderColor
       )}
+      onClick={() => onViewTask(task.taskId)}
     >
       <div className="flex flex-col gap-y-4">
         <div
