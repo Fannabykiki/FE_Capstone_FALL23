@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
 import { TaskType } from "./display";
+import PriorityStatus from "../Task/PriorityStatus";
 
 interface Props {
   snapshot?: DraggableStateSnapshot;
@@ -70,7 +71,7 @@ export default function TaskDraggableDisplay({
           </div>
           <div className="flex-grow text-right">
             <Tooltip title={`Priority: ${task.priorityName}`}>
-              {calcPriorityStatus(task.priorityName)}
+              <PriorityStatus priorityName={task.priorityName} />
             </Tooltip>
           </div>
           <Tooltip title={task.assignTo}>
@@ -81,26 +82,3 @@ export default function TaskDraggableDisplay({
     </div>
   );
 }
-
-const calcPriorityStatus = (priorityName: string) => {
-  switch (priorityName) {
-    case "Very High":
-      return (
-        <DoubleLeftOutlined className="font-bold text-lg rotate-90 text-red-500" />
-      );
-    case "High":
-      return <UpOutlined className="font-bold text-lg text-red-500" />;
-    case "Medium":
-      return (
-        <PauseOutlined className="font-bold text-lg rotate-90 text-yellow-500" />
-      );
-    case "Low":
-      return <DownOutlined className="font-bold text-lg text-blue-500" />;
-    case "Very Low":
-      return (
-        <DoubleRightOutlined className="font-bold text-lg rotate-90 text-blue-500" />
-      );
-    default:
-      return <QuestionCircleOutlined />;
-  }
-};
