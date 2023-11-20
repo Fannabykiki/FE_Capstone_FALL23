@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
 import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
-import { randomBgColor } from "@/utils/random";
+import { faker } from "@faker-js/faker";
 
 export default function ProjectInformation() {
   const [form] = Form.useForm();
@@ -110,7 +110,7 @@ export default function ProjectInformation() {
           <Col span={3}></Col>
           <Col span={9}>
             <Avatar
-              style={{ backgroundColor: randomBgColor(), fontSize: "50px" }}
+              style={{ backgroundColor: faker.color.rgb(), fontSize: "50px" }}
               size={100}
               shape="square"
             >
@@ -126,7 +126,7 @@ export default function ProjectInformation() {
           <Row>
             <Col span={1} className="flex justify-center items-center">
               {projectAdmin ? (
-                <Avatar style={{ backgroundColor: randomBgColor() }}>
+                <Avatar style={{ backgroundColor: faker.color.rgb() }}>
                   {projectAdmin.fullname.charAt(0).toUpperCase()}
                 </Avatar>
               ) : null}

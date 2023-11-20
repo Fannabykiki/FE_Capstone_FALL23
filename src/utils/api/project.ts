@@ -5,6 +5,7 @@ import {
   IInvitationInfo,
   IProject,
   IProjectMember,
+  IReportProject,
   IUpdateInfoProjectPayload,
   IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
@@ -129,6 +130,13 @@ const getAdminProjectsAnalyzation = async (signal: AbortSignal | undefined) =>
     signal,
   }).then((resp) => resp.data);
 
+const getAdminProjectsStatus = async (signal: AbortSignal | undefined) =>
+  axiosClient({
+    url: "/api/project-management/projects/status",
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
 const getAdminUsersAnalyzationByUserId = async (
   signal: AbortSignal | undefined,
   userId: string | undefined
@@ -146,6 +154,16 @@ const getWorkItemListByProjectId = async (
 ) =>
   axiosClient({
     url: `/api/project-management/projects/tasks/${projectId}` + queryString,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
+const getReportProjectByProjectId = async (
+  signal: AbortSignal | undefined,
+  projectId: string | undefined
+): Promise<IReportProject> =>
+  axiosClient({
+    url: `/api/project-management/projects/report/${projectId}`,
     method: HTTP_METHODS.GET,
     signal,
   }).then((resp) => resp.data);
@@ -257,6 +275,8 @@ export const projectApi = {
   getAdminProjectsAnalyzationKey: "getAdminProjectsAnalyzationKey",
   getAdminUsersAnalyzationByUserId,
   getAdminUsersAnalyzationByUserIdKey: "getAdminUsersAnalyzationByUserIdKey",
+  getAdminProjectsStatus,
+  getAdminProjectsStatusKey: "getAdminProjectsStatusKey",
   acceptEmailInvite,
   acceptEmailInviteKey: "acceptEmailInviteKey",
   declineEmailInvite,
@@ -265,4 +285,6 @@ export const projectApi = {
   removeMemberKey: "removeMemberKey",
   checkEmailInvite,
   checkEmailInviteKey: "checkEmailInviteKey",
+  getReportProjectByProjectId,
+  getReportProjectByProjectIdKey: "getReportProjectByProjectIdKey",
 };

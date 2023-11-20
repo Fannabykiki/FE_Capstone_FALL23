@@ -1,21 +1,16 @@
+import { useRef } from "react";
+import { Avatar, Col, Divider, Row, Space, Table, Typography } from "antd";
 import { useParams, useSearchParams } from "react-router-dom";
-import { SearchOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
 import ReactECharts from "echarts-for-react";
 import { ColumnsType } from "antd/es/table";
-import { debounce } from "lodash";
-import { useRef } from "react";
-import {
-  Col,
-  Divider,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-  Tag,
-  Typography,
-} from "antd";
+import { faker } from "@faker-js/faker";
+import dayjs from "dayjs";
 
+import useProjectDetail from "@/hooks/useProjectDetail";
+import { IReportProject } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { STATUS_COLOR } from "@/utils/constants";
 import { pagination } from "@/utils/pagination";
 
 const Report = () => {
@@ -26,8 +21,32 @@ const Report = () => {
 
   const { projectId } = useParams();
 
+  const { detail } = useProjectDetail(projectId);
+
   const pieChartRef = useRef<HTMLDivElement>(null);
   const lineChartRef = useRef<HTMLDivElement>(null);
+
+  const { data } = useQuery({
+    queryKey: [projectApi.getReportProjectByProjectIdKey],
+    queryFn: async ({ signal }) => {
+      const data = await projectApi.getReportProjectByProjectId(
+        signal,
+        projectId
+      );
+
+      return {
+        ...data,
+        memberTaks: data.memberTaks.map((member) => {
+          const statusObject = member.reportStatuses.reduce(
+            (prev, next) => ({ ...prev, [next.title]: next.numberTask }),
+            {}
+          );
+          return { ...member, avatarColor: faker.color.rgb(), ...statusObject };
+        }),
+      };
+    },
+    enabled: Boolean(projectId),
+  });
 
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
@@ -37,33 +56,62 @@ const Report = () => {
     });
   };
 
-  const handleChange = (value: string) => {
-    setSearchParams((prev) => {
-      if (!value) {
-        prev.delete("status");
-      } else {
-        prev.set("status", value);
-      }
-      return prev;
-    });
-  };
-
-  const handleSearch = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchParams((prev) => {
-      if (!e.target.value) {
-        prev.delete("search");
-      } else {
-        prev.set("search", e.target.value);
-      }
-      return prev;
-    });
-  }, 1000);
+  const columns: ColumnsType<IReportProject["memberTaks"][number]> = [
+    {
+      key: "fullname",
+      title: "MEMBER",
+      dataIndex: "fullname",
+      width: "15%",
+      render: (name: string, record: IReportProject["memberTaks"][number]) => (
+        <Row gutter={4}>
+          <Col span={5} className="flex justify-center items-center">
+            <Avatar style={{ backgroundColor: record.avatarColor }}>
+              {name?.charAt(0).toUpperCase()}
+            </Avatar>
+          </Col>
+          <Col span={19}>
+            <Typography.Title level={5} className="!m-0 min-h-[24px]">
+              {name}
+            </Typography.Title>
+            <Typography.Text className="min-h-[19px]">
+              {record.roleName}
+            </Typography.Text>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      key: "totalTasks",
+      title: "TOTAL TASK",
+      dataIndex: "totalTasks",
+      width: "10%",
+    },
+  ].concat(
+    data?.memberTaks[0]?.reportStatuses.map((status) => ({
+      key: status.title,
+      title: status.title,
+      dataIndex: status.title,
+      width: `${75 / data?.memberTaks[0]?.reportStatuses.length}%`,
+      render: (value) => (
+        <Typography
+          className="font-bold"
+          style={{
+            color:
+              STATUS_COLOR[status.title as keyof typeof STATUS_COLOR]
+                ?.backgroundColor,
+          }}
+        >
+          {value}
+        </Typography>
+      ),
+    })) || []
+  );
 
   return (
     <Space direction="vertical" className="w-full gap-5">
       <Row align="middle">
         <Typography.Title level={4} className="!m-0">
-          Project: {projectId}
+          Project: {detail?.projectName}
         </Typography.Title>
       </Row>
       <Divider className="!m-0" />
@@ -85,42 +133,56 @@ const Report = () => {
                 }px !important`,
               }}
               option={{
+                tooltip: {
+                  trigger: "item",
+                  formatter: (params: any) =>
+                    params.data.name +
+                    ": " +
+                    params.data.numberTask +
+                    " (" +
+                    params.data.value +
+                    "%)",
+                },
+                label: {
+                  show: false,
+                  position: "center",
+                },
                 title: {
-                  text: `Total Tasks`,
+                  text: "Total Tasks",
+                  subtext: data?.reportProject.totalTask,
                   left: "center",
                   top: "center",
                   textStyle: {
-                    fontSize: 14,
+                    fontSize: 12,
+                    opacity: 0.7,
+                  },
+                  subtextStyle: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    color: "#000000",
                   },
                 },
                 legend: {
                   bottom: 0,
-                  data: [
-                    { name: "Todo", icon: "circle" },
-                    { name: "In Progress", icon: "circle" },
-                    { name: "In Code Review", icon: "circle" },
-                    { name: "Bug Ready to Test", icon: "circle" },
-                    { name: "Closed", icon: "circle" },
-                  ],
+                  data: data?.reportProject.reportStatuses.map((status) => ({
+                    name: status.title,
+                    icon: "circle",
+                  })),
                 },
                 series: [
                   {
                     type: "pie",
                     radius: ["40%", "70%"],
-                    color: [
-                      "#0bdbca",
-                      "#ed9d58",
-                      "#81878C",
-                      "#2bff00",
-                      "#FCA3A3",
-                    ],
-                    data: [
-                      { value: 5, name: "Todo" },
-                      { value: 10, name: "In Progress" },
-                      { value: 5, name: "In Code Review" },
-                      { value: 10, name: "Bug Ready to Test" },
-                      { value: 5, name: "Closed" },
-                    ],
+                    color: data?.reportProject.reportStatuses.map(
+                      (status) =>
+                        STATUS_COLOR[status.title as keyof typeof STATUS_COLOR]
+                          ?.backgroundColor
+                    ),
+                    data: data?.reportProject.reportStatuses.map((status) => ({
+                      name: status.title,
+                      value: status.percent,
+                      numberTask: status.numberTask,
+                    })),
                     itemStyle: {
                       normal: {
                         label: {
@@ -158,14 +220,23 @@ const Report = () => {
                 }px !important`,
               }}
               option={{
+                tooltip: {
+                  trigger: "item",
+                  formatter: (params: any) =>
+                    params.seriesName + ": " + params.value,
+                },
                 legend: {
-                  data: [
-                    "Todo",
-                    "In Progress",
-                    "In Code Review",
-                    "Bug Ready to Test",
-                    "Closed",
-                  ],
+                  data: data?.reportRecordByWeerk[0]?.reportStatuses.map(
+                    (status) => ({
+                      name: status.title,
+                      itemStyle: {
+                        color:
+                          STATUS_COLOR[
+                            status.title as keyof typeof STATUS_COLOR
+                          ]?.backgroundColor,
+                      },
+                    })
+                  ),
                 },
                 grid: {
                   left: "3%",
@@ -173,79 +244,32 @@ const Report = () => {
                   bottom: "3%",
                   containLabel: true,
                 },
-                xAxis: [
-                  {
-                    type: "category",
-                    boundaryGap: false,
-                    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-                  },
-                ],
-                yAxis: [
-                  {
-                    type: "value",
-                  },
-                ],
-                series: [
-                  {
-                    name: "Todo",
-                    type: "line",
-                    stack: "Total",
-                    areaStyle: {},
-                    emphasis: {
-                      focus: "series",
-                    },
-                    color: "#0bdbca",
-                    data: [120, 132, 101, 134, 90, 230, 210],
-                  },
-                  {
-                    name: "In Progress",
-                    type: "line",
-                    stack: "Total",
-                    areaStyle: {},
-                    emphasis: {
-                      focus: "series",
-                    },
-                    color: "#ed9d58",
-                    data: [220, 182, 191, 234, 290, 330, 310],
-                  },
-                  {
-                    name: "In Code Review",
-                    type: "line",
-                    stack: "Total",
-                    areaStyle: {},
-                    emphasis: {
-                      focus: "series",
-                    },
-                    color: "#81878C",
-                    data: [150, 232, 201, 154, 190, 330, 410],
-                  },
-                  {
-                    name: "Bug Ready to Test",
-                    type: "line",
-                    stack: "Total",
-                    areaStyle: {},
-                    emphasis: {
-                      focus: "series",
-                    },
-                    color: "#2bff00",
-                    data: [320, 332, 301, 334, 390, 330, 320],
-                  },
-                  {
-                    name: "Closed",
-                    type: "line",
-                    stack: "Total",
-                    label: {
-                      show: true,
-                      position: "top",
-                    },
-                    areaStyle: {},
-                    emphasis: {
-                      focus: "series",
-                    },
-                    color: "#FCA3A3",
-                    data: [820, 932, 901, 934, 1290, 1330, 1320],
-                  },
-                ],
+                xAxis: {
+                  type: "category",
+                  data: data?.reportRecordByWeerk.map((record) =>
+                    dayjs(record.dateTime).format("DD/MM")
+                  ),
+                },
+                yAxis: {
+                  type: "value",
+                },
+                series: data?.reportRecordByWeerk[0]?.reportStatuses.map(
+                  (status) => ({
+                    name: status.title,
+                    type: "bar",
+                    data: data?.reportRecordByWeerk.map((item) => ({
+                      value: item.reportStatuses.find(
+                        (s) => s.title === status.title
+                      )?.numberTask,
+                      itemStyle: {
+                        color:
+                          STATUS_COLOR[
+                            status.title as keyof typeof STATUS_COLOR
+                          ]?.backgroundColor,
+                      },
+                    })),
+                  })
+                ),
               }}
               notMerge
               lazyUpdate
@@ -261,37 +285,11 @@ const Report = () => {
           Your Tasks In this Project
         </Typography.Title>
         <Divider className="my-4" />
-        <Row className="px-3" gutter={16} justify="end">
-          <Col span={6}>
-            <Input
-              className="w-full"
-              placeholder="Search"
-              defaultValue={searchParams.get("search") || ""}
-              prefix={<SearchOutlined />}
-              onChange={handleSearch}
-              allowClear
-            />
-          </Col>
-          <Col span={4}>
-            <Select
-              className="w-full"
-              placeholder="Select Status"
-              defaultValue={searchParams.get("status")}
-              onChange={handleChange}
-              allowClear
-              options={[
-                { value: "Active", label: "Doing" },
-                { value: "InActive", label: "Done" },
-                { value: "Deleted", label: "Deleted" },
-              ]}
-            />
-          </Col>
-        </Row>
         <Table
-          id="key"
+          id="userId"
           columns={columns}
           dataSource={pagination(
-            [],
+            data?.memberTaks,
             parseInt(searchParams.get("page") || "1"),
             parseInt(searchParams.get("limit") || "10")
           )}
@@ -309,52 +307,5 @@ const Report = () => {
     </Space>
   );
 };
-
-const columns: ColumnsType<any> = [
-  {
-    key: "stt",
-    dataIndex: "index",
-    width: "5%",
-    align: "center",
-    render: (_text, _record, index) => index + 1,
-  },
-  {
-    key: "task",
-    title: "TASK",
-    dataIndex: "task",
-    width: "45%",
-    sorter: (a, b) => a - b,
-  },
-  {
-    key: "status",
-    title: "STATUS",
-    dataIndex: "status",
-    width: "15%",
-    sorter: (a, b) => a - b,
-    render: (status) => (
-      <span>
-        {status === 1 ? (
-          <Tag color="green">Active</Tag>
-        ) : status === 2 ? (
-          <Tag color="red">Deactive</Tag>
-        ) : null}
-      </span>
-    ),
-  },
-  {
-    key: "due-date",
-    title: "DUE DATE",
-    dataIndex: "due-date",
-    width: "15%",
-    sorter: (a, b) => a - b,
-  },
-  {
-    key: "creator/reviewer",
-    title: "CREATOR/REVIEWER",
-    dataIndex: "creator/reviewer",
-    width: "20%",
-    sorter: (a, b) => a - b,
-  },
-];
 
 export default Report;

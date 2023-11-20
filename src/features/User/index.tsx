@@ -1,6 +1,5 @@
 import useListProjectOfUser from "@/hooks/useListProjectOfUser";
 import { useMemo, useState } from "react";
-import { faker } from "@faker-js/faker";
 import {
   Avatar,
   Col,
@@ -50,12 +49,13 @@ export default function UserDashboard() {
   };
 
   const mostRecentProjects: IProject[] = useMemo(() => {
-    const savedProjects = localStorage.getItem(`${userInfo?.id}-projects`);
-    if (savedProjects) {
-      const parsedSavedProjects = JSON.parse(savedProjects) as IProject[];
-      return parsedSavedProjects.filter(
-        (project) =>
-          projects?.find((_project) => _project.projectId === project.projectId)
+    const savedProjects = localStorage.getItem(
+      `${userInfo?.id}-projects-recent`
+    );
+    if (savedProjects && projects) {
+      const parsedSavedProjects = JSON.parse(savedProjects) as string[];
+      return projects.filter((project) =>
+        parsedSavedProjects.includes(project.projectId)
       );
     }
     return [];
@@ -78,12 +78,22 @@ export default function UserDashboard() {
         <div className="flex gap-x-4">
           {mostRecentProjects?.slice(0, 4).map((project) => (
             <div
-              key={project.projectId}
-              onClick={() => navigateToProject(project.projectId)}
-              className="cursor-pointer basis-1/4 bg-white rounded p-4 pb-12 shadow hover:shadow-lg"
+              key={`recent-${project.projectId}`}
+              onClick={() =>
+                !project.deleteAt && navigateToProject(project.projectId)
+              }
+              className={classNames(
+                "basis-1/4 bg-white rounded p-4 pb-12 shadow",
+                project.deleteAt
+                  ? "cursor-not-allowed opacity-40"
+                  : "cursor-pointer hover:shadow-lg"
+              )}
             >
               <div className="flex gap-4 items-center">
-                <Avatar shape="square">
+                <Avatar
+                  shape="square"
+                  style={{ backgroundColor: project.bgColor }}
+                >
                   <span className="text-white select-none font-semibold uppercase">
                     {project.projectName?.slice(0, 1)}
                   </span>
@@ -117,12 +127,17 @@ export default function UserDashboard() {
                 !project.deleteAt && navigateToProject(project.projectId)
               }
               className={classNames(
-                "cursor-pointer bg-white rounded p-4 flex items-center shadow hover:shadow-lg",
-                project.deleteAt ? "opacity-50" : ""
+                "bg-white rounded p-4 flex items-center shadow",
+                project.deleteAt
+                  ? "cursor-not-allowed opacity-40"
+                  : "cursor-pointer hover:shadow-lg"
               )}
             >
               <Col span={22} className="flex gap-4">
-                <Avatar shape="square">
+                <Avatar
+                  shape="square"
+                  style={{ backgroundColor: project.bgColor }}
+                >
                   <span className="text-white select-none font-semibold uppercase">
                     {project.projectName?.slice(0, 1)}
                   </span>
@@ -155,7 +170,7 @@ export default function UserDashboard() {
                     arrow
                     trigger={["click"]}
                   >
-                    <MoreOutlined className="cursor-pointer" />
+                    <MoreOutlined className="cursor-pointer p-2 hover:bg-gray-200" />
                   </Dropdown>
                 </Col>
               ) : null}

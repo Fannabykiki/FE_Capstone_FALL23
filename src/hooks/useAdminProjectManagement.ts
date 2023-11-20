@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
+import { faker } from "@faker-js/faker";
 
-import { IAdminProject, IAdminProjectAnalyzation } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useAuthContext } from "@/context/Auth";
-import { randomBgColor } from "@/utils/random";
+import {
+  IAdminProject,
+  IAdminProjectAnalyzation,
+  IProjectStatus,
+} from "@/interfaces/project";
 
 interface Params {
   queryString: string;
@@ -28,10 +32,10 @@ export default function useAdminProjectManagement(params: Params) {
 
       return data.map((prj) => ({
         ...prj,
-        manager: { ...prj.manager, avatarColor: randomBgColor() },
+        manager: { ...prj.manager, avatarColor: faker.color.rgb() },
         member: prj.member.map((mem) => ({
           ...mem,
-          avatarColor: randomBgColor(),
+          avatarColor: faker.color.rgb(),
         })),
       }));
     },
@@ -45,12 +49,22 @@ export default function useAdminProjectManagement(params: Params) {
       enabled: Boolean(userInfo),
     });
 
+  const { data: statusList, isLoading: isLoadingGetProjectStatusOption } =
+    useQuery<IProjectStatus[]>({
+      queryKey: [projectApi.getAdminProjectsStatusKey, userInfo?.id],
+      queryFn: ({ signal }) => projectApi.getAdminProjectsStatus(signal),
+      enabled: Boolean(userInfo),
+    });
+
   const isLoading =
-    isLoadingGetAdminProjects || isLoadingGetAdminProjectsAnalyzation;
+    isLoadingGetAdminProjects ||
+    isLoadingGetAdminProjectsAnalyzation ||
+    isLoadingGetProjectStatusOption;
 
   return {
     project,
     analyzation,
+    statusList,
     isLoading,
   };
 }
