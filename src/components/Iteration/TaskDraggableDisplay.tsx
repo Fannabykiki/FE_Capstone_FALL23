@@ -39,7 +39,7 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
   return (
     <div
       className={classNames(
-        "select-none p-4 min-h-[50px] rounded shadow",
+        "select-none p-4 min-h-[50px] rounded cursor-pointer shadow hover:shadow-lg",
         snapshot?.isDragging ? "bg-neutral-300" : "bg-white",
         "border-0 border-l-4 border-solid",
         taskTypeBorderColor
@@ -67,7 +67,9 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
               {calcPriorityStatus(task.priorityName)}
             </Tooltip>
           </div>
-          <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
+          <Tooltip title={task.assignTo}>
+            <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
+          </Tooltip>
         </div>
       </div>
     </div>

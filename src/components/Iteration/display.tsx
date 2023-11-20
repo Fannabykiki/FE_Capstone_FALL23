@@ -20,7 +20,8 @@ import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateTask } from "../Modal";
-import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
+import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
+import TaskDetail from "../Task/Detail";
 
 export enum TaskType {
   Main = "Work Item",
@@ -51,6 +52,12 @@ const IterationDisplay = ({ iterationId }: Props) => {
     onOpenView: onOpenCreateTaskModal,
     detail: initTaskData,
   } = useDetailView<Partial<ICreateTaskRequest>>();
+  const {
+    openView: isModalDetailTaskOpen,
+    onOpenView: onOpenViewDetailTask,
+    onCloseView: onCloseViewDetailTask,
+    detail: taskId,
+  } = useDetailView<string>();
 
   const handleOpenCreateTaskModal = (
     initData: Partial<ICreateTaskRequest> = {}
@@ -249,6 +256,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
             onSuccess={() => refetchIteration()}
           />
         )}
+        {isModalDetailTaskOpen && <TaskDetail taskId={taskId || ""} />}
       </>
     );
   return null;
