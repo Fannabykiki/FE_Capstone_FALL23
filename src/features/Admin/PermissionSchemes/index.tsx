@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { generatePath, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
+import buildQuery from "odata-query";
 import {
   Button,
   Col,
@@ -15,7 +16,6 @@ import {
   Typography,
 } from "antd";
 
-import { convertToODataParams } from "@/utils/convertToODataParams";
 import CreatePermissionScheme from "./CreateEditPermissionScheme";
 import { IPermissionSchemes } from "@/interfaces/schema";
 import { useAuthContext } from "@/context/Auth";
@@ -45,14 +45,16 @@ const PermissionSchemes = () => {
       searchParams.get("search"),
     ],
     queryFn: ({ signal }) =>
-      schemaApi.getAdminSchemas(signal, {
-        $filter: convertToODataParams(
-          {},
-          {
-            schemaName: searchParams.get("search"),
-          }
-        ),
-      }),
+      schemaApi.getAdminSchemas(
+        signal,
+        buildQuery({
+          filter: {
+            "tolower(schemaName)": {
+              contains: searchParams.get("search")?.toLowerCase(),
+            },
+          },
+        })
+      ),
     enabled: Boolean(userInfo),
   });
 

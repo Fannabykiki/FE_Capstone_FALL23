@@ -204,11 +204,7 @@ export default function Routers() {
         <Route
           path={paths.joinProject}
           element={
-            <PageContainer
-              requireAuth={false}
-              Component={InviteMember}
-              title="Invite Member"
-            />
+            <PageContainer Component={InviteMember} title="Invite Member" />
           }
         />
         <Route

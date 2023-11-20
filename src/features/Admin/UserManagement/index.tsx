@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 import debounce from "lodash/debounce";
 import { toast } from "react-toastify";
+import buildQuery from "odata-query";
 import {
   Avatar,
   Col,
@@ -18,7 +19,6 @@ import {
 } from "antd";
 
 import useAdminUserManagement from "@/hooks/useAdminUserManagement";
-import { convertToODataParams } from "@/utils/convertToODataParams";
 import deactiveUser from "@/assets/images/deactive-user.png";
 import activeUser from "@/assets/images/active-user.png";
 import { IAdminUsers } from "@/interfaces/user";
@@ -34,17 +34,17 @@ const UserManagement = () => {
   });
 
   const { users, analyzation, isLoading } = useAdminUserManagement({
-    $filter: convertToODataParams(
-      {
-        statusName: searchParams.get("status"),
+    queryString: buildQuery({
+      filter: {
+        statusName: searchParams.get("status") || undefined,
         isAdmin: searchParams.get("role")
           ? searchParams.get("role") === "admin"
           : undefined,
+        "tolower(userName)": {
+          contains: searchParams.get("search")?.toLowerCase(),
+        },
       },
-      {
-        userName: searchParams.get("search"),
-      }
-    ),
+    }),
   });
 
   const queryClient = useQueryClient();

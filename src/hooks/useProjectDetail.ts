@@ -31,8 +31,6 @@ export default function useProjectDetail(projectId: string | undefined) {
     enabled: Boolean(projectId),
   });
 
-  console.log(kanbanIteration);
-
   const { mutate: updatePrivacyStatus, isLoading: isUpdatingPrivacyStatus } =
     useMutation({
       mutationKey: [projectApi.updatePrivacyKey],
@@ -42,6 +40,7 @@ export default function useProjectDetail(projectId: string | undefined) {
   return {
     detail,
     iterations,
+    kanbanIteration,
     actions: {
       isGettingDetail,
       updatePrivacyStatus,

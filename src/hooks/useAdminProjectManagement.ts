@@ -6,7 +6,7 @@ import { useAuthContext } from "@/context/Auth";
 import { randomBgColor } from "@/utils/random";
 
 interface Params {
-  [key: string]: string | undefined;
+  queryString: string;
 }
 
 export default function useAdminProjectManagement(params: Params) {
@@ -15,11 +15,15 @@ export default function useAdminProjectManagement(params: Params) {
   const { data: project, isLoading: isLoadingGetAdminProjects } = useQuery<
     IAdminProject[]
   >({
-    queryKey: [projectApi.getAdminProjectsKey, userInfo?.id, params],
+    queryKey: [
+      projectApi.getAdminProjectsKey,
+      userInfo?.id,
+      params.queryString,
+    ],
     queryFn: async ({ signal }) => {
       const data: IAdminProject[] = await projectApi.getAdminProjects(
         signal,
-        params
+        params.queryString
       );
 
       return data.map((prj) => ({
