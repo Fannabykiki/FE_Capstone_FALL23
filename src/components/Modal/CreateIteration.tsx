@@ -1,7 +1,7 @@
 import { ICreateIterationPayload } from "@/interfaces/iteration";
 import { paths } from "@/routers/paths";
 import { iterationApi } from "@/utils/api/iteration";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Col, DatePicker, Form, Input, Modal, Row } from "antd";
 import dayjs from "dayjs";
 import { useLayoutEffect } from "react";
@@ -22,6 +22,7 @@ export default function CreateIteration({ open, onClose }: Props) {
   };
 
   const { projectId } = useParams();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
@@ -35,6 +36,9 @@ export default function CreateIteration({ open, onClose }: Props) {
     mutationKey: [iterationApi.createKey],
     onSuccess: (_, variables) => {
       toast.success(`Create Iteration '${variables.interationName}' succeed`);
+      queryClient.refetchQueries({
+        queryKey: [iterationApi.getListKey, projectId],
+      });
       onClose();
     },
   });
