@@ -28,7 +28,7 @@ import Notifications from "@/features/Notifications";
 import AccessDenied from "@/features/403/403";
 import NotFound from "@/features/404/404";
 
-export default function Routers() {
+export default function   Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
 
   if (isAuthenticated && !userInfo) {
