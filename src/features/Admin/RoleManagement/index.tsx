@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import debounce from "lodash/debounce";
 import orderBy from "lodash/orderBy";
+import buildQuery from "odata-query";
 import {
   Button,
   Col,
@@ -16,7 +17,6 @@ import {
   Typography,
 } from "antd";
 
-import { convertToODataParams } from "@/utils/convertToODataParams";
 import { useAuthContext } from "@/context/Auth";
 import { IAdminRoles } from "@/interfaces/role";
 import CreateEditRole from "./CreateEditRole";
@@ -43,14 +43,16 @@ const RoleManagement = () => {
       searchParams.get("search"),
     ],
     queryFn: async ({ signal }) => {
-      const data = await roleApi.getAdminRoles(signal, {
-        $filter: convertToODataParams(
-          {},
-          {
-            roleName: searchParams.get("search"),
-          }
-        ),
-      });
+      const data = await roleApi.getAdminRoles(
+        signal,
+        buildQuery({
+          filter: {
+            "tolower(roleName)": {
+              contains: searchParams.get("search")?.toLowerCase(),
+            },
+          },
+        })
+      );
 
       return orderBy(data, ["role.roleName"], ["asc"]);
     },

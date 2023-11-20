@@ -1,6 +1,7 @@
 import { generatePath, useNavigate, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 import debounce from "lodash/debounce";
+import buildQuery from "odata-query";
 import {
   Avatar,
   Button,
@@ -22,7 +23,6 @@ import {
 } from "@ant-design/icons";
 
 import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
-import { convertToODataParams } from "@/utils/convertToODataParams";
 import { IAdminProject } from "@/interfaces/project";
 import { pagination } from "@/utils/pagination";
 import { paths } from "@/routers/paths";
@@ -34,14 +34,14 @@ const AdminDashboard = () => {
   });
 
   const { project, analyzation, isLoading } = useAdminProjectManagement({
-    $filter: convertToODataParams(
-      {
-        projectStatus: searchParams.get("status"),
+    queryString: buildQuery({
+      filter: {
+        projectStatus: searchParams.get("status") || undefined,
+        "tolower(projectName)": {
+          contains: searchParams.get("search")?.toLowerCase(),
+        },
       },
-      {
-        projectName: searchParams.get("search"),
-      }
-    ),
+    }),
   });
 
   const navigate = useNavigate();
@@ -127,15 +127,11 @@ const AdminDashboard = () => {
         let bg = "";
 
         switch (status) {
-          case "Active":
+          case "Doing":
             color = "#6ED99F";
             bg = "#E5F8ED";
             break;
-          case "Close":
-            color = "#4AD8EC";
-            bg = "#E0F9FC";
-            break;
-          case "Inactive":
+          case "Done":
             color = "#968EF3";
             bg = "#EEEDFD";
             break;
@@ -295,8 +291,8 @@ const AdminDashboard = () => {
               onChange={handleChange}
               allowClear
               options={[
-                { value: "Active", label: "Doing" },
-                { value: "InActive", label: "Done" },
+                { value: "Doing", label: "Doing" },
+                { value: "Done", label: "Done" },
                 { value: "Deleted", label: "Deleted" },
               ]}
             />

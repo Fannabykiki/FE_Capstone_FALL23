@@ -8,13 +8,12 @@ import {
 
 const getAdminSchemas = async (
   signal: AbortSignal | undefined,
-  params: { [key: string]: string | undefined }
+  queryString: string
 ) =>
   axiosClient({
-    url: "/api/schema-management/schemas",
+    url: "/api/schema-management/schemas" + queryString,
     method: HTTP_METHODS.GET,
     signal,
-    params,
   }).then((resp) => resp.data);
 
 const createPermissionScheme = (data: IPermissionSchemeInputType) =>

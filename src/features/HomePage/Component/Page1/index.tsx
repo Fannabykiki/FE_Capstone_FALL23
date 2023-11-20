@@ -11,10 +11,14 @@ import HUET from "@/assets/images/HomePage/HUET.png";
 import MTA from "@/assets/images/HomePage/MTA.png";
 import DUT from "@/assets/images/HomePage/DUT.png";
 import UIT from "@/assets/images/HomePage/UIT.png";
+import { paths } from "@/routers/paths";
+import { useNavigate } from "react-router-dom";
 
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 export default function Page1() {
+  const navigate = useNavigate();
+
   return (
     <Row className="min-h-screen">
       <Col className="mt-28" span={6}>
@@ -34,7 +38,10 @@ export default function Page1() {
           Execution Across Every Department with Our All-in-One Platform
         </Typography>
 
-        <Button className="mt-10 self-center rounded-3xl bg-green-500 shadow-2xl h-16 w-52">
+        <Button
+          onClick={() => navigate(paths.login)}
+          className="mt-10 self-center rounded-3xl bg-green-500 shadow-2xl h-16 w-52"
+        >
           <Text className="text-white text-2xl  font-bold">Sign In</Text>
         </Button>
 

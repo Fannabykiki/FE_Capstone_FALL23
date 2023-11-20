@@ -54,31 +54,35 @@ export default function PageContainer({
     if (!isAuthenticated) {
       const isTokenValid = checkTokenValid();
       if (!isTokenValid && requireAuth) {
-        navigate("/login");
+        navigate(paths.login, {
+          state: {
+            from: location.pathname,
+            search: location.search,
+          },
+          replace: true,
+        });
       }
     } else {
       if (userInfo?.isAdmin) {
-        navigate({
-          pathname: matchRoutes(
-            Object.values(adminPaths).map((path) => ({ path })),
-            location
-          )
-            ? location.pathname
-            : paths.admin.index,
-          search: location.search,
-        });
+        const redirectPath = matchRoutes(
+          Object.values(adminPaths).map((path) => ({ path })),
+          location
+        )
+          ? location.pathname
+          : paths.admin.index;
+
+        navigate({ pathname: redirectPath, search: location.search });
       } else {
-        navigate({
-          pathname: matchRoutes(
-            Object.values(userPaths).map((path) => ({ path })) as {
-              path: string;
-            }[],
-            location
-          )
-            ? location.pathname
-            : paths.dashboard,
-          search: location.search,
-        });
+        const redirectPath = matchRoutes(
+          Object.values(userPaths).map((path) => ({ path })) as {
+            path: string;
+          }[],
+          location
+        )
+          ? location.pathname
+          : paths.dashboard;
+
+        navigate({ pathname: redirectPath, search: location.search });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

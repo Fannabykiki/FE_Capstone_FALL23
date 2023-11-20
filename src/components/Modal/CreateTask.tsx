@@ -123,7 +123,7 @@ export default function CreateTask({
 
   return (
     <Modal
-      title="Create Work Item"
+      title="New Task"
       onCancel={onCancel}
       open={isOpen}
       onOk={form.submit}
