@@ -32,13 +32,19 @@ export default function PageContainer({
 
   const { projectId } = useParams();
 
-  useQuery({
+  const { refetch: refetchStatus } = useQuery({
     queryKey: [taskApi.getTaskStatusKey, projectId],
     queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId!),
     initialData: [],
     enabled: Boolean(projectId),
     staleTime: 60000,
   });
+
+  useEffect(() => {
+    if (projectId) {
+      refetchStatus();
+    }
+  }, [projectId, refetchStatus]);
 
   useEffect(() => {
     document.title = `Dev Tasker - ${title}`;
