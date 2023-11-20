@@ -7,6 +7,8 @@ import { CreateIteration } from "@/components/Modal";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { IIteration } from "@/interfaces/iteration";
 import { IterationDisplay } from "@/components";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/utils/constants";
 
 export enum TaskType {
   Main = "Work Item",
@@ -46,7 +48,6 @@ const TaskBoard = () => {
 
   return (
     <>
-      <Typography.Title>Sprints</Typography.Title>
       <div className="flex gap-x-2 items-center mb-4">
         <label>Select sprint:</label>
         <Select
@@ -65,7 +66,9 @@ const TaskBoard = () => {
               label: (
                 <div className="flex items-center justify-between">
                   <span>{iteration.interationName}</span>
-                  <span className="text-xs bg-neutral-100 px-2 rounded-full">{iteration.status}</span>
+                  <span className="text-xs bg-neutral-100 px-2 rounded-full">
+                    {iteration.status}
+                  </span>
                 </div>
               ),
               value: iteration.interationId,
@@ -77,7 +80,18 @@ const TaskBoard = () => {
         />
       </div>
       {selectedIteration ? (
-        <IterationDisplay iterationId={selectedIteration.interationId} />
+        <>
+          <div className="flex justify-between items-center">
+            <Typography.Title>
+              Sprints {selectedIteration.interationName}
+            </Typography.Title>
+            <span className="text-xl">
+              {dayjs(selectedIteration.startDate).format(DATE_FORMAT)} -{" "}
+              {dayjs(selectedIteration.endDate).format(DATE_FORMAT)}
+            </span>
+          </div>
+          <IterationDisplay iterationId={selectedIteration.interationId} />
+        </>
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
       )}
