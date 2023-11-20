@@ -6,7 +6,11 @@ import useDetailView from "@/hooks/useDetailView";
 import { CreateIteration } from "@/components/Modal";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { IIteration } from "@/interfaces/iteration";
-import { IterationDisplay } from "@/components";
+import {
+  IterationDisplay,
+  IterationDisplayDate,
+  IterationDisplayName,
+} from "@/components";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 
@@ -82,13 +86,11 @@ const TaskBoard = () => {
       {selectedIteration ? (
         <>
           <div className="flex justify-between items-center">
-            <Typography.Title>
-              Sprints {selectedIteration.interationName}
+            <Typography.Title className="flex gap-x-2">
+              <span className="flex-shrink-0">Sprints</span>
+              <IterationDisplayName iteration={selectedIteration} />
             </Typography.Title>
-            <span className="text-xl">
-              {dayjs(selectedIteration.startDate).format(DATE_FORMAT)} -{" "}
-              {dayjs(selectedIteration.endDate).format(DATE_FORMAT)}
-            </span>
+            <IterationDisplayDate iteration={selectedIteration} />
           </div>
           <IterationDisplay iterationId={selectedIteration.interationId} />
         </>
