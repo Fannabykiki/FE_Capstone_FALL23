@@ -1,20 +1,11 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { Avatar, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
-import {
-  CommentOutlined,
-  DoubleLeftOutlined,
-  DoubleRightOutlined,
-  DownOutlined,
-  PaperClipOutlined,
-  PauseOutlined,
-  QuestionCircleOutlined,
-  UpOutlined,
-} from "@ant-design/icons";
+import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
-import { TaskType } from "./display";
+import { TaskType } from ".";
 import PriorityStatus from "../Task/PriorityStatus";
 
 interface Props {
