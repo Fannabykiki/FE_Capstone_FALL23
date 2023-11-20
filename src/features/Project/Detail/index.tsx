@@ -34,23 +34,17 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (detail && userInfo) {
-      let projects: Partial<IProject>[] = [];
+      let projects: string[] = [];
       const savedProjectsString = localStorage.getItem(
-        `${userInfo?.id}-projects`
+        `${userInfo?.id}-projects-recent`
       );
       if (savedProjectsString) {
-        projects = JSON.parse(savedProjectsString) as Partial<IProject>[];
+        projects = JSON.parse(savedProjectsString) as string[];
       }
-      projects = projects.filter(
-        (project) => project.projectId !== detail?.projectId
-      );
-      projects.unshift({
-        projectId: detail?.projectId,
-        projectName: detail?.projectName,
-        description: detail?.description,
-      });
+      projects = projects.filter((prjId) => prjId !== detail?.projectId);
+      projects.unshift(detail?.projectId);
       localStorage.setItem(
-        `${userInfo?.id}-projects`,
+        `${userInfo?.id}-projects-recent`,
         JSON.stringify(projects.slice(0, 4))
       );
     }

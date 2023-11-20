@@ -47,26 +47,28 @@ export const REGEX_SPECIAL_CHARACTER = /[~`!@#$%^&*()\-_+={}\[\]|\/:;"'<>,.?]/;
 
 export const REGEX_CHARACTER = /(?=.*[a-z])(?=.*[A-Z])/;
 
-export const AVATAR_BG_COLOR = ["#f56a00", "#7265e6", "#ffbf00", "#00a2ae"];
-
 export const SAFE_DAY_TIL_DUE_DATE = -7;
 export const WARNING_DAY_TIL_DUE_DATE = -2;
 
 export const STATUS_COLOR = {
   "To do": {
-    backgroundColor: "F5B7B1",
-    color: "E74C3C",
+    backgroundColor: "#FFD700",
+    color: "#000000",
   },
   Doing: {
-    backgroundColor: "ABEBC6",
-    color: "28B463",
+    backgroundColor: "#87CEEB",
+    color: "#000000",
+  },
+  "In Progress": {
+    backgroundColor: "#87CEEB",
+    color: "#000000",
   },
   Done: {
-    backgroundColor: "F9E79F",
-    color: "D4AC0D",
+    backgroundColor: "#90EE90",
+    color: "#000000",
   },
   Close: {
-    backgroundColor: "grey",
-    color: "white",
+    backgroundColor: "#808080",
+    color: "#FFFFFF",
   },
 };

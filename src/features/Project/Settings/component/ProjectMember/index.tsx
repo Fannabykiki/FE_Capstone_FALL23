@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { UserDeleteOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import { faker } from "@faker-js/faker";
 import { toast } from "react-toastify";
 import {
   Avatar,
@@ -19,7 +20,6 @@ import {
 
 import { IProjectMember } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
-import { randomBgColor } from "@/utils/random";
 
 export default function ProjectMember() {
   const { projectId } = useParams();
@@ -65,7 +65,7 @@ export default function ProjectMember() {
       render: (name, record) => (
         <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: randomBgColor() }}>
+            <Avatar style={{ backgroundColor: faker.color.rgb() }}>
               {name?.charAt(0).toUpperCase()}
             </Avatar>
           </Col>
@@ -127,7 +127,7 @@ export default function ProjectMember() {
         <Row>
           <Col span={1} className="flex justify-center items-center">
             {managerProject ? (
-              <Avatar style={{ backgroundColor: randomBgColor() }}>
+              <Avatar style={{ backgroundColor: faker.color.rgb() }}>
                 {managerProject.fullname.charAt(0).toUpperCase()}
               </Avatar>
             ) : null}

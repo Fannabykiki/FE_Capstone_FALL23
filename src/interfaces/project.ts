@@ -61,6 +61,7 @@ export interface IProject {
   totalTaskCreated: number;
   totalTaskCompleted: number;
   projectMembers: IProjectMember[];
+  bgColor?: string;
 }
 
 export interface IProjectMember {
@@ -118,6 +119,11 @@ export interface IAdminProjectAnalyzation {
   projectInActive: number;
   projectInActivePercent: number;
   totalProject: number;
+}
+
+export interface IProjectStatus {
+  statusId: string;
+  statusName: string;
 }
 
 export interface IAdminUserProjectList {
@@ -195,4 +201,46 @@ export interface IInvitationInfo {
   projectName: string;
   statusId: string;
   statusName: string;
+}
+
+export interface IReportProject {
+  reportProject: {
+    totalTask: number;
+    dateTime: Date | null;
+    reportStatuses: {
+      boardStatusId: string;
+      title: string;
+      numberTask: number;
+      percent: number;
+    }[];
+  };
+  reportRecordByWeerk: {
+    totalTask: number;
+    dateTime: Date;
+    reportStatuses: {
+      boardStatusId: string;
+      title: string;
+      numberTask: number;
+      percent: number;
+    }[];
+  }[];
+  memberTaks: {
+    memberId: string;
+    userId: string;
+    fullname: string;
+    userName: string | null;
+    email: string;
+    roleId: string;
+    roleName: string;
+    isOwner: boolean;
+    totalTasks: number;
+    avatarColor?: string;
+    reportStatuses: {
+      boardStatusId: string;
+      title: string;
+      numberTask: number;
+      percent: number;
+    }[];
+    [key: string]: any;
+  }[];
 }

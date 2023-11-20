@@ -20,11 +20,11 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+
 import useProjectDetail from "@/hooks/useProjectDetail";
 import useMenuCollapse from "@/hooks/useMenuCollapse";
 import { paths } from "@/routers/paths";
 import Brand from "../Layout/Brand";
-import { randomBgColor } from "@/utils/random";
 import { useAuthContext } from "@/context/Auth";
 
 type PathKeys = keyof typeof paths;
@@ -177,7 +177,7 @@ export default function ProjectSider() {
             </div>
             <div className="px-2 flex gap-x-4 items-center">
               <Avatar
-                style={{ backgroundColor: randomBgColor() }}
+                style={{ backgroundColor: detail?.bgColor }}
                 shape="square"
               >
                 {detail?.projectName.charAt(0).toUpperCase()}

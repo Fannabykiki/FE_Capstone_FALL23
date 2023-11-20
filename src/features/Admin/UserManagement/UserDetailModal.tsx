@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
+import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import {
   Avatar,
@@ -18,7 +19,6 @@ import { projectApi } from "@/utils/api/project";
 import { IAdminUsers } from "@/interfaces/user";
 import { useAuthContext } from "@/context/Auth";
 import { pagination } from "@/utils/pagination";
-import { randomBgColor } from "@/utils/random";
 
 interface Props {
   userDetail: IAdminUsers | undefined;
@@ -48,7 +48,7 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
         );
       return data.map((user) => ({
         ...user,
-        manager: { ...user.manager, avatarColor: randomBgColor() },
+        manager: { ...user.manager, avatarColor: faker.color.rgb() },
       }));
     },
     enabled: Boolean(userInfo) && Boolean(userDetail),
@@ -98,15 +98,11 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
         let bg = "";
 
         switch (status) {
-          case "Active":
+          case "Doing":
             color = "#6ED99F";
             bg = "#E5F8ED";
             break;
-          case "Close":
-            color = "#4AD8EC";
-            bg = "#E0F9FC";
-            break;
-          case "Inactive":
+          case "Done":
             color = "#968EF3";
             bg = "#EEEDFD";
             break;

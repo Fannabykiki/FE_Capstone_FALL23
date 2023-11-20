@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { faker } from "@faker-js/faker";
 
 import { IAdminUsers, IAdminUsersAnalyzation } from "@/interfaces/user";
 import { useAuthContext } from "@/context/Auth";
-import { randomBgColor } from "@/utils/random";
 import { userApi } from "@/utils/api/user";
 
 interface Params {
@@ -24,7 +24,7 @@ export default function useAdminUserManagement(params: Params) {
 
       return data.map((user) => ({
         ...user,
-        avatarColor: randomBgColor(),
+        avatarColor: faker.color.rgb(),
       }));
     },
     enabled: Boolean(userInfo),

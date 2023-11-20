@@ -113,10 +113,12 @@ const ProjectCalendar = () => {
                   ge: searchParams.get("startDate")
                     ? dayjs(searchParams.get("startDate"))
                         .startOf("day")
-                        .toDate()
+                        .toISOString()
                     : undefined,
                   le: searchParams.get("endDate")
-                    ? dayjs(searchParams.get("endDate")).endOf("day").toDate()
+                    ? dayjs(searchParams.get("endDate"))
+                        .endOf("day")
+                        .toISOString()
                     : undefined,
                 },
               },
@@ -125,12 +127,36 @@ const ProjectCalendar = () => {
                   ge: searchParams.get("startDate")
                     ? dayjs(searchParams.get("startDate"))
                         .startOf("day")
-                        .toDate()
+                        .toISOString()
                     : undefined,
                   le: searchParams.get("endDate")
-                    ? dayjs(searchParams.get("endDate")).endOf("day").toDate()
+                    ? dayjs(searchParams.get("endDate"))
+                        .endOf("day")
+                        .toISOString()
                     : undefined,
                 },
+              },
+              {
+                and: [
+                  {
+                    startDate: {
+                      le: searchParams.get("startDate")
+                        ? dayjs(searchParams.get("startDate"))
+                            .startOf("day")
+                            .toISOString()
+                        : undefined,
+                    },
+                  },
+                  {
+                    dueDate: {
+                      ge: searchParams.get("endDate")
+                        ? dayjs(searchParams.get("endDate"))
+                            .endOf("day")
+                            .toISOString()
+                        : undefined,
+                    },
+                  },
+                ],
               },
             ],
           },
