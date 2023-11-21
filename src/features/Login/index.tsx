@@ -8,15 +8,11 @@ import { paths } from "@/routers/paths";
 import { classNames, handleValidatePassword } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { AxiosError } from "axios";
-import { useEffect, useState } from "react";
-import { IErrorInfoState } from "@/interfaces/shared/state";
+import useErrorMessage from "@/hooks/useErrorMessage";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [errorInfo, setErrorInfo] = useState<IErrorInfoState>({
-    isError: false,
-    message: "",
-  });
+  const { errorInfo, setErrorInfo } = useErrorMessage();
   const [form] = Form.useForm();
   const { setAuthenticate } = useAuthContext();
 
@@ -46,26 +42,6 @@ export default function Login() {
       toast.error(err.response?.data || "Login failed! Please try again later");
     },
   });
-
-  const setErrorWithTimeout = (err: IErrorInfoState) => {
-    setErrorInfo(err);
-
-    return setTimeout(() => {
-      setErrorInfo({
-        isError: false,
-        message: "",
-      });
-    }, 6000);
-  };
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    if (errorInfo.isError) {
-      timeoutId = setErrorWithTimeout(errorInfo);
-      // Return a cleanup function to clear the timeout
-    }
-    return () => clearTimeout(timeoutId);
-  }, [errorInfo]);
 
   const onFinish = (values: any) => {
     login(values);
