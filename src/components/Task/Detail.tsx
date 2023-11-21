@@ -20,6 +20,8 @@ import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import PriorityStatus from "./PriorityStatus";
 import { faker } from "@faker-js/faker";
+import useTaskActions from "@/hooks/useTaskActions";
+import { toast } from "react-toastify";
 
 interface Props {
   taskId: string;
@@ -28,7 +30,7 @@ interface Props {
 }
 
 export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
-  const { data: task } = useQuery({
+  const { data: task, refetch: refetchTaskDetail } = useQuery({
     queryKey: [taskApi.getDetailKey, taskId],
     queryFn: ({ signal }) => taskApi.getDetail(signal, taskId),
     enabled: Boolean(taskId),
@@ -40,6 +42,24 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
       taskApi.getTaskStatusKey,
       projectId,
     ]) || [];
+
+  const { changeTaskStatusMutation } = useTaskActions();
+
+  const onChangeTaskStatus = (statusId: string) => {
+    changeTaskStatusMutation.mutate(
+      {
+        id: task!.taskId,
+        statusId,
+      },
+      {
+        onSuccess: () => refetchTaskDetail(),
+        onError: (err: any) => {
+          console.error(err);
+          toast.error("Update task status failed! Please try again later");
+        },
+      }
+    );
+  };
 
   if (task) {
     return (
@@ -60,6 +80,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               }))}
               value={task.statusId}
               className="min-w-[200px] mb-4"
+              onChange={onChangeTaskStatus}
             />
           </div>
           <Row gutter={32}>

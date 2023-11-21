@@ -85,12 +85,22 @@ const TaskBoard = () => {
       </div>
       {selectedIteration ? (
         <>
-          <div className="flex justify-between items-center">
-            <Typography.Title className="flex gap-x-2">
+          <div className="flex justify-between items-center mb-4">
+            <Typography.Title className="flex gap-x-2 !mb-0">
               <span className="flex-shrink-0">Sprints</span>
               <IterationDisplayName iteration={selectedIteration} />
             </Typography.Title>
-            <IterationDisplayDate iteration={selectedIteration} />
+            <div>
+              <IterationDisplayDate
+                iteration={selectedIteration}
+                property="startDate"
+              />
+              {" - "}
+              <IterationDisplayDate
+                iteration={selectedIteration}
+                property="endDate"
+              />
+            </div>
           </div>
           <IterationDisplay iterationId={selectedIteration.interationId} />
         </>

@@ -2,7 +2,7 @@ import { useAuthContext } from "@/context/Auth";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { EProjectPrivacyStatusLabel, IProject } from "@/interfaces/project";
 import { paths } from "@/routers/paths";
-import { Avatar, Button, Tooltip, Typography } from "antd";
+import { Avatar, Button, Descriptions, Tooltip, Typography } from "antd";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { faker } from "@faker-js/faker";
@@ -15,6 +15,8 @@ import {
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import InviteMemberModal from "./InviteMemberModal";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/utils/constants";
 
 export default function ProjectDetail() {
   const [isOpenInviteMemberModal, setOpenInviteMemberModal] =
@@ -76,6 +78,8 @@ export default function ProjectDetail() {
     );
   };
 
+  const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -103,6 +107,20 @@ export default function ProjectDetail() {
       <div className="flex gap-4">
         <div className="bg-white shadow p-4 flex-grow h-fit rounded-md">
           <p className="font-semibold text-xl">About this project</p>
+          <Descriptions>
+            <Descriptions.Item label="Owner">
+              <div className="flex gap-x-2 items-center">
+                {projectOwner?.fullname || "Unknown"}
+              </div>
+            </Descriptions.Item>
+            <Descriptions.Item label="Start date">
+              {dayjs(detail?.startDate).format(DATE_FORMAT)}
+            </Descriptions.Item>
+            <Descriptions.Item label="End date">
+              {dayjs(detail?.endDate).format(DATE_FORMAT)}
+            </Descriptions.Item>
+          </Descriptions>
+          <p className="font-semibold text-xl">Description</p>
           <Typography.Paragraph>{detail?.description}</Typography.Paragraph>
         </div>
         <div className="basis-1/3 flex-shrink-0 flex flex-col gap-4">
