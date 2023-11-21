@@ -85,9 +85,9 @@ export default function CreateTask({
             toast.success("Create subtask successfully");
             handleClose();
           },
-          onError: (err) => {
+          onError: (err: any) => {
             console.error(err);
-            toast.error("Create subtask failed");
+            toast.error(err.response?.data || "Create subtask failed");
           },
         }
       );
@@ -100,9 +100,9 @@ export default function CreateTask({
             toast.success("Create task successfully");
             handleClose();
           },
-          onError: (err) => {
+          onError: (err: any) => {
             console.error(err);
-            toast.error("Create task failed");
+            toast.error(err.response?.data || "Create task failed");
           },
         }
       );
@@ -132,7 +132,7 @@ export default function CreateTask({
           createTaskMutation.isLoading || createSubtaskMutation.isLoading,
       }}
       okText="Create"
-      width="80vw"
+      width="35vw"
     >
       <Form
         className="w-full"
@@ -148,24 +148,22 @@ export default function CreateTask({
         >
           <Input />
         </Form.Item>
+        <Form.Item
+          label="Interation"
+          name="interationId"
+          rules={[{ required: true, message: "Interation is required" }]}
+        >
+          <Select
+            options={interationList?.map((interation) => ({
+              label: interation.interationName,
+              value: interation.interationId,
+            }))}
+            disabled={Boolean(initTaskData.interationId)}
+            loading={isLoadingIterations}
+          />
+        </Form.Item>
         <Row gutter={12}>
-          <Col span={6}>
-            <Form.Item
-              label="Interation"
-              name="interationId"
-              rules={[{ required: true, message: "Interation is required" }]}
-            >
-              <Select
-                options={interationList?.map((interation) => ({
-                  label: interation.interationName,
-                  value: interation.interationId,
-                }))}
-                disabled={Boolean(initTaskData.interationId)}
-                loading={isLoadingIterations}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
+          <Col span={8}>
             <Form.Item
               label="Type"
               name="typeId"
@@ -179,7 +177,7 @@ export default function CreateTask({
               />
             </Form.Item>
           </Col>
-          <Col span={6}>
+          <Col span={8}>
             <Form.Item label="State" name="statusId">
               <Select
                 disabled
@@ -190,7 +188,7 @@ export default function CreateTask({
               />
             </Form.Item>
           </Col>
-          <Col span={6}>
+          <Col span={8}>
             <Form.Item
               label="Priority"
               name="priorityId"
