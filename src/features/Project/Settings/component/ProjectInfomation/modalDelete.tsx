@@ -29,8 +29,8 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
   const navigate = useNavigate();
 
   const { mutate: deleteProject, isLoading: isRemoving } = useMutation({
-    mutationKey: [projectApi.deleteProjectKey],
-    mutationFn: projectApi.deleteProject,
+    mutationFn: projectApi.updateProject,
+    mutationKey: [projectApi.updateProjectKey],
     onSuccess: async () => {
       await queryClient.refetchQueries([
         projectApi.getListByUserKey,
@@ -58,7 +58,14 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
 
   const handleSubmit = () => {
     if (!projectId) return;
-    deleteProject(projectId);
+    deleteProject({
+      id: projectId,
+      data: {
+        projectName: detail!.projectName,
+        description: detail!.description,
+        isDeleted: true,
+      },
+    });
   };
 
   return (
