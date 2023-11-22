@@ -26,21 +26,18 @@ export default function DisplayName({ iteration }: Props) {
   });
 
   const onUpdateName = () => {
-    if (newName && newName !== iteration.interationName) {
-      const newIterationData = pick(iteration, [
-        "interationId",
-        "startDate",
-        "endDate",
-        "statusId",
-      ]);
-      updateIteration({
-        id: iteration.interationId,
-        data: { ...newIterationData, interationName: newName },
-      });
-    } else {
-      setNewName(iteration.interationName);
-      setIsEditing(false);
-    }
+    // if (newName && newName !== iteration.interationName) {
+    //   const newIterationData = pick(iteration, [
+    //     "interationId",
+    //     "startDate",
+    //     "endDate",
+    //     "statusId",
+    //   ]);
+    //   updateIteration({ ...newIterationData, interationName: newName });
+    // } else {
+    //   setNewName(iteration.interationName);
+    //   setIsEditing(false);
+    // }
   };
 
   if (!isEditing) {

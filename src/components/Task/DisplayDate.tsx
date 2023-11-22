@@ -29,23 +29,23 @@ export default function DisplayDate({ iteration, property }: Props) {
   });
 
   const onUpdateDate = (date: Dayjs | null) => {
-    if (date) {
-      const newIterationData = pick(iteration, [
-        "interationId",
-        "interationName",
-        "startDate",
-        "endDate",
-        "statusId",
-      ]);
-      updateIteration({
-        id: iteration.interationId,
-        data: { ...newIterationData, [property]: date.toDate() },
-      });
-      setNewDate(date);
-    } else {
-      setNewDate(dayjs(iteration[property] as string));
-      setIsEditing(false);
-    }
+    // if (date) {
+    //   const newIterationData = pick(iteration, [
+    //     "interationId",
+    //     "interationName",
+    //     "startDate",
+    //     "endDate",
+    //     "statusId",
+    //   ]);
+    //   updateIteration({
+    //     id: iteration.interationId,
+    //     data: { ...newIterationData, [property]: date.toDate() },
+    //   });
+    //   setNewDate(date);
+    // } else {
+    //   setNewDate(dayjs(iteration[property] as string));
+    //   setIsEditing(false);
+    // }
   };
 
   if (!isEditing) {
