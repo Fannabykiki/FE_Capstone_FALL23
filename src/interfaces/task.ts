@@ -52,6 +52,12 @@ export interface IGetTypeListResponse {
   title: string;
 }
 
+export interface ICreateStatusPayload {
+  title: string;
+  order: number;
+  projectId: string;
+}
+
 export interface IUpdateTaskPayload {
   id: string;
   data: ITask;

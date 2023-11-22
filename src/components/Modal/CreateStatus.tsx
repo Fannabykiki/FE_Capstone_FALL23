@@ -1,25 +1,10 @@
 import useErrorMessage from "@/hooks/useErrorMessage";
-import useListProjectOfUser from "@/hooks/useListProjectOfUser";
-import {
-  EProjectPrivacyStatusLabel,
-  ICreateProjectPayload,
-} from "@/interfaces/project";
-import { IErrorInfoState } from "@/interfaces/shared/state";
-import { projectApi } from "@/utils/api/project";
-import { useMutation } from "@tanstack/react-query";
-import {
-  Col,
-  DatePicker,
-  Form,
-  Input,
-  Modal,
-  Row,
-  Switch,
-  Typography,
-} from "antd";
+import { ICreateStatusPayload } from "@/interfaces/task";
+import { taskApi } from "@/utils/api/task";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Form, Input, Modal, Typography } from "antd";
 import { AxiosError } from "axios";
-import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -27,25 +12,28 @@ interface Props {
   onClose: VoidFunction;
 }
 
-export default function CreateProject({ open, onClose }: Props) {
+export default function CreateStatus({ open, onClose }: Props) {
   const [form] = Form.useForm();
+  const { projectId } = useParams();
   const initialValues = {
-    projectName: "",
-    description: "",
-    startDate: dayjs(),
-    endDate: dayjs(),
-    privacyStatus: true,
+    title: "",
+    order: 1,
+    projectId,
   };
   const { errorInfo, setErrorInfo } = useErrorMessage();
+  const queryClient = useQueryClient();
 
-  const { refetchProjects } = useListProjectOfUser();
-
-  const { mutate: createProject, isLoading } = useMutation({
-    mutationFn: projectApi.create,
-    mutationKey: [projectApi.createKey],
-    onSuccess: (_, variables) => {
-      toast.success(`Create project '${variables.projectName}' succeed`);
-      refetchProjects();
+  const { mutate: createStatus, isLoading } = useMutation({
+    mutationFn: taskApi.createTaskStatus,
+    mutationKey: [taskApi.createTaskStatusKey],
+    onSuccess: async (_, variables) => {
+      toast.success(`Create status '${variables.title}' succeed`);
+      await queryClient.invalidateQueries({
+        queryKey: [taskApi.getTaskStatusKey, projectId],
+      });
+      await queryClient.refetchQueries({
+        queryKey: [taskApi.getTaskStatusKey, projectId],
+      });
       onClose();
     },
     onError: (err: AxiosError<any>) => {
@@ -66,15 +54,15 @@ export default function CreateProject({ open, onClose }: Props) {
         }
       }
       toast.error(
-        err.response?.data || "Register failed! Please try again later"
+        err.response?.data || "Create status failed! Please try again later"
       );
     },
   });
 
-  const onCreateProject = async () => {
+  const onCreateStatus = async () => {
     try {
       const values = await form.validateFields();
-      createProject(values);
+      createStatus({ ...values, projectId });
     } catch (error) {
       console.error("Validation Failed:", error);
     }
@@ -83,13 +71,13 @@ export default function CreateProject({ open, onClose }: Props) {
   return (
     <Modal
       open={open}
-      onOk={onCreateProject}
+      onOk={onCreateStatus}
       okText="Create"
       okButtonProps={{ loading: isLoading }}
       onCancel={onClose}
-      title="Create new Project"
+      title="Create new Status"
     >
-      <Form<ICreateProjectPayload>
+      <Form<ICreateStatusPayload>
         form={form}
         initialValues={initialValues}
         layout="vertical"
@@ -99,80 +87,21 @@ export default function CreateProject({ open, onClose }: Props) {
             {errorInfo.message}
           </Typography.Paragraph>
         )}
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="projectName"
-              label="Name"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter the project name",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="privacyStatus"
-              label="Privacy"
-              valuePropName="checked"
-            >
-              <Switch
-                checkedChildren={EProjectPrivacyStatusLabel.Public}
-                unCheckedChildren={EProjectPrivacyStatusLabel.Private}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Form.Item name="description" label="Description">
-          <Input.TextArea />
+        <Form.Item
+          name="title"
+          label="Title"
+          rules={[
+            {
+              required: true,
+              message: "Please enter the status title",
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              name="startDate"
-              label="Start Date"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select the start date",
-                },
-              ]}
-            >
-              <DatePicker className="w-full" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item
-              name="endDate"
-              label="End Date"
-              dependencies={["startDate"]}
-              rules={[
-                {
-                  required: true,
-                  message: "Please select the end date",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("startDate").isBefore(value)) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("End date must be after start date")
-                    );
-                  },
-                }),
-              ]}
-            >
-              <DatePicker className="w-full" />
-            </Form.Item>
-          </Col>
-        </Row>
-        {/* <Form.Item hidden name="createAt" />
-        <Form.Item hidden name="createBy" /> */}
+        <Form.Item name="order" label="Order">
+          <Input type="number" />
+        </Form.Item>
       </Form>
     </Modal>
   );

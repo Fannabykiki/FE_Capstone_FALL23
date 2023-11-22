@@ -6,10 +6,9 @@ import { Row, Space, Typography, Table, Button, Card } from "antd";
 
 import { ITaskStatus } from "@/interfaces/task";
 import useDetailView from "@/hooks/useDetailView";
-import { projectApi } from "@/utils/api/project";
 import { STATUS_COLOR } from "@/utils/constants";
 import { taskApi } from "@/utils/api/task";
-import { CreateTask } from "@/components";
+import { CreateStatus } from "@/components";
 
 export default function StatusManagement() {
   const { projectId } = useParams();
@@ -30,14 +29,7 @@ export default function StatusManagement() {
 
   return (
     <Card className="min-h-screen">
-      <CreateTask
-        isOpen={isModalCreateOpen}
-        handleClose={handleCloseModalCreate}
-        onSuccess={() =>
-          queryClient.refetchQueries([projectApi.getWorkItemListByProjectIdKey])
-        }
-      />
-
+      <CreateStatus open={isModalCreateOpen} onClose={handleCloseModalCreate} />
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Status Management</Typography.Title>
         <Space>
@@ -77,8 +69,8 @@ const columns: ColumnsType<ITaskStatus> = [
     dataIndex: "title",
     width: "10%",
     render: (state) => {
-      const { backgroundColor, color } =
-        STATUS_COLOR[state as keyof typeof STATUS_COLOR];
+      const { backgroundColor = "gray", color = "white" } =
+        STATUS_COLOR[state as keyof typeof STATUS_COLOR] || {};
 
       return (
         <Row align="middle" className="gap-2">
