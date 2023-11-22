@@ -5,7 +5,7 @@ import {
   JwtTokenInfo,
 } from "@/interfaces/user";
 import { HTTP_METHODS } from "@/utils/constants";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axiosClient from "./axios-client";
 
 const getProfile = () => {

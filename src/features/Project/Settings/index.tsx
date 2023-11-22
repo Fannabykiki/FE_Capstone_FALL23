@@ -72,7 +72,7 @@ export default function ProjectSettings() {
   return (
     <>
       <Layout>
-        <Sider className="min-h-screen rounded-md">
+        <Sider className="min-h-[calc(100vh_-_116px_-_4rem)] rounded-md">
           <Menu
             className="rounded-md"
             mode="inline"
