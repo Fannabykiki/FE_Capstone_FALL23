@@ -7,6 +7,7 @@ import { DATE_FORMAT } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
 import { TaskType } from ".";
 import PriorityStatus from "../Task/PriorityStatus";
+import AvatarWithColor from "../AvatarWithColor";
 
 interface Props {
   snapshot?: DraggableStateSnapshot;
@@ -66,7 +67,9 @@ export default function TaskDraggableDisplay({
             </Tooltip>
           </div>
           <Tooltip title={task.assignTo}>
-            <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
+            <AvatarWithColor stringContent={task.assignTo}>
+              {task.assignTo.slice(0, 1).toUpperCase()}
+            </AvatarWithColor>
           </Tooltip>
         </div>
       </div>

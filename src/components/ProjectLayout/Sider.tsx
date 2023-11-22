@@ -26,6 +26,7 @@ import useMenuCollapse from "@/hooks/useMenuCollapse";
 import { paths } from "@/routers/paths";
 import Brand from "../Layout/Brand";
 import { useAuthContext } from "@/context/Auth";
+import AvatarWithColor from "../AvatarWithColor";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -176,12 +177,12 @@ export default function ProjectSider() {
               <Brand menuCollapse={menuCollapse} />
             </div>
             <div className="px-2 flex gap-x-4 items-center">
-              <Avatar
-                style={{ backgroundColor: detail?.bgColor }}
+              <AvatarWithColor
                 shape="square"
+                stringContent={detail?.projectName || "Unknown"}
               >
                 {detail?.projectName.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
               {!menuCollapse && (
                 <span className="font-semibold text-lg">
                   {detail?.projectName}

@@ -20,6 +20,7 @@ import {
 
 import { IProjectMember } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
+import AvatarWithColor from "@/components/AvatarWithColor";
 
 export default function ProjectMember() {
   const { projectId } = useParams();
@@ -65,9 +66,9 @@ export default function ProjectMember() {
       render: (name, record) => (
         <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: faker.color.rgb() }}>
+            <AvatarWithColor stringContent={name || "Unknown"}>
               {name?.charAt(0).toUpperCase()}
-            </Avatar>
+            </AvatarWithColor>
           </Col>
           <Col span={20}>
             <Typography.Title level={5} className="!m-0 min-h-[24px]">
@@ -127,9 +128,9 @@ export default function ProjectMember() {
         <Row>
           <Col span={1} className="flex justify-center items-center">
             {managerProject ? (
-              <Avatar style={{ backgroundColor: faker.color.rgb() }}>
+              <AvatarWithColor stringContent={managerProject.fullname}>
                 {managerProject.fullname.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
             ) : null}
           </Col>
           <Col className="ml-3" span={19}>

@@ -9,7 +9,7 @@ import Sider from "antd/es/layout/Sider";
 import { Content } from "antd/es/layout/layout";
 import ProjectInformation from "./component/ProjectInfomation";
 import ProjectMember from "./component/ProjectMember";
-import PermissionRole from "./component/Permission&Role";
+import PermissionRole from "./component/PermissionRole";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { generatePath, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/context/Auth";

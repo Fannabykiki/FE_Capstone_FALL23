@@ -19,6 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import { faker } from "@faker-js/faker";
+import AvatarWithColor from "@/components/AvatarWithColor";
 
 export default function ProjectInformation() {
   const [form] = Form.useForm();
@@ -109,13 +110,14 @@ export default function ProjectInformation() {
           </Col>
           <Col span={3}></Col>
           <Col span={9}>
-            <Avatar
-              style={{ backgroundColor: faker.color.rgb(), fontSize: "50px" }}
+            <AvatarWithColor
+              style={{ fontSize: "50px" }}
               size={100}
               shape="square"
+              stringContent={detail?.projectName || "Unknown"}
             >
-              {detail?.projectName.charAt(0).toUpperCase()}
-            </Avatar>
+              {detail?.projectName.charAt(0).toUpperCase() || "U"}
+            </AvatarWithColor>
           </Col>
         </Row>
         <Divider />
@@ -126,9 +128,9 @@ export default function ProjectInformation() {
           <Row>
             <Col span={1} className="flex justify-center items-center">
               {projectAdmin ? (
-                <Avatar style={{ backgroundColor: faker.color.rgb() }}>
+                <AvatarWithColor stringContent={projectAdmin.fullname}>
                   {projectAdmin.fullname.charAt(0).toUpperCase()}
-                </Avatar>
+                </AvatarWithColor>
               ) : null}
             </Col>
             <Col className="ml-3" span={19}>
