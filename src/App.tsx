@@ -1,6 +1,6 @@
 import { AuthContext } from "@/context/Auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { IAuthState } from "./interfaces/shared/state";
 import { JwtTokenInfo } from "./interfaces/user";

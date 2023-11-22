@@ -13,6 +13,13 @@ const login = (data: ILoginPayload) =>
     data,
   }).then((resp) => resp.data);
 
+const loginWithGG = (data: { code: string }) =>
+  axiosClient({
+    url: "/api/authentication/external-login/token",
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
 const register = (data: IRegisterPayload) =>
   axiosClient({
     url: "/api/authentication/register",
@@ -35,10 +42,12 @@ const verifyAccount = (params: IVerifyAccountPayload) =>
 
 export const authApi = {
   login,
+  loginWithGG,
   register,
   forgotPassword,
   verifyAccount,
   loginKey: "authLogin",
+  loginWithGGKey: "loginWithGGKey",
   registerKey: "authRegister",
   forgotPasswordKey: "authForgotPassword",
   verifyAccountKey: "authVerifyAccount",

@@ -9,6 +9,12 @@ import { classNames, handleValidatePassword } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { AxiosError } from "axios";
 import useErrorMessage from "@/hooks/useErrorMessage";
+import { CLIENT_ID } from "@/utils/constants";
+import {
+  GoogleLogin,
+  GoogleOAuthProvider,
+  CredentialResponse,
+} from "@react-oauth/google";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -43,8 +49,40 @@ export default function Login() {
     },
   });
 
+  const { mutate: loginWithGG, isLoading: isLoginWithGG } = useMutation({
+    mutationFn: authApi.loginWithGG,
+    mutationKey: [authApi.loginWithGGKey],
+    onSuccess: (data) => {
+      const { token, isAdmin } = data;
+      localStorage.setItem("token", token);
+      setAuthenticate({ isAuthenticated: true, userInfo: null });
+      navigate({
+        pathname:
+          location.state?.from || (isAdmin ? paths.dashboard : paths.user),
+        search: location.state?.search,
+      });
+    },
+    onError: (err: AxiosError<any>) => {
+      if (err.response?.data) {
+        setErrorInfo({
+          isError: true,
+          message: err.response.data,
+        });
+      }
+      toast.error(
+        err.response?.data || "Login with Google failed! Please try again later"
+      );
+    },
+  });
+
   const onFinish = (values: any) => {
     login(values);
+  };
+
+  const onSuccess = ({ credential }: CredentialResponse) => {
+    if (!credential) return;
+
+    loginWithGG({ code: credential });
   };
 
   return (
@@ -100,7 +138,7 @@ export default function Login() {
             type="primary"
             className="w-full"
             htmlType="submit"
-            loading={isLoading}
+            loading={isLoading || isLoginWithGG}
           >
             Login
           </Button>
@@ -112,6 +150,16 @@ export default function Login() {
             Do not have an account? Register now
           </Button>
         </Form>
+        <div className="mt-5">
+          <GoogleOAuthProvider clientId={CLIENT_ID}>
+            <GoogleLogin
+              onSuccess={onSuccess}
+              onError={() =>
+                toast.error("Login with Google failed! Please try again later")
+              }
+            />
+          </GoogleOAuthProvider>
+        </div>
       </div>
     </div>
   );

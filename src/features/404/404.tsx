@@ -1,9 +1,13 @@
 import NotFound404 from "@/assets/images/NotFound.png";
+import { paths } from "@/routers/paths";
 import { Button, Image, Typography } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
 export default function NotFound() {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
@@ -18,7 +22,10 @@ export default function NotFound() {
           </Typography>
         </div>
         <div className="mt-4">
-          <Button className="rounded-3xl bg-blue-500 shadow-2xl h-12 w-48">
+          <Button
+            className="rounded-3xl bg-blue-500 shadow-2xl h-12 w-48"
+            onClick={() => navigate(paths.dashboard)}
+          >
             <Text className="font-bold text-white">GO TO HOMEPAGE</Text>
           </Button>
         </div>

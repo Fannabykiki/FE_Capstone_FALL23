@@ -1,6 +1,6 @@
 import { JwtTokenInfo } from "@/interfaces/user";
 import dayjs from "dayjs";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import {
   DATETIME_FORMAT,
   DATE_FORMAT,
