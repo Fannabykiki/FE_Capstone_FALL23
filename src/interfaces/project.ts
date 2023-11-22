@@ -30,6 +30,7 @@ export interface IUpdateInfoProjectPayload {
 export interface IUpdateProject
   extends Pick<IProject, "projectName" | "description"> {
   isDeleted?: boolean;
+  isDelete?: boolean;
 }
 export interface IUpdateProjectPayload {
   id: string;

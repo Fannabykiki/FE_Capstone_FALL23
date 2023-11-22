@@ -64,6 +64,7 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
         projectName: detail!.projectName,
         description: detail!.description,
         isDeleted: true,
+        isDelete: true,
       },
     });
   };
