@@ -18,8 +18,7 @@ import dayjs from "dayjs";
 import { useMutation } from "@tanstack/react-query";
 import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
-import { faker } from "@faker-js/faker";
-import AvatarWithColor from "@/components/AvatarWithColor";
+import { AvatarWithColor } from "@/components";
 
 export default function ProjectInformation() {
   const [form] = Form.useForm();

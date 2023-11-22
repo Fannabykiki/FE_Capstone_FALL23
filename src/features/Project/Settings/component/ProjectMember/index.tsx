@@ -20,7 +20,7 @@ import {
 
 import { IProjectMember } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
-import AvatarWithColor from "@/components/AvatarWithColor";
+import { AvatarWithColor } from "@/components";
 
 export default function ProjectMember() {
   const { projectId } = useParams();

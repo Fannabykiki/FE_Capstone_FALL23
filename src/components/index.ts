@@ -6,6 +6,7 @@ import IterationDisplayName from "./Iteration/DisplayName";
 import IterationDisplayDate from "./Iteration/DisplayDate";
 import TaskDetail from "./Task/Detail";
 import PriorityStatus from "./Task/PriorityStatus";
+import AvatarWithColor from "./AvatarWithColor";
 
 export {
   Layout,
@@ -16,6 +17,7 @@ export {
   IterationDisplayDate,
   TaskDetail,
   PriorityStatus,
+  AvatarWithColor,
 };
 
 export * from "./Modal";

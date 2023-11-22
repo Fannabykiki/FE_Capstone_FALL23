@@ -3,6 +3,7 @@ import {
   InfoCircleOutlined,
   LockOutlined,
   UserOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
@@ -14,6 +15,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import { generatePath, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/context/Auth";
 import { paths } from "@/routers/paths";
+import StatusManagement from "./component/StatusManagement";
 
 interface MenuItem {
   label: string;
@@ -37,7 +39,7 @@ export default function ProjectSettings() {
       }
     }
   }, [userInfo, detail, navigate]);
-  
+
   const items: MenuItem[] = [
     {
       label: "Project Information",
@@ -53,6 +55,11 @@ export default function ProjectSettings() {
       label: "Permission & Role",
       icon: <LockOutlined />,
       key: "permission&role",
+    },
+    {
+      label: "Status Management",
+      icon: <WarningOutlined />,
+      key: "statusManagement",
     },
   ];
 
@@ -88,6 +95,7 @@ export default function ProjectSettings() {
           {selectedKey === "projectInformation" && <ProjectInformation />}
           {selectedKey === "projectMember" && <ProjectMember />}
           {selectedKey === "permission&role" && <PermissionRole />}
+          {selectedKey === "statusManagement" && <StatusManagement />}
         </Content>
       </Layout>
     </>

@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import InviteMemberModal from "./InviteMemberModal";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
-import AvatarWithColor from "@/components/AvatarWithColor";
+import { AvatarWithColor } from "@/components";
 
 export default function ProjectDetail() {
   const [isOpenInviteMemberModal, setOpenInviteMemberModal] =

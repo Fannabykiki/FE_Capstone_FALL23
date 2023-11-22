@@ -20,7 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import useDebounceValue from "@/hooks/useDebounceValue";
-import AvatarWithColor from "@/components/AvatarWithColor";
+import { AvatarWithColor } from "@/components";
 
 export default function UserDashboard() {
   const { projects, refetchProjects } = useListProjectOfUser();

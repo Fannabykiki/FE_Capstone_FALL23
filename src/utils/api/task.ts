@@ -43,7 +43,7 @@ const getTaskById = (taskId: string): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const postTaskStatus = (status: ITaskStatus): Promise<ITaskStatus> => {
+const createTaskStatus = (status: ITaskStatus): Promise<ITaskStatus> => {
   return axiosClient({
     url: "/api/task-management/tasks/status",
     method: HTTP_METHODS.POST,
@@ -155,8 +155,8 @@ export const taskApi = {
   getDetailKey: "taskGetDetail",
   getTaskById,
   getTaskByIdKey: "taskGetTaskById",
-  postTaskStatus,
-  postTaskStatusKey: "taskPostTaskStatus",
+  createTaskStatus,
+  createTaskStatusKey: "taskCreateTaskStatus",
   getTaskTypes,
   getTaskTypesKey: "taskGetTaskTypes",
   createTask,
