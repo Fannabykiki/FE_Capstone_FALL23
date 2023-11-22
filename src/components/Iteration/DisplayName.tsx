@@ -1,4 +1,4 @@
-import { IIteration } from "@/interfaces/iteration";
+import { IIteration, IUpdateIterationPayload } from "@/interfaces/iteration";
 import { iterationApi } from "@/utils/api/iteration";
 import { useMutation } from "@tanstack/react-query";
 import { Input } from "antd";
@@ -32,11 +32,8 @@ export default function DisplayName({ iteration }: Props) {
         "startDate",
         "endDate",
         "statusId",
-      ]);
-      updateIteration({
-        id: iteration.interationId,
-        data: { ...newIterationData, interationName: newName },
-      });
+      ]) as IUpdateIterationPayload;
+      updateIteration({ ...newIterationData, interationName: newName });
     } else {
       setNewName(iteration.interationName);
       setIsEditing(false);

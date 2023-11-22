@@ -31,7 +31,7 @@ interface Props {
   statusList: ITaskStatus[];
   onToggleCollapseTask: VoidFunction;
   onOpenCreateTaskModal: (_: Partial<ICreateTaskRequest> | undefined) => void;
-  filterData: { name: string; statusId: string };
+  filterData: { name: string; statusId: string | null };
   onViewTask: (_taskId?: string | undefined) => void;
 }
 
