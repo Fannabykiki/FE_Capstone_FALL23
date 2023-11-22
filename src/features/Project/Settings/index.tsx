@@ -37,7 +37,7 @@ export default function ProjectSettings() {
       }
     }
   }, [userInfo, detail, navigate]);
-  
+
   const items: MenuItem[] = [
     {
       label: "Project Information",
@@ -63,33 +63,31 @@ export default function ProjectSettings() {
   };
 
   return (
-    <>
-      <Layout>
-        <Sider className="min-h-screen rounded-md">
-          <Menu
-            className="rounded-md"
-            mode="inline"
-            selectedKeys={[selectedKey]}
-            defaultSelectedKeys={["projectInformation"]}
-            style={{ height: "100%" }}
-          >
-            {items.map((item) => (
-              <Menu.Item
-                key={item.key}
-                icon={item.icon}
-                onClick={() => handleMenuClick(item.key)}
-              >
-                {item.label}
-              </Menu.Item>
-            ))}
-          </Menu>
-        </Sider>
-        <Content className="ml-2">
-          {selectedKey === "projectInformation" && <ProjectInformation />}
-          {selectedKey === "projectMember" && <ProjectMember />}
-          {selectedKey === "permission&role" && <PermissionRole />}
-        </Content>
-      </Layout>
-    </>
+    <Layout>
+      <Sider className="min-h-[calc(100vh_-_116px_-_4rem)] rounded-md">
+        <Menu
+          className="rounded-md"
+          mode="inline"
+          selectedKeys={[selectedKey]}
+          defaultSelectedKeys={["projectInformation"]}
+          style={{ height: "100%" }}
+        >
+          {items.map((item) => (
+            <Menu.Item
+              key={item.key}
+              icon={item.icon}
+              onClick={() => handleMenuClick(item.key)}
+            >
+              {item.label}
+            </Menu.Item>
+          ))}
+        </Menu>
+      </Sider>
+      <Content className="ml-2">
+        {selectedKey === "projectInformation" && <ProjectInformation />}
+        {selectedKey === "projectMember" && <ProjectMember />}
+        {selectedKey === "permission&role" && <PermissionRole />}
+      </Content>
+    </Layout>
   );
 }

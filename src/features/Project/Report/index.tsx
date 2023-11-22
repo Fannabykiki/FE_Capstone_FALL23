@@ -252,10 +252,12 @@ const Report = () => {
                 },
                 yAxis: {
                   type: "value",
+                  interval: 1,
                 },
                 series: data?.reportRecordByWeerk[0]?.reportStatuses.map(
                   (status) => ({
                     name: status.title,
+                    stack: "status",
                     type: "bar",
                     data: data?.reportRecordByWeerk.map((item) => ({
                       value: item.reportStatuses.find(

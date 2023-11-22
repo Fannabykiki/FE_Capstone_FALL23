@@ -2,8 +2,7 @@ import pick from "lodash/pick";
 
 export const paths = {
   dashboard: "/",
-  accessDenied: "/access-denied",
-  notFound: "/not-found",
+  notFound: "*",
   login: "/login",
   register: "/register",
   forgotPassword: "/forgot-password",
@@ -31,6 +30,18 @@ export const paths = {
   },
 };
 
+const projectPath = pick(paths.project, [
+  "index",
+  "detail",
+  "tasks",
+  "sprint",
+  "calendar",
+  "trash",
+  "report",
+  "settings",
+  "kanban",
+]);
+
 export const adminPaths = Object.assign(
   pick(paths.admin, [
     "index",
@@ -39,32 +50,10 @@ export const adminPaths = Object.assign(
     "permissionManagement",
     "projectPermission",
   ]),
-  pick(paths.project, [
-    "index",
-    "detail",
-    "tasks",
-    "sprint",
-    "calendar",
-    "trash",
-    "report",
-    "settings",
-  ])
+  projectPath
 );
 
 export const userPaths = Object.assign(
-  {
-    ...pick(paths, ["user", "joinProject", "notification"]),
-    ...pick(paths.project, [
-      "index",
-      "detail",
-      "tasks",
-      "sprint",
-      "calendar",
-      "trash",
-      "report",
-      "settings",
-      "kanban",
-    ]),
-  },
-  {}
+  pick(paths, ["user", "joinProject", "notification"]),
+  projectPath
 );
