@@ -41,7 +41,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
   const [selectedIteration, setSelectedIteration] = useState<IIteration>();
   const [filterData, setFilterData] = useState({
     name: "",
-    statusId: "",
+    statusId: null,
   });
 
   const queryClient = useQueryClient();

@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import InviteMemberModal from "./InviteMemberModal";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
+import { AvatarWithColor } from "@/components";
 
 export default function ProjectDetail() {
   const [isOpenInviteMemberModal, setOpenInviteMemberModal] =
@@ -157,10 +158,12 @@ export default function ProjectDetail() {
                   title={member.fullname}
                   placement="top"
                 >
-                  <Avatar
+                  <AvatarWithColor
                     key={member.userId}
-                    src={faker.image.avatarGitHub()}
-                  />
+                    stringContent={member.fullname}
+                  >
+                    {member.fullname[0].toUpperCase()}
+                  </AvatarWithColor>
                 </Tooltip>
               ))}
             </Avatar.Group>

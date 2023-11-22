@@ -20,6 +20,7 @@ import {
 import TaskDraggableDisplay from "./TaskDraggableDisplay";
 import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
 import useDebounceValue from "@/hooks/useDebounceValue";
+import AvatarWithColor from "../AvatarWithColor";
 
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
 const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
@@ -30,7 +31,7 @@ interface Props {
   statusList: ITaskStatus[];
   onToggleCollapseTask: VoidFunction;
   onOpenCreateTaskModal: (_: Partial<ICreateTaskRequest> | undefined) => void;
-  filterData: { name: string; statusId: string };
+  filterData: { name: string; statusId: string | null };
   onViewTask: (_taskId?: string | undefined) => void;
 }
 
@@ -77,7 +78,9 @@ export default function MainTaskDisplay({
             <div>
               <CommentOutlined /> 0
             </div>
-            <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
+            <AvatarWithColor stringContent={task.assignTo}>
+              {task.assignTo.slice(0, 1).toUpperCase()}
+            </AvatarWithColor>
           </div>
         </div>
       </div>

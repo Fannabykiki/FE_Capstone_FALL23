@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import useDebounceValue from "@/hooks/useDebounceValue";
+import { AvatarWithColor } from "@/components";
 
 export default function UserDashboard() {
   const { projects, refetchProjects } = useListProjectOfUser();
@@ -90,14 +91,12 @@ export default function UserDashboard() {
               )}
             >
               <div className="flex gap-4 items-center">
-                <Avatar
+                <AvatarWithColor
                   shape="square"
-                  style={{ backgroundColor: project.bgColor }}
+                  stringContent={project.projectName || "Unknown"}
                 >
-                  <span className="text-white select-none font-semibold uppercase">
-                    {project.projectName?.slice(0, 1)}
-                  </span>
-                </Avatar>
+                  {project.projectName?.[0].toUpperCase()}
+                </AvatarWithColor>
                 <div>
                   <div>
                     <span className="font-semibold">{project.projectName}</span>
@@ -134,14 +133,12 @@ export default function UserDashboard() {
               )}
             >
               <Col span={22} className="flex gap-4">
-                <Avatar
+                <AvatarWithColor
                   shape="square"
-                  style={{ backgroundColor: project.bgColor }}
+                  stringContent={project.projectName || "Unknown"}
                 >
-                  <span className="text-white select-none font-semibold uppercase">
-                    {project.projectName?.slice(0, 1)}
-                  </span>
-                </Avatar>
+                  {project.projectName?.[0].toUpperCase()}
+                </AvatarWithColor>
                 <Space direction="vertical" className="gap-0">
                   <span className="font-semibold">{project.projectName}</span>
                   <span className="font-light text-xs">

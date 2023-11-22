@@ -1,4 +1,4 @@
-import { IIteration } from "@/interfaces/iteration";
+import { IIteration, IUpdateIterationPayload } from "@/interfaces/iteration";
 import { iterationApi } from "@/utils/api/iteration";
 import { DATE_FORMAT } from "@/utils/constants";
 import { useMutation } from "@tanstack/react-query";
@@ -21,9 +21,12 @@ export default function DisplayDate({ iteration, property }: Props) {
     mutationKey: [iterationApi.updateKey],
     mutationFn: iterationApi.update,
     onSettled: () => setIsEditing(false),
-    onSuccess: (err) => {
+    onError: (err: any) => {
       console.error(err);
-      toast.error("Update iteration date failed! Please try again later");
+      toast.error(
+        err.response?.data ||
+          "Update iteration date failed! Please try again later"
+      );
       setNewDate(dayjs(iteration[property] as string));
     },
   });
@@ -36,11 +39,8 @@ export default function DisplayDate({ iteration, property }: Props) {
         "startDate",
         "endDate",
         "statusId",
-      ]);
-      updateIteration({
-        id: iteration.interationId,
-        data: { ...newIterationData, [property]: date.toDate() },
-      });
+      ]) as IUpdateIterationPayload;
+      updateIteration({ ...newIterationData, [property]: date.toDate() });
       setNewDate(date);
     } else {
       setNewDate(dayjs(iteration[property] as string));

@@ -112,6 +112,31 @@ const handleValidatePhoneNumber = async (phoneNumber: string) => {
   }
 };
 
+const stringToColor = (str: string) => {
+  // Hash function to convert string to number
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    hash = hash & hash; // Convert to 32bit integer
+  }
+
+  // Convert the number to a hex color code and calculate RGB values
+  let color = "#";
+  let rgb = [0, 0, 0];
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 255;
+    color += ("00" + value.toString(16)).substr(-2);
+    rgb[i] = value;
+  }
+
+  // Calculate the luminance
+  const luminance = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+  // Determine whether the color is light or dark
+  const hue = luminance > 128 ? "light" : "dark";
+
+  return { color, hue };
+};
+
 export {
   classNames,
   makePath,
@@ -122,4 +147,5 @@ export {
   calcTaskDueDateColor,
   handleValidatePassword,
   handleValidatePhoneNumber,
+  stringToColor,
 };
