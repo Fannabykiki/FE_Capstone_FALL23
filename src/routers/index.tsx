@@ -27,7 +27,7 @@ import InviteMember from "@/features/InviteMember";
 import Notifications from "@/features/Notifications";
 import NotFound from "@/features/404/404";
 
-export default function Routers() {
+export default function   Routers() {
   const { isAuthenticated, userInfo } = useAuthContext();
 
   if (isAuthenticated && !userInfo) {
