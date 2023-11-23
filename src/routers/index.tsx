@@ -25,7 +25,6 @@ import ProjectCalendar from "@/features/Project/Calendar";
 import WorkItem from "@/features/Project/WorkItem";
 import InviteMember from "@/features/InviteMember";
 import Notifications from "@/features/Notifications";
-import AccessDenied from "@/features/403/403";
 import NotFound from "@/features/404/404";
 
 export default function   Routers() {
@@ -217,26 +216,7 @@ export default function   Routers() {
             />
           }
         />
-        <Route
-          path={paths.accessDenied}
-          element={
-            <PageContainer
-              requireAuth={false}
-              Component={AccessDenied}
-              title="AccessDenied"
-            />
-          }
-        />
-        <Route
-          path={paths.notFound}
-          element={
-            <PageContainer
-              requireAuth={false}
-              Component={NotFound}
-              title="NotFound"
-            />
-          }
-        />
+        <Route path={paths.notFound} element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,8 +1,10 @@
+import useErrorMessage from "@/hooks/useErrorMessage";
 import useListProjectOfUser from "@/hooks/useListProjectOfUser";
 import {
   EProjectPrivacyStatusLabel,
   ICreateProjectPayload,
 } from "@/interfaces/project";
+import { IErrorInfoState } from "@/interfaces/shared/state";
 import { projectApi } from "@/utils/api/project";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -13,8 +15,11 @@ import {
   Modal,
   Row,
   Switch,
+  Typography,
 } from "antd";
+import { AxiosError } from "axios";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -31,6 +36,7 @@ export default function CreateProject({ open, onClose }: Props) {
     endDate: dayjs(),
     privacyStatus: true,
   };
+  const { errorInfo, setErrorInfo } = useErrorMessage();
 
   const { refetchProjects } = useListProjectOfUser();
 
@@ -41,6 +47,27 @@ export default function CreateProject({ open, onClose }: Props) {
       toast.success(`Create project '${variables.projectName}' succeed`);
       refetchProjects();
       onClose();
+    },
+    onError: (err: AxiosError<any>) => {
+      console.error(err);
+      if (err.response?.data) {
+        if (err.response.data.errors) {
+          form.setFields(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: key.toLowerCase(),
+              errors: [value] as string[],
+            }))
+          );
+        } else if (typeof err.response.data === "string") {
+          setErrorInfo({
+            isError: true,
+            message: err.response.data,
+          });
+        }
+      }
+      toast.error(
+        err.response?.data || "Register failed! Please try again later"
+      );
     },
   });
 
@@ -67,6 +94,11 @@ export default function CreateProject({ open, onClose }: Props) {
         initialValues={initialValues}
         layout="vertical"
       >
+        {errorInfo.isError && (
+          <Typography.Paragraph className="text-center text-red-400 font-semibold">
+            {errorInfo.message}
+          </Typography.Paragraph>
+        )}
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item

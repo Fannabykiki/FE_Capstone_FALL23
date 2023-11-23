@@ -33,16 +33,17 @@ const AdminDashboard = () => {
     limit: "10",
   });
 
-  const { project, analyzation, isLoading } = useAdminProjectManagement({
-    queryString: buildQuery({
-      filter: {
-        projectStatus: searchParams.get("status") || undefined,
-        "tolower(projectName)": {
-          contains: searchParams.get("search")?.toLowerCase(),
+  const { project, analyzation, statusList, isLoading } =
+    useAdminProjectManagement({
+      queryString: buildQuery({
+        filter: {
+          projectStatus: searchParams.get("status") || undefined,
+          "tolower(projectName)": {
+            contains: searchParams.get("search")?.toLowerCase(),
+          },
         },
-      },
-    }),
-  });
+      }),
+    });
 
   const navigate = useNavigate();
 
@@ -290,11 +291,10 @@ const AdminDashboard = () => {
               defaultValue={searchParams.get("status")}
               onChange={handleChange}
               allowClear
-              options={[
-                { value: "Doing", label: "Doing" },
-                { value: "Done", label: "Done" },
-                { value: "Deleted", label: "Deleted" },
-              ]}
+              options={statusList?.map((status) => ({
+                value: status.statusName,
+                label: status.statusName,
+              }))}
             />
           </Col>
         </Row>

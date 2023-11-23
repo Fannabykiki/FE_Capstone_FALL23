@@ -13,9 +13,9 @@ const create = async (data: ICreateIterationPayload) =>
     data,
   }).then((resp) => resp.data);
 
-const update = ({ id, data }: IUpdateIterationPayload): Promise<any[]> =>
+const update = (data: IUpdateIterationPayload): Promise<any[]> =>
   axiosClient({
-    url: `/api/Iteration-management/Iteration/${id}`,
+    url: `/api/Iteration-management/Iteration`,
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);

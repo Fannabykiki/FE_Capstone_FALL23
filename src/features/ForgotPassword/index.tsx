@@ -7,16 +7,12 @@ import { classNames } from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
-import { IErrorInfoState } from "@/interfaces/shared/state";
+import useErrorMessage from "@/hooks/useErrorMessage";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [errorInfo, setErrorInfo] = useState<IErrorInfoState>({
-    isError: false,
-    message: "",
-  });
+  const { errorInfo, setErrorInfo } = useErrorMessage();
   const initialValues = {
     email: "",
   };
@@ -43,26 +39,6 @@ export default function ForgotPassword() {
       );
     },
   });
-
-  const setErrorWithTimeout = (err: IErrorInfoState) => {
-    setErrorInfo(err);
-
-    return setTimeout(() => {
-      setErrorInfo({
-        isError: false,
-        message: "",
-      });
-    }, 6000);
-  };
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    if (errorInfo.isError) {
-      timeoutId = setErrorWithTimeout(errorInfo);
-      // Return a cleanup function to clear the timeout
-    }
-    return () => clearTimeout(timeoutId);
-  }, [errorInfo]);
 
   const onSubmit = async () => {
     const formValues = await form.validateFields();

@@ -6,7 +6,13 @@ import useDetailView from "@/hooks/useDetailView";
 import { CreateIteration } from "@/components/Modal";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { IIteration } from "@/interfaces/iteration";
-import { IterationDisplay } from "@/components";
+import {
+  IterationDisplay,
+  IterationDisplayDate,
+  IterationDisplayName,
+} from "@/components";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/utils/constants";
 
 export enum TaskType {
   Main = "Work Item",
@@ -46,7 +52,6 @@ const TaskBoard = () => {
 
   return (
     <>
-      <Typography.Title>Sprints</Typography.Title>
       <div className="flex gap-x-2 items-center mb-4">
         <label>Select sprint:</label>
         <Select
@@ -65,7 +70,9 @@ const TaskBoard = () => {
               label: (
                 <div className="flex items-center justify-between">
                   <span>{iteration.interationName}</span>
-                  <span className="text-xs bg-neutral-100 px-2 rounded-full">{iteration.status}</span>
+                  <span className="text-xs bg-neutral-100 px-2 rounded-full">
+                    {iteration.status}
+                  </span>
                 </div>
               ),
               value: iteration.interationId,
@@ -77,7 +84,26 @@ const TaskBoard = () => {
         />
       </div>
       {selectedIteration ? (
-        <IterationDisplay iterationId={selectedIteration.interationId} />
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <Typography.Title className="flex gap-x-2 !mb-0">
+              <span className="flex-shrink-0">Sprints</span>
+              <IterationDisplayName iteration={selectedIteration} />
+            </Typography.Title>
+            <div>
+              <IterationDisplayDate
+                iteration={selectedIteration}
+                property="startDate"
+              />
+              {" - "}
+              <IterationDisplayDate
+                iteration={selectedIteration}
+                property="endDate"
+              />
+            </div>
+          </div>
+          <IterationDisplay iterationId={selectedIteration.interationId} />
+        </>
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
       )}

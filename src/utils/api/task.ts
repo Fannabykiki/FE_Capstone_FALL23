@@ -9,6 +9,7 @@ import {
   IGetPriorityListResponse,
   IUpdateTaskPayload,
   IChangeTaskStatusPayload,
+  ICreateStatusPayload,
 } from "@/interfaces/task";
 import { sortBy } from "lodash";
 
@@ -24,6 +25,18 @@ const getKanbanTasks = (
   }).then((resp) => resp.data);
 };
 
+const getDetail = (
+  signal: AbortSignal | undefined,
+  taskId: string
+): Promise<ITask> => {
+  return axiosClient({
+    url: "/api/task-management/tasks/detail",
+    method: HTTP_METHODS.GET,
+    params: { taskId },
+    signal,
+  }).then((resp) => resp.data);
+};
+
 const getTaskById = (taskId: string): Promise<ITask> => {
   return axiosClient({
     url: `/api/task-management/task/${taskId}`,
@@ -31,11 +44,11 @@ const getTaskById = (taskId: string): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const postTaskStatus = (status: ITaskStatus): Promise<ITaskStatus> => {
+const createTaskStatus = (data: ICreateStatusPayload): Promise<ITaskStatus> => {
   return axiosClient({
     url: "/api/task-management/tasks/status",
     method: HTTP_METHODS.POST,
-    data: status,
+    data,
   }).then((resp) => resp.data);
 };
 
@@ -139,10 +152,12 @@ const getAllTaskInTrashBin = (
 export const taskApi = {
   getKanbanTasks,
   getKanbanTasksKey: "taskGetKanbanTasks",
+  getDetail,
+  getDetailKey: "taskGetDetail",
   getTaskById,
   getTaskByIdKey: "taskGetTaskById",
-  postTaskStatus,
-  postTaskStatusKey: "taskPostTaskStatus",
+  createTaskStatus,
+  createTaskStatusKey: "taskCreateTaskStatus",
   getTaskTypes,
   getTaskTypesKey: "taskGetTaskTypes",
   createTask,

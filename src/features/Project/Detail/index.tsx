@@ -2,7 +2,7 @@ import { useAuthContext } from "@/context/Auth";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { EProjectPrivacyStatusLabel, IProject } from "@/interfaces/project";
 import { paths } from "@/routers/paths";
-import { Avatar, Button, Tooltip, Typography } from "antd";
+import { Avatar, Button, Descriptions, Tooltip, Typography } from "antd";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { faker } from "@faker-js/faker";
@@ -15,6 +15,9 @@ import {
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import InviteMemberModal from "./InviteMemberModal";
+import dayjs from "dayjs";
+import { DATE_FORMAT } from "@/utils/constants";
+import { AvatarWithColor } from "@/components";
 
 export default function ProjectDetail() {
   const [isOpenInviteMemberModal, setOpenInviteMemberModal] =
@@ -34,23 +37,17 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (detail && userInfo) {
-      let projects: Partial<IProject>[] = [];
+      let projects: string[] = [];
       const savedProjectsString = localStorage.getItem(
-        `${userInfo?.id}-projects`
+        `${userInfo?.id}-projects-recent`
       );
       if (savedProjectsString) {
-        projects = JSON.parse(savedProjectsString) as Partial<IProject>[];
+        projects = JSON.parse(savedProjectsString) as string[];
       }
-      projects = projects.filter(
-        (project) => project.projectId !== detail?.projectId
-      );
-      projects.unshift({
-        projectId: detail?.projectId,
-        projectName: detail?.projectName,
-        description: detail?.description,
-      });
+      projects = projects.filter((prjId) => prjId !== detail?.projectId);
+      projects.unshift(detail?.projectId);
       localStorage.setItem(
-        `${userInfo?.id}-projects`,
+        `${userInfo?.id}-projects-recent`,
         JSON.stringify(projects.slice(0, 4))
       );
     }
@@ -82,6 +79,8 @@ export default function ProjectDetail() {
     );
   };
 
+  const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
+
   return (
     <>
       <div className="flex justify-between items-center">
@@ -109,6 +108,20 @@ export default function ProjectDetail() {
       <div className="flex gap-4">
         <div className="bg-white shadow p-4 flex-grow h-fit rounded-md">
           <p className="font-semibold text-xl">About this project</p>
+          <Descriptions>
+            <Descriptions.Item label="Owner">
+              <div className="flex gap-x-2 items-center">
+                {projectOwner?.fullname || "Unknown"}
+              </div>
+            </Descriptions.Item>
+            <Descriptions.Item label="Start date">
+              {dayjs(detail?.startDate).format(DATE_FORMAT)}
+            </Descriptions.Item>
+            <Descriptions.Item label="End date">
+              {dayjs(detail?.endDate).format(DATE_FORMAT)}
+            </Descriptions.Item>
+          </Descriptions>
+          <p className="font-semibold text-xl">Description</p>
           <Typography.Paragraph>{detail?.description}</Typography.Paragraph>
         </div>
         <div className="basis-1/3 flex-shrink-0 flex flex-col gap-4">
@@ -145,10 +158,12 @@ export default function ProjectDetail() {
                   title={member.fullname}
                   placement="top"
                 >
-                  <Avatar
+                  <AvatarWithColor
                     key={member.userId}
-                    src={faker.image.avatarGitHub()}
-                  />
+                    stringContent={member.fullname}
+                  >
+                    {member.fullname[0].toUpperCase()}
+                  </AvatarWithColor>
                 </Tooltip>
               ))}
             </Avatar.Group>

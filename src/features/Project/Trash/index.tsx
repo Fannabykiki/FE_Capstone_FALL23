@@ -29,6 +29,7 @@ import {
 } from "antd";
 
 import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
+import { STATUS_COLOR } from "@/utils/constants";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
 
@@ -186,25 +187,24 @@ const TrashBin = () => {
       title: "State",
       dataIndex: "statusName",
       width: "10%",
-      render: (state) => (
-        <Row align="middle" className="gap-2">
-          <Typography.Text
-            className={`px-2 py-1 rounded font-medium ${
-              state === "To do"
-                ? "text-gray-600 bg-gray-300"
-                : state === "Doing"
-                ? "text-blue-700 bg-blue-100"
-                : state === "Done"
-                ? "text-green-500 bg-[#43ff641a]"
-                : state === "Close"
-                ? "text-red-500 bg-[#ef44441a]"
-                : ""
-            }`}
-          >
-            {state}
-          </Typography.Text>
-        </Row>
-      ),
+      render: (state) => {
+        const { backgroundColor, color } =
+          STATUS_COLOR[state as keyof typeof STATUS_COLOR];
+
+        return (
+          <Row align="middle" className="gap-2">
+            <Typography.Text
+              className="px-2 py-1 rounded font-medium"
+              style={{
+                color,
+                backgroundColor,
+              }}
+            >
+              {state}
+            </Typography.Text>
+          </Row>
+        );
+      },
     },
     {
       title: "Priority",

@@ -8,8 +8,11 @@ export interface ICreateIterationPayload {
 }
 
 export interface IUpdateIterationPayload {
-  id: string;
-  data: Partial<ICreateIterationPayload>;
+  interationId: string;
+  interationName: string;
+  startDate: Date;
+  endDate: Date;
+  statusId: string;
 }
 
 export interface IIteration {

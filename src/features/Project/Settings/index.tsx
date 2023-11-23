@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   InfoCircleOutlined,
   LockOutlined,
   UserOutlined,
+  WarningOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu } from "antd";
 import Sider from "antd/es/layout/Sider";
 import { Content } from "antd/es/layout/layout";
 import ProjectInformation from "./component/ProjectInfomation";
 import ProjectMember from "./component/ProjectMember";
-import PermissionRole from "./component/Permission&Role";
+import PermissionRole from "./component/PermissionRole";
+import useProjectDetail from "@/hooks/useProjectDetail";
+import { generatePath, useNavigate, useParams } from "react-router-dom";
+import { useAuthContext } from "@/context/Auth";
+import { paths } from "@/routers/paths";
+import StatusManagement from "./component/StatusManagement";
 
 interface MenuItem {
   label: string;
@@ -18,6 +24,22 @@ interface MenuItem {
 }
 
 export default function ProjectSettings() {
+  const { projectId } = useParams();
+  const { detail } = useProjectDetail(projectId);
+  const { userInfo } = useAuthContext();
+  const navigate = useNavigate();
+
+  useLayoutEffect(() => {
+    if (detail && userInfo) {
+      const owner = detail.projectMembers.find((member) => member.isOwner);
+      if (!userInfo.isAdmin && userInfo.id !== owner?.userId) {
+        navigate(
+          generatePath(paths.project.detail, { projectId: detail.projectId })
+        );
+      }
+    }
+  }, [userInfo, detail, navigate]);
+
   const items: MenuItem[] = [
     {
       label: "Project Information",
@@ -34,6 +56,11 @@ export default function ProjectSettings() {
       icon: <LockOutlined />,
       key: "permission&role",
     },
+    {
+      label: "Status Management",
+      icon: <WarningOutlined />,
+      key: "statusManagement",
+    },
   ];
 
   const [selectedKey, setSelectedKey] = useState(items[0].key);
@@ -45,7 +72,7 @@ export default function ProjectSettings() {
   return (
     <>
       <Layout>
-        <Sider className="min-h-screen rounded-md">
+        <Sider className="min-h-[calc(100vh_-_116px_-_4rem)] rounded-md">
           <Menu
             className="rounded-md"
             mode="inline"
@@ -68,6 +95,7 @@ export default function ProjectSettings() {
           {selectedKey === "projectInformation" && <ProjectInformation />}
           {selectedKey === "projectMember" && <ProjectMember />}
           {selectedKey === "permission&role" && <PermissionRole />}
+          {selectedKey === "statusManagement" && <StatusManagement />}
         </Content>
       </Layout>
     </>

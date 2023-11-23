@@ -1,27 +1,25 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
 import { Avatar, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
-import {
-  CommentOutlined,
-  DoubleLeftOutlined,
-  DoubleRightOutlined,
-  DownOutlined,
-  PaperClipOutlined,
-  PauseOutlined,
-  QuestionCircleOutlined,
-  UpOutlined,
-} from "@ant-design/icons";
+import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
-import { TaskType } from "./display";
+import { TaskType } from ".";
+import PriorityStatus from "../Task/PriorityStatus";
+import AvatarWithColor from "../AvatarWithColor";
 
 interface Props {
   snapshot?: DraggableStateSnapshot;
   task: ITask;
+  onViewTask: (_taskId?: string | undefined) => void;
 }
 
-export default function TaskDraggableDisplay({ snapshot, task }: Props) {
+export default function TaskDraggableDisplay({
+  snapshot,
+  task,
+  onViewTask,
+}: Props) {
   let taskTypeBorderColor = "border-blue-400";
   switch (task.typeName) {
     case TaskType.Main:
@@ -39,11 +37,12 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
   return (
     <div
       className={classNames(
-        "select-none p-4 min-h-[50px] rounded shadow",
+        "select-none p-4 min-h-[50px] rounded cursor-pointer shadow hover:shadow-lg",
         snapshot?.isDragging ? "bg-neutral-300" : "bg-white",
         "border-0 border-l-4 border-solid",
         taskTypeBorderColor
       )}
+      onClick={() => onViewTask(task.taskId)}
     >
       <div className="flex flex-col gap-y-4">
         <div
@@ -64,35 +63,16 @@ export default function TaskDraggableDisplay({ snapshot, task }: Props) {
           </div>
           <div className="flex-grow text-right">
             <Tooltip title={`Priority: ${task.priorityName}`}>
-              {calcPriorityStatus(task.priorityName)}
+              <PriorityStatus priorityName={task.priorityName} />
             </Tooltip>
           </div>
-          <Avatar>{task.assignTo.slice(0, 1).toUpperCase()}</Avatar>
+          <Tooltip title={task.assignTo}>
+            <AvatarWithColor stringContent={task.assignTo}>
+              {task.assignTo.slice(0, 1).toUpperCase()}
+            </AvatarWithColor>
+          </Tooltip>
         </div>
       </div>
     </div>
   );
 }
-
-const calcPriorityStatus = (priorityName: string) => {
-  switch (priorityName) {
-    case "Very High":
-      return (
-        <DoubleLeftOutlined className="font-bold text-lg rotate-90 text-red-500" />
-      );
-    case "High":
-      return <UpOutlined className="font-bold text-lg text-red-500" />;
-    case "Medium":
-      return (
-        <PauseOutlined className="font-bold text-lg rotate-90 text-yellow-500" />
-      );
-    case "Low":
-      return <DownOutlined className="font-bold text-lg text-blue-500" />;
-    case "Very Low":
-      return (
-        <DoubleRightOutlined className="font-bold text-lg rotate-90 text-blue-500" />
-      );
-    default:
-      return <QuestionCircleOutlined />;
-  }
-};

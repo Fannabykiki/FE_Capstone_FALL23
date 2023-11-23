@@ -5,6 +5,7 @@ import { MenuInfo } from "rc-menu/lib/interface";
 import { UpdateProfile } from "./Modal";
 import { useState } from "react";
 import ChangePassword from "./Modal/ChangePassword";
+import { paths } from "@/routers/paths";
 
 enum KeyActions {
   SignOut = "sign-out",
@@ -29,7 +30,7 @@ export default function UserMenu({ children }: Props) {
       isAuthenticated: false,
       userInfo: null,
     });
-    navigate("/login");
+    navigate(paths.login);
   };
 
   const onSelectAction = ({ key }: MenuInfo) => {
@@ -42,6 +43,7 @@ export default function UserMenu({ children }: Props) {
         break;
       case KeyActions.ChangePassword:
         setOpenChangePasswordModal(true);
+        break;
       default:
         break;
     }

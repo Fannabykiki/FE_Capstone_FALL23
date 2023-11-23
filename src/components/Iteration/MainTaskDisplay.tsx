@@ -20,6 +20,10 @@ import {
 import TaskDraggableDisplay from "./TaskDraggableDisplay";
 import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
 import useDebounceValue from "@/hooks/useDebounceValue";
+import AvatarWithColor from "../AvatarWithColor";
+
+const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
+const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 
 interface Props {
   task: ITask;
@@ -27,11 +31,9 @@ interface Props {
   statusList: ITaskStatus[];
   onToggleCollapseTask: VoidFunction;
   onOpenCreateTaskModal: (_: Partial<ICreateTaskRequest> | undefined) => void;
-  filterData: { name: string; statusId: string };
+  filterData: { name: string; statusId: string | null };
+  onViewTask: (_taskId?: string | undefined) => void;
 }
-
-const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
-const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 
 export default function MainTaskDisplay({
   task,
@@ -39,6 +41,7 @@ export default function MainTaskDisplay({
   statusList,
   onToggleCollapseTask,
   onOpenCreateTaskModal,
+  onViewTask,
   filterData,
 }: Props) {
   const filterTaskName = useDebounceValue(filterData.name, 1000);
@@ -47,13 +50,17 @@ export default function MainTaskDisplay({
       <div className="p-2">
         <div
           className={classNames(
-            "border-0 border-l-4 border-solid border-blue-400 shadow",
-            "bg-white p-2 rounded flex gap-x-4 items-center"
+            "border-0 border-l-4 border-solid border-blue-400",
+            "bg-white p-2 rounded flex gap-x-4 items-center shadow hover:shadow-lg cursor-pointer"
           )}
+          onClick={() => onViewTask(task.taskId)}
         >
           <DoubleRightOutlined
             className="rotate-90 cursor-pointer"
-            onClick={onToggleCollapseTask}
+            onClick={(e) => {
+              onToggleCollapseTask();
+              e.stopPropagation();
+            }}
           />
           <div
             className={classNames(
@@ -71,7 +78,9 @@ export default function MainTaskDisplay({
             <div>
               <CommentOutlined /> 0
             </div>
-            <Avatar src={faker.image.avatarGitHub()} />
+            <AvatarWithColor stringContent={task.assignTo}>
+              {task.assignTo.slice(0, 1).toUpperCase()}
+            </AvatarWithColor>
           </div>
         </div>
       </div>
@@ -91,7 +100,7 @@ export default function MainTaskDisplay({
         <div className="flex w-full gap-x-4">
           <div className="p-2">
             <div className={classNames("w-56 h-fit")}>
-              <TaskDraggableDisplay task={task} />
+              <TaskDraggableDisplay task={task} onViewTask={onViewTask} />
             </div>
           </div>
           {statusList.map((status, index) => (
@@ -111,21 +120,41 @@ export default function MainTaskDisplay({
                   >
                     <>
                       <div className="flex flex-col gap-y-4">
-                        <SubTasks
-                          subTasks={
-                            task.subTask?.filter(
-                              (subtask) =>
-                                subtask.statusId === status.boardStatusId &&
-                                (!filterTaskName ||
-                                  subtask.title
-                                    .toLowerCase()
-                                    .includes(filterTaskName.toLowerCase())) &&
-                                (!filterData.statusId ||
-                                  filterData.statusId === subtask.statusId)
-                            ) || []
-                          }
-                          status={status}
-                        />
+                        {(
+                          task.subTask?.filter(
+                            (subtask) =>
+                              subtask.statusId === status.boardStatusId &&
+                              (!filterTaskName ||
+                                subtask.title
+                                  .toLowerCase()
+                                  .includes(filterTaskName.toLowerCase())) &&
+                              (!filterData.statusId ||
+                                filterData.statusId === subtask.statusId)
+                          ) || []
+                        ).map((subtask, index) => (
+                          <DraggableComponent
+                            key={subtask.taskId}
+                            draggableId={subtask.taskId}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                }}
+                              >
+                                <TaskDraggableDisplay
+                                  snapshot={snapshot}
+                                  task={subtask}
+                                  onViewTask={onViewTask}
+                                />
+                              </div>
+                            )}
+                          </DraggableComponent>
+                        ))}
                       </div>
                       {provided.placeholder}
                     </>
@@ -155,35 +184,3 @@ export default function MainTaskDisplay({
     </>
   );
 }
-
-interface SubTasksProps {
-  subTasks: ITask[];
-  status: ITaskStatus;
-}
-
-const SubTasks = ({ subTasks, status }: SubTasksProps) => {
-  return (
-    <>
-      {subTasks.map((subtask, index) => (
-        <DraggableComponent
-          key={subtask.taskId}
-          draggableId={subtask.taskId}
-          index={index}
-        >
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-              style={{
-                ...provided.draggableProps.style,
-              }}
-            >
-              <TaskDraggableDisplay snapshot={snapshot} task={subtask} />
-            </div>
-          )}
-        </DraggableComponent>
-      ))}
-    </>
-  );
-};
