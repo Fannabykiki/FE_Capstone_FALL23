@@ -72,6 +72,13 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     detail: initTaskData,
   } = useDetailView<ITask>();
 
+  const onUpdateTaskSuccess = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: [taskApi.getDetailKey, taskId],
+    });
+    await queryClient.refetchQueries([taskApi.getDetailKey, taskId]);
+  };
+
   if (task) {
     return (
       <>
@@ -400,9 +407,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
             isOpen={isModalUpdateOpen}
             handleClose={handleCloseModalUpdate}
             initTaskData={initTaskData || undefined}
-            onSuccess={() =>
-              queryClient.refetchQueries([taskApi.getDetailKey, taskId])
-            }
+            onSuccess={onUpdateTaskSuccess}
           />
         )}
       </>

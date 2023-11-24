@@ -1,6 +1,5 @@
 import { taskApi } from "@/utils/api/task";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 
 export default function useTaskActions() {
   const createTaskMutation = useMutation({
@@ -16,9 +15,6 @@ export default function useTaskActions() {
   const updateTaskMutation = useMutation({
     mutationKey: [taskApi.updateTaskKey],
     mutationFn: taskApi.updateTask,
-    onSuccess: () => {
-      toast.success("Update task status succeed!");
-    },
   });
 
   const deleteTaskMutation = useMutation({

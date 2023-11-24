@@ -126,6 +126,15 @@ export default function UpdateTask({
     }
   }, [interationList, form, initTaskData]);
 
+  useEffect(() => {
+    if (memberList) {
+      const selectingMember = memberList.find(
+        (member) => member.fullname === initTaskData.assignTo
+      )?.memberId;
+      form.setFieldValue("assignTo", selectingMember);
+    }
+  }, [memberList, form, initTaskData]);
+
   return (
     <Modal
       title="Edit Task"
