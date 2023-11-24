@@ -26,6 +26,7 @@ import { toast } from "react-toastify";
 import { EditOutlined } from "@ant-design/icons";
 import useDetailView from "@/hooks/useDetailView";
 import UpdateTask from "../Modal/UpdateTask";
+import AddComment from "./AddComment";
 
 interface Props {
   taskId: string;
@@ -189,10 +190,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Divider />
               <div>
                 <Typography.Title level={5}>Comments</Typography.Title>
-                <div className="flex gap-x-2">
-                  <Avatar>T</Avatar>
-                  <Input.TextArea placeholder="Add a comment" />
-                </div>
+                <AddComment task={task} />
                 <div className="mt-8 flex flex-col gap-2">
                   <div>
                     <div className="flex gap-x-2">

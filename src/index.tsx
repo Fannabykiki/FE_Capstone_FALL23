@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import { ToastContainer } from "react-toastify";
 import "@/assets/styles/index.scss";
 import "react-toastify/dist/ReactToastify.css";
+import "react-quill/dist/quill.snow.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
