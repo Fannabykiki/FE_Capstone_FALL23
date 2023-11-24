@@ -1,4 +1,4 @@
-import { ITaskStatus } from "@/interfaces/task";
+import { ITask, ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 import { classNames } from "@/utils/common";
 import { DATE_FORMAT } from "@/utils/constants";
@@ -14,6 +14,7 @@ import {
   Modal,
   Row,
   Select,
+  Tooltip,
   Typography,
 } from "antd";
 import dayjs from "dayjs";
@@ -22,6 +23,10 @@ import PriorityStatus from "./PriorityStatus";
 import { faker } from "@faker-js/faker";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
+import { EditOutlined } from "@ant-design/icons";
+import useDetailView from "@/hooks/useDetailView";
+import UpdateTask from "../Modal/UpdateTask";
+import AddComment from "./AddComment";
 
 interface Props {
   taskId: string;
@@ -61,6 +66,20 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     );
   };
 
+  const {
+    onOpenView: handleOpenModalUpdate,
+    onCloseView: handleCloseModalUpdate,
+    openView: isModalUpdateOpen,
+    detail: initTaskData,
+  } = useDetailView<ITask>();
+
+  const onUpdateTaskSuccess = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: [taskApi.getDetailKey, taskId],
+    });
+    await queryClient.refetchQueries([taskApi.getDetailKey, taskId]);
+  };
+
   if (task) {
     return (
       <>
@@ -73,15 +92,23 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
         >
           <div className="flex items-center justify-between mt-8">
             <Typography.Title level={4}>{task.title}</Typography.Title>
-            <Select
-              options={statusList.map((status) => ({
-                label: status.title,
-                value: status.boardStatusId,
-              }))}
-              value={task.statusId}
-              className="min-w-[200px] mb-4"
-              onChange={onChangeTaskStatus}
-            />
+            <div className="flex gap-x-2">
+              <Select
+                options={statusList.map((status) => ({
+                  label: status.title,
+                  value: status.boardStatusId,
+                }))}
+                value={task.statusId}
+                className="min-w-[200px] mb-4"
+                onChange={onChangeTaskStatus}
+              />
+              <Tooltip title="Edit task">
+                <Button
+                  icon={<EditOutlined />}
+                  onClick={() => handleOpenModalUpdate(task)}
+                />
+              </Tooltip>
+            </div>
           </div>
           <Row gutter={32}>
             <Col
@@ -163,10 +190,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Divider />
               <div>
                 <Typography.Title level={5}>Comments</Typography.Title>
-                <div className="flex gap-x-2">
-                  <Avatar>T</Avatar>
-                  <Input.TextArea placeholder="Add a comment" />
-                </div>
+                <AddComment task={task} />
                 <div className="mt-8 flex flex-col gap-2">
                   <div>
                     <div className="flex gap-x-2">
@@ -376,6 +400,14 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
             </Col>
           </Row>
         </Modal>
+        {isModalUpdateOpen && (
+          <UpdateTask
+            isOpen={isModalUpdateOpen}
+            handleClose={handleCloseModalUpdate}
+            initTaskData={initTaskData || undefined}
+            onSuccess={onUpdateTaskSuccess}
+          />
+        )}
       </>
     );
   }

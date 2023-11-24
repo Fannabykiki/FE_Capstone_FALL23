@@ -155,14 +155,14 @@ export default function ProjectDetail() {
               {detail?.projectMembers.map((member) => (
                 <Tooltip
                   key={member.memberId}
-                  title={member.fullname}
+                  title={member.fullname || "Unknown"}
                   placement="top"
                 >
                   <AvatarWithColor
                     key={member.userId}
-                    stringContent={member.fullname}
+                    stringContent={member.fullname || "Unknown"}
                   >
-                    {member.fullname[0].toUpperCase()}
+                    {member.fullname?.[0].toUpperCase() || "U"}
                   </AvatarWithColor>
                 </Tooltip>
               ))}
