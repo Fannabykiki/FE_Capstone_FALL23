@@ -75,9 +75,9 @@ const createSubtask = (subtask: ICreateTaskRequest): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const updateTask = ({ id, data }: IUpdateTaskPayload): Promise<ITask> => {
+const updateTask = (data: IUpdateTaskPayload): Promise<ITask> => {
   return axiosClient({
-    url: `/api/task-management/tasks/${id}`,
+    url: `/api/task-management/tasks`,
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);

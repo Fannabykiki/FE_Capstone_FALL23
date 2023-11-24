@@ -33,7 +33,9 @@ export interface ICreateTaskRequest {
   dueDate: Date;
   assignTo: string;
   priorityId: string;
+  priorityName?: string;
   interationId: string;
+  interationName?: string;
   projectId: string;
   prevId: string | null;
   statusId: string;
@@ -59,8 +61,20 @@ export interface ICreateStatusPayload {
 }
 
 export interface IUpdateTaskPayload {
-  id: string;
-  data: ITask;
+  title: string;
+  decription: string;
+  startDate: Date;
+  dueDate: Date;
+  assignTo: string;
+  priorityId: string;
+  priorityName?: string;
+  interationId: string;
+  interationName?: string;
+  projectId: string;
+  prevId: string | null;
+  statusId: string;
+  typeId: string;
+  taskId?: string;
 }
 
 export interface IChangeTaskStatusPayload {
