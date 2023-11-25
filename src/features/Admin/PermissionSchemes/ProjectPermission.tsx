@@ -47,7 +47,7 @@ const ProjectPermission = () => {
       setOpenGrantPermModal(true);
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data);
+      toast.error(err?.response?.data || "Get grant list failed");
     },
   });
 
@@ -66,7 +66,7 @@ const ProjectPermission = () => {
       setOpenRvkPermModal(true);
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data);
+      toast.error(err?.response?.data || "Get revoke list failed");
     },
   });
 

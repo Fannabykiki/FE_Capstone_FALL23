@@ -47,8 +47,8 @@ export default function ProjectMember() {
       await refetchMemberList();
       toast.success("Delete member successfully");
     },
-    onError: (err) => {
-      toast.error("Delete member failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Delete member failed");
     },
   });
   const managerProject = useMemo(

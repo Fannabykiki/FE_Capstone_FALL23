@@ -70,9 +70,8 @@ const RoleManagement = () => {
       await queryClient.refetchQueries([roleApi.getAdminRolesKey]);
       toast.success("Delete role successfully");
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Delete role failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Delete role failed");
     },
   });
 

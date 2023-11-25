@@ -63,8 +63,8 @@ const UserManagement = () => {
       ]);
       toast.success("Change status successfully");
     },
-    onError: (err) => {
-      toast.error("Change status failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Change status failed");
     },
   });
 

@@ -39,8 +39,8 @@ const PermissionRole = () => {
         await refetch();
         toast.success("Change schema successfully");
       },
-      onError: () => {
-        toast.error("Change schema failed!");
+      onError: (err: any) => {
+        toast.error(err?.response?.data || "Change schema failed!");
       },
     });
 

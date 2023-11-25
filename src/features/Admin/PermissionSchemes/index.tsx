@@ -69,9 +69,8 @@ const PermissionSchemes = () => {
       await queryClient.refetchQueries([schemaApi.getAdminSchemasKey]);
       toast.success("Delete schema successfully");
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Delete schema failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Delete schema failed");
     },
   });
 

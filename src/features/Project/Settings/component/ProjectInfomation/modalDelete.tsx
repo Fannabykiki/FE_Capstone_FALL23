@@ -39,8 +39,8 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
       toast.success("Delete project successfully!");
       navigate(paths.user);
     },
-    onError: () => {
-      toast.error("Has an error, please try again");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Has an error, please try again");
     },
   });
 
