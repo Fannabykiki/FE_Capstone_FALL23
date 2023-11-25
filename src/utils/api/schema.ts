@@ -23,15 +23,9 @@ const createPermissionScheme = (data: IPermissionSchemeInputType) =>
     data,
   }).then((resp) => resp.data);
 
-const updatePermissionScheme = ({
-  id,
-  data,
-}: {
-  id: string;
-  data: IPermissionSchemeInputType;
-}) =>
+const updatePermissionScheme = (data: IPermissionSchemeInputType) =>
   axiosClient({
-    url: `/api/schema-management/schemas/${id}`,
+    url: "/api/schema-management/schemas",
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);
@@ -46,16 +40,16 @@ const getAdminSchemaDetail = async (
     signal,
   }).then((resp) => resp.data);
 
-const grantPermission = ({ id, data }: IGrantPermissionRequest) =>
+const grantPermission = (data: IGrantPermissionRequest) =>
   axiosClient({
-    url: `/api/schema-management/schemas/grant-permission/${id}`,
+    url: "/api/schema-management/schemas/grant-permission",
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);
 
-const revokePermission = ({ id, data }: IRevokePermissionRequest) =>
+const revokePermission = (data: IRevokePermissionRequest) =>
   axiosClient({
-    url: `/api/schema-management/schemas/revoke-permission/${id}`,
+    url: "/api/schema-management/schemas/revoke-permission",
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);

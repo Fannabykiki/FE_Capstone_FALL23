@@ -61,7 +61,7 @@ const Report = () => {
       key: "fullname",
       title: "MEMBER",
       dataIndex: "fullname",
-      width: "15%",
+      width: "20%",
       render: (name: string, record: IReportProject["memberTaks"][number]) => (
         <Row gutter={4}>
           <Col span={5} className="flex justify-center items-center">
@@ -91,7 +91,7 @@ const Report = () => {
       key: status.title,
       title: status.title,
       dataIndex: status.title,
-      width: `${75 / data?.memberTaks[0]?.reportStatuses.length}%`,
+      width: `${70 / data?.memberTaks[0]?.reportStatuses.length}%`,
       render: (value) => (
         <Typography
           className="font-bold"

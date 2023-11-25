@@ -48,8 +48,8 @@ export default function ProjectInformation() {
     };
     updateProject(
       {
-        id: detail!.projectId,
-        data: dataToUpdate,
+        ...dataToUpdate,
+        projectId: detail!.projectId,
       },
       {
         onSuccess: () => {

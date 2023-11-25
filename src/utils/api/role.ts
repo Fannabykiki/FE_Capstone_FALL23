@@ -19,9 +19,9 @@ const createRole = (data: RoleInputType) =>
     data,
   }).then((resp) => resp.data);
 
-const updateRole = ({ id, data }: { id: string; data: RoleInputType }) =>
+const updateRole = (data: RoleInputType) =>
   axiosClient({
-    url: `/api/role-management/system/roles/${id}`,
+    url: "/api/role-management/system/roles",
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);

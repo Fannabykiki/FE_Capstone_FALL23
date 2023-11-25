@@ -13,6 +13,7 @@ interface Props {
 }
 
 export interface RoleInputType {
+  roleId: string;
   roleName: string;
   description?: string;
 }
@@ -52,10 +53,7 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
 
   const onSubmit = (values: RoleInputType) => {
     if (roleEdit) {
-      updateRole({
-        id: roleEdit.roleId,
-        data: values,
-      });
+      updateRole({ ...values, roleId: roleEdit.roleId });
     } else {
       createRole(values);
     }

@@ -104,11 +104,9 @@ const UserManagement = () => {
 
   const handleChangeStatus = (userId: string, value: boolean) => {
     updateUserStatus({
-      id: userId,
-      data: {
-        statusIdChangeTo: value,
-        reason: "",
-      },
+      userId,
+      statusIdChangeTo: value,
+      reason: "",
     });
   };
 
@@ -167,8 +165,8 @@ const UserManagement = () => {
         <Row align="middle" className="gap-2">
           <Switch
             defaultChecked={statusName === "Active"}
-            disabled={variables?.id === record.userId && isUpdating}
             onChange={(value) => handleChangeStatus(record.userId, value)}
+            loading={variables?.userId === record.userId && isUpdating}
           />
           <Typography.Text
             className={`px-2 py-1 rounded font-medium ${

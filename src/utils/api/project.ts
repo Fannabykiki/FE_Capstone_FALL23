@@ -76,11 +76,11 @@ const updateInfo = async ({ id, data }: IUpdateInfoProjectPayload) =>
     data: data,
   }).then((resp) => resp.data);
 
-const updateProject = async ({ id, data }: IUpdateProjectPayload) =>
+const updateProject = async (data: IUpdateProjectPayload) =>
   axiosClient({
-    url: `/api/project-management/projects/info/${id}`,
+    url: "/api/project-management/projects/info",
     method: HTTP_METHODS.PUT,
-    data: data,
+    data,
   }).then((resp) => resp.data);
 
 const createRole = async (data: ICreateMemberRolePayload) =>

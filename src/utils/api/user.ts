@@ -20,9 +20,9 @@ const getProfile = () => {
   }).then((resp) => ({ ...resp.data, id: tokenInfo.UserId }));
 };
 
-const update = ({ id, data }: IUpdateUserPayload) =>
+const update = (data: IUpdateUserPayload) =>
   axiosClient({
-    url: `/api/user-management/users/${id}`,
+    url: "/api/user-management/users",
     method: HTTP_METHODS.PUT,
     data,
   });
@@ -53,9 +53,9 @@ const getAdminUsersAnalyzation = async (signal: AbortSignal | undefined) =>
     signal,
   }).then((resp) => resp.data);
 
-const changeUserStatus = ({ id, data }: IUpdateUserStatus) =>
+const changeUserStatus = (data: IUpdateUserStatus) =>
   axiosClient({
-    url: `/api/user-management/users/change-status/${id}`,
+    url: "/api/user-management/users/change-status",
     method: HTTP_METHODS.PUT,
     data,
   });
