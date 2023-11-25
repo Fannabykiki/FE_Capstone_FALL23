@@ -1,9 +1,10 @@
 import useErrorMessage from "@/hooks/useErrorMessage";
-import { ICreateStatusPayload } from "@/interfaces/task";
+import { ICreateStatusPayload, ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form, Input, Modal, Typography } from "antd";
 import { AxiosError } from "axios";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -15,13 +16,20 @@ interface Props {
 export default function CreateStatus({ open, onClose }: Props) {
   const [form] = Form.useForm();
   const { projectId } = useParams();
+  const queryClient = useQueryClient();
+
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
+
   const initialValues = {
     title: "",
     order: 1,
     projectId,
   };
   const { errorInfo, setErrorInfo } = useErrorMessage();
-  const queryClient = useQueryClient();
 
   const { mutate: createStatus, isLoading } = useMutation({
     mutationFn: taskApi.createTaskStatus,
@@ -67,6 +75,12 @@ export default function CreateStatus({ open, onClose }: Props) {
       console.error("Validation Failed:", error);
     }
   };
+
+  useEffect(() => {
+    if (statusList?.length > 0) {
+      form.setFieldValue("order", statusList.length + 1);
+    }
+  }, [statusList, form]);
 
   return (
     <Modal
