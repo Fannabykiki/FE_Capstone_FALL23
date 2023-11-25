@@ -10,7 +10,6 @@ import {
   Descriptions,
   Divider,
   Image,
-  Input,
   Modal,
   Row,
   Select,
@@ -191,11 +190,17 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Divider />
               <div>
                 <Typography.Title level={5}>Comments</Typography.Title>
-                <AddComment task={task} />
+                <AddComment taskId={task.taskId} />
                 <div className="mt-8 flex flex-col gap-2">
-                  {task.commentResponse?.map((comment) => (
-                    <DisplayComment comment={comment} key={comment.commentId} />
-                  ))}
+                  {task.commentResponse
+                    ?.sort((a, b) => (a.createAt < b.createAt ? 1 : -1))
+                    .map((comment) => (
+                      <DisplayComment
+                        task={task}
+                        comment={comment}
+                        key={comment.commentId}
+                      />
+                    ))}
                 </div>
               </div>
             </Col>

@@ -3,41 +3,81 @@ import AvatarWithColor from "../AvatarWithColor";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
-import { ITask } from "@/interfaces/task";
 import useCommentActions from "@/hooks/useCommentActions";
+import { IComment } from "@/interfaces/comment";
+import { useAuthContext } from "@/context/Auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { taskApi } from "@/utils/api/task";
 
 interface Props {
-  task: ITask;
+  taskId: string;
+  parentComment?: IComment;
+  onCancelReplying?: VoidFunction;
 }
 
-export default function AddComment({ task }: Props) {
+export default function AddComment({
+  taskId,
+  parentComment,
+  onCancelReplying,
+}: Props) {
   const [isCommenting, setIsCommenting] = useState(false);
 
   const [comment, setComment] = useState("");
 
-  const { createCommentMutation } = useCommentActions();
+  const { createCommentMutation, replyCommentMutation } = useCommentActions();
+  const queryClient = useQueryClient();
 
   const onSubmit = () => {
     if (!comment.trim()) {
       toast.error("Please enter a comment.");
       return;
     }
-    createCommentMutation.mutate(
-      {
-        taskId: task.taskId,
-        content: comment,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Create new comment succeed");
-          onCancelComment();
+    if (!parentComment) {
+      // Add comment
+      createCommentMutation.mutate(
+        {
+          taskId,
+          content: comment,
         },
-        onError: (err) => {
-          console.error(err);
-          toast.error("Create comment failed! Please try again later");
+        {
+          onSuccess: async () => {
+            toast.success("Create new comment succeed");
+            await queryClient.refetchQueries({
+              queryKey: [taskApi.getDetailKey, taskId],
+            });
+            onCancelComment();
+          },
+          onError: (err) => {
+            console.error(err);
+            toast.error("Create comment failed! Please try again later");
+          },
+        }
+      );
+    } else {
+      // Reply comment
+      replyCommentMutation.mutate(
+        {
+          id: parentComment.commentId,
+          data: {
+            commentId: parentComment.commentId,
+            content: comment,
+          },
         },
-      }
-    );
+        {
+          onSuccess: async () => {
+            toast.success("Reply to comment succeed");
+            await queryClient.refetchQueries({
+              queryKey: [taskApi.getDetailKey, taskId],
+            });
+            onCancelComment();
+          },
+          onError: (err) => {
+            console.error(err);
+            toast.error("Reply to comment failed! Please try again later");
+          },
+        }
+      );
+    }
   };
 
   const onStartComment = () => {
@@ -48,12 +88,27 @@ export default function AddComment({ task }: Props) {
   const onCancelComment = () => {
     setIsCommenting(false);
     setComment("");
+    onCancelReplying?.();
   };
 
-  if (!isCommenting) {
+  const { userInfo } = useAuthContext();
+
+  if (!isCommenting && !parentComment) {
     return (
       <div className="flex gap-x-2">
-        <AvatarWithColor stringContent="T">T</AvatarWithColor>
+        <AvatarWithColor
+          stringContent={
+            userInfo!.fullname ||
+            userInfo!.userName ||
+            userInfo!.email ||
+            "Unknown"
+          }
+          className="flex-shrink-0"
+        >
+          {(userInfo!.fullname ||
+            userInfo!.userName ||
+            userInfo!.email)[0].toUpperCase()}
+        </AvatarWithColor>
         <Input.TextArea placeholder="Add a comment" onFocus={onStartComment} />
       </div>
     );
@@ -62,7 +117,18 @@ export default function AddComment({ task }: Props) {
   return (
     <div>
       <div className="flex gap-x-2">
-        <AvatarWithColor stringContent="T">T</AvatarWithColor>
+        <AvatarWithColor
+          stringContent={
+            userInfo!.fullname ||
+            userInfo!.userName ||
+            userInfo!.email ||
+            "Unknown"
+          }
+        >
+          {(userInfo!.fullname ||
+            userInfo!.userName ||
+            userInfo!.email)[0].toUpperCase()}
+        </AvatarWithColor>
         <ReactQuill
           theme="snow"
           value={comment}
