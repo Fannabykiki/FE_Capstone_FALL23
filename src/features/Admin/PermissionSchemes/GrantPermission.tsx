@@ -38,9 +38,8 @@ const GrantPermission = ({
       toast.success("Grant permission successfully");
       handleClose();
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Grant permission failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Grant permission failed");
     },
   });
 
@@ -66,12 +65,9 @@ const GrantPermission = ({
     }
 
     grantPermission({
-      id: schema.schemaId,
-      data: {
-        schemaId: schema.schemaId,
-        permissionIds: permissions,
-        roleId: role,
-      },
+      schemaId: schema.schemaId,
+      permissionIds: permissions,
+      roleId: role,
     });
   };
 

@@ -25,19 +25,13 @@ export interface ISchema {
 }
 
 export interface IGrantPermissionRequest {
-  id: string;
-  data: {
-    schemaId: string;
-    roleId: string;
-    permissionIds: string[];
-  };
+  schemaId: string;
+  roleId: string;
+  permissionIds: string[];
 }
 
 export interface IRevokePermissionRequest {
-  id: string;
-  data: {
-    schemaId: string;
-    permissionId: string;
-    roleIds: string[];
-  };
+  schemaId: string;
+  permissionId: string;
+  roleIds: string[];
 }

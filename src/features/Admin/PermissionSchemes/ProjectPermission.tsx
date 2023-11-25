@@ -110,9 +110,8 @@ const ProjectPermission = () => {
       render: (_, record) => (
         <Space direction="horizontal">
           <Button
-            type="text"
             ghost
-            className="hover:!bg-transparent p-1"
+            className="hover:!border-transparent hover:!bg-transparent focus:outline-none active:!bg-transparent"
             loading={
               isLoadingGetGrantList &&
               record.permissionId === variables?.data.permissionIds[0]
@@ -130,15 +129,15 @@ const ProjectPermission = () => {
             icon={
               <EditOutlined
                 style={{
+                  color: "#000000",
                   fontSize: 22,
                 }}
               />
             }
           />
           <Button
-            type="text"
             ghost
-            className="hover:!bg-transparent"
+            className="hover:!border-transparent hover:!bg-transparent focus:outline-none active:!bg-transparent"
             loading={
               isLoadingGetRevokeList &&
               record.permissionId ===
@@ -180,7 +179,19 @@ const ProjectPermission = () => {
           </Typography.Title>
         </Col>
         <Col span={6} className="flex justify-end items-center">
-          <Button type="primary" onClick={() => setOpenGrantPermModal(true)}>
+          <Button
+            type="primary"
+            onClick={() => {
+              if (!schema) return;
+              getGrantList({
+                schemaId: schema?.schemaId,
+                data: {
+                  permissionIds: [],
+                },
+              });
+              setOpenGrantPermModal(true);
+            }}
+          >
             Grant permission
           </Button>
         </Col>

@@ -32,9 +32,8 @@ export interface IUpdateProject
   isDeleted?: boolean;
   isDelete?: boolean;
 }
-export interface IUpdateProjectPayload {
-  id: string;
-  data: IUpdateProject;
+export interface IUpdateProjectPayload extends IUpdateProject {
+  projectId: string;
 }
 
 export interface ICreateMemberRolePayload {

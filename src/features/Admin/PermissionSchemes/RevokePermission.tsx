@@ -38,9 +38,8 @@ const RevokePermission = ({
       toast.success("Revoke permission successfully");
       handleClose();
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Revoke permission failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Revoke permission failed");
     },
   });
 
@@ -55,12 +54,9 @@ const RevokePermission = ({
     }
 
     revokePermission({
-      id: schemaId,
-      data: {
-        schemaId,
-        roleIds: checkedList,
-        permissionId: permission.permissionId,
-      },
+      schemaId,
+      roleIds: checkedList,
+      permissionId: permission.permissionId,
     });
   };
 

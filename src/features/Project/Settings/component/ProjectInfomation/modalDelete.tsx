@@ -59,13 +59,11 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
   const handleSubmit = () => {
     if (!projectId) return;
     deleteProject({
-      id: projectId,
-      data: {
-        projectName: detail!.projectName,
-        description: detail!.description,
-        isDeleted: true,
-        isDelete: true,
-      },
+      projectId,
+      projectName: detail!.projectName,
+      description: detail!.description,
+      isDeleted: true,
+      isDelete: true,
     });
   };
 
@@ -95,7 +93,7 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
           Are you sure you want to delete the "{detail?.projectName}" project?
         </Typography>
         <Typography className="mt-2">
-          To confirm this action, please type "{detail?.projectName}":
+          To confirm this action, please type "{detail?.projectName}"
         </Typography>
         <Input
           className="mb-10"

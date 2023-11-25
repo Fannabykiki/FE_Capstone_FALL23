@@ -132,7 +132,17 @@ const PermissionSchemes = () => {
         <ul>
           {projectsUsed.map((project, index) => (
             <li key={index}>
-              <Button type="link" className="text-sm p-0">
+              <Button
+                type="link"
+                className="text-sm p-0"
+                onClick={() =>
+                  navigate(
+                    generatePath(paths.project.detail, {
+                      projectId: project.projectId,
+                    })
+                  )
+                }
+              >
                 {project.projectName}
               </Button>
             </li>
@@ -147,9 +157,8 @@ const PermissionSchemes = () => {
       render: (_, record) => (
         <Row justify="space-evenly">
           <Button
-            type="text"
             ghost
-            className="hover:!bg-transparent focus:outline-none active:!bg-transparent"
+            className="hover:!border-transparent hover:!bg-transparent focus:outline-none active:!bg-transparent"
             loading={isDeleting && record.schemaId === variables}
             onClick={() => handleDelete(record.schemaId)}
             icon={

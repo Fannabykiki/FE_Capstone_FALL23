@@ -34,13 +34,14 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
     const formValues = await form.validateFields();
     updateProfile(
       {
-        id: userInfo!.id,
-        data: formValues,
+        ...formValues,
+        userId: userInfo!.id,
       },
       {
         onSuccess: () => {
           toast.success("Update profile succeed");
           refetchProfile();
+          onCancel();
         },
         onError: (error: any) => {
           if (typeof error.response?.data?.errors === "object") {

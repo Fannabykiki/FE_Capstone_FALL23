@@ -39,9 +39,8 @@ export interface IUpdateProfile
     "fullname" | "address" | "doB" | "gender" | "phoneNumber" | "userName"
   > {}
 
-export interface IUpdateUserPayload {
-  id: string;
-  data: IUpdateProfile;
+export interface IUpdateUserPayload extends IUpdateProfile {
+  userId: string;
 }
 
 export interface IAdminUsers {
@@ -65,9 +64,7 @@ export interface IAdminUsersAnalyzation {
 }
 
 export interface IUpdateUserStatus {
-  id: string;
-  data: {
-    reason: string;
-    statusIdChangeTo: boolean;
-  };
+  userId: string;
+  reason: string;
+  statusIdChangeTo: boolean;
 }

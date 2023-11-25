@@ -13,6 +13,7 @@ interface Props {
 }
 
 export interface IPermissionSchemeInputType {
+  schemaId?: string;
   schemaName: string;
   description?: string;
 }
@@ -57,13 +58,15 @@ const CreateEditPermissionScheme = ({
   );
 
   const onSubmit = (values: IPermissionSchemeInputType) => {
+    const data = {
+      schemaId: permissionScheme?.schemaId,
+      schemaName: values.schemaName,
+      description: values.description || "",
+    };
     if (permissionScheme) {
-      updatePermissionScheme({
-        id: permissionScheme.schemaId,
-        data: values,
-      });
+      updatePermissionScheme(data);
     } else {
-      createPermissionScheme(values);
+      createPermissionScheme(data);
     }
   };
 
