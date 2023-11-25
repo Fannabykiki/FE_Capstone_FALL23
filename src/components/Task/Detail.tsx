@@ -10,7 +10,6 @@ import {
   Descriptions,
   Divider,
   Image,
-  Input,
   Modal,
   Row,
   Select,
@@ -23,10 +22,14 @@ import PriorityStatus from "./PriorityStatus";
 import { faker } from "@faker-js/faker";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
-import { EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import useDetailView from "@/hooks/useDetailView";
 import UpdateTask from "../Modal/UpdateTask";
 import AddComment from "./AddComment";
+import DisplayComment from "./DisplayComment";
+import { iterationApi } from "@/utils/api/iteration";
+import { IIteration } from "@/interfaces/iteration";
+import AvatarWithColor from "../AvatarWithColor";
 
 interface Props {
   taskId: string;
@@ -48,7 +51,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
       projectId,
     ]) || [];
 
-  const { changeTaskStatusMutation } = useTaskActions();
+  const { changeTaskStatusMutation, deleteTaskMutation } = useTaskActions();
 
   const onChangeTaskStatus = (statusId: string) => {
     changeTaskStatusMutation.mutate(
@@ -66,6 +69,9 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     );
   };
 
+  const iterations: IIteration[] =
+    queryClient.getQueryData([iterationApi.getListKey, projectId]) || [];
+
   const {
     onOpenView: handleOpenModalUpdate,
     onCloseView: handleCloseModalUpdate,
@@ -78,6 +84,36 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
       queryKey: [taskApi.getDetailKey, taskId],
     });
     await queryClient.refetchQueries([taskApi.getDetailKey, taskId]);
+  };
+
+  const onDeleteTask = () => {
+    if (task) {
+      Modal.confirm({
+        title: "Delete task",
+        content: "Are you sure to delete this task?",
+        onOk: () => {
+          deleteTaskMutation.mutate(task.taskId, {
+            onSuccess: async () => {
+              toast.success("Delete task succeed!");
+              const currentIteration = iterations?.find(
+                (iteration) => iteration.interationName === task.interationName
+              );
+              await queryClient.refetchQueries({
+                queryKey: [
+                  iterationApi.getTasksKey,
+                  currentIteration?.interationId || "",
+                ],
+              });
+              onClose();
+            },
+            onError: (err) => {
+              console.error(err);
+              toast.error("Delete task failed! Please try again later");
+            },
+          });
+        },
+      });
+    }
   };
 
   if (task) {
@@ -106,6 +142,13 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 <Button
                   icon={<EditOutlined />}
                   onClick={() => handleOpenModalUpdate(task)}
+                />
+              </Tooltip>
+              <Tooltip title="Delete task">
+                <Button
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={onDeleteTask}
                 />
               </Tooltip>
             </div>
@@ -190,167 +233,17 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Divider />
               <div>
                 <Typography.Title level={5}>Comments</Typography.Title>
-                <AddComment task={task} />
+                <AddComment taskId={task.taskId} />
                 <div className="mt-8 flex flex-col gap-2">
-                  <div>
-                    <div className="flex gap-x-2">
-                      <Avatar className="flex-shrink-0">T</Avatar>
-                      <div>
-                        <div className="flex gap-x-2">
-                          <span className="font-semibold">TungLS</span>
-                          <span>4 days ago</span>
-                        </div>
-                        <Typography.Paragraph>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do eiusmod tempor incididunt ut labore et
-                          dolore magna aliqua. Ut enim ad minim veniam, quis
-                          nostrud exercitation ullamco laboris nisi ut aliquip
-                          ex ea commodo consequat. Duis aute irure dolor in
-                          reprehenderit in voluptate velit esse cillum dolore eu
-                          fugiat nulla pariatur. Excepteur sint occaecat
-                          cupidatat non proident, sunt in culpa qui officia
-                          deserunt mollit anim id est laborum.
-                        </Typography.Paragraph>
-                        <div className="flex gap-x-2">
-                          <Button type="text">Reply</Button>
-                          <Button type="text">Edit</Button>
-                          <Button type="text">Delete</Button>
-                        </div>
-                        <div className="mt-4">
-                          <div className="flex gap-x-2">
-                            <Avatar className="flex-shrink-0">T</Avatar>
-                            <div>
-                              <div className="flex gap-x-2">
-                                <span className="font-semibold">TungLS</span>
-                                <span>4 days ago</span>
-                              </div>
-                              <Typography.Paragraph>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur. Excepteur sint
-                                occaecat cupidatat non proident, sunt in culpa
-                                qui officia deserunt mollit anim id est laborum.
-                              </Typography.Paragraph>
-                              <div className="flex gap-x-2">
-                                <Button type="text">Reply</Button>
-                                <Button type="text">Edit</Button>
-                                <Button type="text">Delete</Button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-x-2">
-                            <Avatar className="flex-shrink-0">T</Avatar>
-                            <div>
-                              <div className="flex gap-x-2">
-                                <span className="font-semibold">TungLS</span>
-                                <span>4 days ago</span>
-                              </div>
-                              <Typography.Paragraph>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur. Excepteur sint
-                                occaecat cupidatat non proident, sunt in culpa
-                                qui officia deserunt mollit anim id est laborum.
-                              </Typography.Paragraph>
-                              <div className="flex gap-x-2">
-                                <Button type="text">Reply</Button>
-                                <Button type="text">Edit</Button>
-                                <Button type="text">Delete</Button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-x-2">
-                            <Avatar className="flex-shrink-0">T</Avatar>
-                            <div>
-                              <div className="flex gap-x-2">
-                                <span className="font-semibold">TungLS</span>
-                                <span>4 days ago</span>
-                              </div>
-                              <Typography.Paragraph>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur. Excepteur sint
-                                occaecat cupidatat non proident, sunt in culpa
-                                qui officia deserunt mollit anim id est laborum.
-                              </Typography.Paragraph>
-                              <div className="flex gap-x-2">
-                                <Button type="text">Reply</Button>
-                                <Button type="text">Edit</Button>
-                                <Button type="text">Delete</Button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-x-2">
-                            <Avatar className="flex-shrink-0">T</Avatar>
-                            <div>
-                              <div className="flex gap-x-2">
-                                <span className="font-semibold">TungLS</span>
-                                <span>4 days ago</span>
-                              </div>
-                              <Typography.Paragraph>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur. Excepteur sint
-                                occaecat cupidatat non proident, sunt in culpa
-                                qui officia deserunt mollit anim id est laborum.
-                              </Typography.Paragraph>
-                              <div className="flex gap-x-2">
-                                <Button type="text">Reply</Button>
-                                <Button type="text">Edit</Button>
-                                <Button type="text">Delete</Button>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-x-2">
-                            <Avatar className="flex-shrink-0">T</Avatar>
-                            <div>
-                              <div className="flex gap-x-2">
-                                <span className="font-semibold">TungLS</span>
-                                <span>4 days ago</span>
-                              </div>
-                              <Typography.Paragraph>
-                                Lorem ipsum dolor sit amet, consectetur
-                                adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore magna aliqua. Ut
-                                enim ad minim veniam, quis nostrud exercitation
-                                ullamco laboris nisi ut aliquip ex ea commodo
-                                consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur. Excepteur sint
-                                occaecat cupidatat non proident, sunt in culpa
-                                qui officia deserunt mollit anim id est laborum.
-                              </Typography.Paragraph>
-                              <div className="flex gap-x-2">
-                                <Button type="text">Reply</Button>
-                                <Button type="text">Edit</Button>
-                                <Button type="text">Delete</Button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  {task.commentResponse
+                    ?.sort((a, b) => (a.createAt < b.createAt ? 1 : -1))
+                    .map((comment) => (
+                      <DisplayComment
+                        task={task}
+                        comment={comment}
+                        key={comment.commentId}
+                      />
+                    ))}
                 </div>
               </div>
             </Col>
@@ -358,7 +251,12 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Descriptions column={1} bordered>
                 <Descriptions.Item label="Assignee">
                   <div className="flex gap-x-2 items-center">
-                    <Avatar>{task.assignTo[0].toUpperCase()}</Avatar>
+                    <AvatarWithColor
+                      stringContent={task.assignTo}
+                      className="flex-shrink-0"
+                    >
+                      {task.assignTo[0].toUpperCase()}
+                    </AvatarWithColor>
                     {task.assignTo}
                   </div>
                 </Descriptions.Item>
@@ -389,7 +287,12 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 </Descriptions.Item>
                 <Descriptions.Item label="Created by">
                   <div className="flex gap-x-2 items-center">
-                    <Avatar>{task.createBy[0].toUpperCase()}</Avatar>
+                    <AvatarWithColor
+                      stringContent={task.createBy}
+                      className="flex-shrink-0"
+                    >
+                      {task.createBy[0].toUpperCase()}
+                    </AvatarWithColor>
                     {task.createBy}
                   </div>
                 </Descriptions.Item>

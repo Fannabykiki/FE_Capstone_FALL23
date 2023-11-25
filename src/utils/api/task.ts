@@ -85,8 +85,11 @@ const updateTask = (data: IUpdateTaskPayload): Promise<ITask> => {
 
 const deleteTask = (taskId: string): Promise<void> => {
   return axiosClient({
-    url: `/api/task-management/task/deletion/${taskId}`,
+    url: `/api/task-management/tasks/deletion`,
     method: HTTP_METHODS.PUT, // This should be DELETE if you are actually deleting the resource
+    data: {
+      taskId,
+    },
   }).then((resp) => resp.data);
 };
 

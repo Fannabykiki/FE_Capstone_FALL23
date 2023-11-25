@@ -29,7 +29,12 @@ export default function StatusManagement() {
 
   return (
     <Card className="min-h-screen">
-      <CreateStatus open={isModalCreateOpen} onClose={handleCloseModalCreate} />
+      {isModalCreateOpen && (
+        <CreateStatus
+          open={isModalCreateOpen}
+          onClose={handleCloseModalCreate}
+        />
+      )}
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Status Management</Typography.Title>
         <Space>

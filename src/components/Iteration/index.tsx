@@ -19,7 +19,7 @@ import { Button, Input, Select } from "antd";
 import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
-import { CreateTask } from "../Modal";
+import { CreateStatus, CreateTask } from "../Modal";
 import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
@@ -173,6 +173,13 @@ const IterationDisplay = ({ iterationId }: Props) => {
       }
     }
   };
+
+  const {
+    onOpenView: handleOpenModalCreateStatus,
+    onCloseView: handleCloseModalCreateStatus,
+    openView: isModalCreateStatusOpen,
+  } = useDetailView();
+
   if (selectedIteration)
     return (
       <>
@@ -231,6 +238,15 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   <h4>{status.title}</h4>
                 </div>
               ))}
+              <div className="basis-[250px] rounded p-2 shrink-0">
+                <Button
+                  icon={<PlusOutlined />}
+                  type="text"
+                  onClick={() => handleOpenModalCreateStatus()}
+                >
+                  New status
+                </Button>
+              </div>
             </div>
             {selectedIteration.tasks.map((task) => (
               <div
@@ -266,6 +282,12 @@ const IterationDisplay = ({ iterationId }: Props) => {
             taskId={taskId || ""}
             isOpen={isModalDetailTaskOpen}
             onClose={onCloseViewDetailTask}
+          />
+        )}
+        {isModalCreateStatusOpen && (
+          <CreateStatus
+            open={isModalCreateStatusOpen}
+            onClose={handleCloseModalCreateStatus}
           />
         )}
       </>
