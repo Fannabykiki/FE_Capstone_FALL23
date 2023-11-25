@@ -9,8 +9,10 @@ import "react-quill/dist/quill.snow.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { ConfigProvider } from "antd";
 
+dayjs.extend(relativeTime);
 dayjs.extend(weekday);
 
 const root = ReactDOM.createRoot(

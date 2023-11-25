@@ -1,4 +1,7 @@
+import { IComment } from "./comment";
+
 export interface ITask {
+  commentResponse?: IComment[];
   taskId: string;
   title: string;
   decription: string;
