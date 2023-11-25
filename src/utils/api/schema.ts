@@ -3,6 +3,7 @@ import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
 import {
   IGrantPermissionRequest,
+  IProjectSchema,
   IRevokePermissionRequest,
 } from "@/interfaces/schema";
 
@@ -60,6 +61,16 @@ const deleteSchema = (id: string) =>
     method: HTTP_METHODS.DELETE,
   }).then((resp) => resp.data);
 
+const getProjectSchemaByProjectId = async (
+  signal: AbortSignal | undefined,
+  projectId: string
+): Promise<IProjectSchema[]> =>
+  axiosClient({
+    url: `/api/schema-management/schemas/project-schema/${projectId}`,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
 export const schemaApi = {
   getAdminSchemas,
   getAdminSchemasKey: "getAdminSchemasKey",
@@ -75,4 +86,6 @@ export const schemaApi = {
   revokePermissionKey: "revokePermissionKey",
   deleteSchema,
   deleteSchemaKey: "deleteSchemaKey",
+  getProjectSchemaByProjectId,
+  getProjectSchemaByProjectIdKey: "getProjectSchemaByProjectIdKey",
 };

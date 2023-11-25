@@ -1,31 +1,55 @@
 import { useState } from "react";
 import { Button, Card, Row, Space, Table, Typography } from "antd";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 
 import PermissionDetailModal from "./PermissionDetailModal";
 import { IPermissionSchemes } from "@/interfaces/schema";
-import { useAuthContext } from "@/context/Auth";
+import { projectApi } from "@/utils/api/project";
 import { schemaApi } from "@/utils/api/schema";
 
 const PermissionRole = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isPermissionId, setPermissionId] = useState<string>();
 
-  const { userInfo } = useAuthContext();
+  const { projectId } = useParams();
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  const { data: schemas, isLoading } = useQuery<IPermissionSchemes[]>({
-    queryKey: [schemaApi.getAdminSchemasKey, userInfo?.id],
-    queryFn: ({ signal }) => schemaApi.getAdminSchemas(signal, ""),
-    enabled: Boolean(userInfo),
+  const {
+    data: schemas,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: [schemaApi.getProjectSchemaByProjectIdKey],
+    queryFn: ({ signal }) =>
+      schemaApi.getProjectSchemaByProjectId(signal, projectId!),
+    enabled: Boolean(projectId),
   });
 
+  const { mutate: changeProjectSchema, isLoading: isChangingProjectSchema } =
+    useMutation({
+      mutationKey: [projectApi.changeProjectSchemaKey],
+      mutationFn: projectApi.changeProjectSchema,
+      onSuccess: async () => {
+        await refetch();
+        toast.success("Change schema successfully");
+      },
+      onError: () => {
+        toast.error("Change schema failed!");
+      },
+    });
+
   const onSubmit = () => {
-    console.log("selectedRowKeys: ", selectedRowKeys[0]);
+    if (!projectId) return;
+    changeProjectSchema({
+      projectId,
+      data: { schemaId: selectedRowKeys[0] as string },
+    });
   };
 
   const columns: ColumnsType<IPermissionSchemes> = [
@@ -51,13 +75,25 @@ const PermissionRole = () => {
 
   return (
     <Card>
-      <Typography className="text-3xl font-bold">Permission Role</Typography>
+      <Typography className="text-3xl font-bold">Permission & Role</Typography>
+      <Typography className="text-md font-bold mt-5">
+        Permission Schema for Project
+      </Typography>
       <Table
         rowKey="schemaId"
-        className="mt-5"
         columns={columns}
         loading={isLoading}
-        dataSource={schemas}
+        dataSource={schemas?.filter((schema) => schema.isCurrentProjectSchema)}
+        pagination={false}
+      />
+      <Typography className="text-md font-bold mt-5">
+        Other Permission role
+      </Typography>
+      <Table
+        rowKey="schemaId"
+        columns={columns}
+        loading={isLoading}
+        dataSource={schemas?.filter((schema) => !schema.isCurrentProjectSchema)}
         pagination={false}
         rowSelection={{
           selectedRowKeys,
@@ -66,7 +102,12 @@ const PermissionRole = () => {
         }}
       />
       <Row className="mt-5" justify="end">
-        <Button loading={isLoading} onClick={onSubmit} type="primary">
+        <Button
+          disabled={!selectedRowKeys[0]}
+          loading={isChangingProjectSchema}
+          onClick={onSubmit}
+          type="primary"
+        >
           Save
         </Button>
       </Row>

@@ -57,7 +57,7 @@ export default function WorkItem() {
       projectId,
     ]) || [];
 
-  const { data, isLoading } = useQuery<IWorkItemList[]>({
+  const { data, isLoading, refetch } = useQuery<IWorkItemList[]>({
     queryKey: [
       projectApi.getWorkItemListByProjectIdKey,
       searchParams.get("type"),
@@ -132,9 +132,7 @@ export default function WorkItem() {
       <CreateTask
         isOpen={isModalCreateOpen}
         handleClose={handleCloseModalCreate}
-        onSuccess={() =>
-          queryClient.refetchQueries([projectApi.getWorkItemListByProjectIdKey])
-        }
+        onSuccess={() => refetch()}
       />
 
       <div className="flex justify-between items-center">

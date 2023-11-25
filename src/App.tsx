@@ -43,6 +43,7 @@ function App() {
     queryKey: [taskApi.getTaskTypeKey],
     queryFn: async ({ signal }) => taskApi.getTaskType(signal),
     staleTime: Infinity,
+    enabled: Boolean(authenticate.userInfo),
   });
 
   useEffect(() => {

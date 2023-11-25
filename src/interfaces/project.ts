@@ -42,10 +42,8 @@ export interface ICreateMemberRolePayload {
 }
 
 export interface IUpdateMemberRolePayload {
-  id: string;
-  data: {
-    roleId: string;
-  };
+  memberId: string;
+  roleId: string;
 }
 
 export interface IProject {
@@ -75,6 +73,9 @@ export interface IProjectMember {
   isOwner: boolean;
   fullname: string;
   email: string;
+  statusId: string;
+  statusName: string;
+  userName: string;
 }
 
 export interface IAdminProject {
@@ -216,7 +217,7 @@ export interface IReportProject {
       percent: number;
     }[];
   };
-  reportRecordByWeerk: {
+  reportRecordByWeek: {
     totalTask: number;
     dateTime: Date;
     reportStatuses: {

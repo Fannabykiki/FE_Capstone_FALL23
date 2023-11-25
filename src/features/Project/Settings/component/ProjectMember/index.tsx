@@ -1,12 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { UserDeleteOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { UserDeleteOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { faker } from "@faker-js/faker";
 import { toast } from "react-toastify";
 import {
-  Avatar,
   Button,
   Card,
   Col,
@@ -20,9 +18,17 @@ import {
 
 import { IProjectMember } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
+import { pagination } from "@/utils/pagination";
 import { AvatarWithColor } from "@/components";
+import ReAssignModal from "./ReAssignModal";
 
 export default function ProjectMember() {
+  const [isOpenModalReAssign, setOpenModalReAssign] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: "1",
+    limit: "10",
+  });
+
   const { projectId } = useParams();
 
   const [modal, contextHolder] = Modal.useModal();
@@ -55,6 +61,14 @@ export default function ProjectMember() {
       title: "Warning",
       content: "Are you sure to delete this member?",
       onOk: () => removeMember({ memberId }),
+    });
+  };
+
+  const onChangePage = (page: number, pageSize: number) => {
+    setSearchParams((prev) => {
+      prev.set("page", page.toString());
+      prev.set("limit", pageSize.toString());
+      return prev;
     });
   };
 
@@ -107,7 +121,6 @@ export default function ProjectMember() {
     {
       dataIndex: "action",
       width: "20%",
-      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -116,6 +129,14 @@ export default function ProjectMember() {
           >
             Remove
           </Button>
+          {record.roleName === "PO" ? (
+            <Button
+              icon={<UserSwitchOutlined />}
+              onClick={() => setOpenModalReAssign(true)}
+            >
+              ReAssign
+            </Button>
+          ) : null}
         </Space>
       ),
     },
@@ -151,7 +172,27 @@ export default function ProjectMember() {
       <Typography className="text-xl font-medium mb-5">
         Project Member
       </Typography>
-      <Table dataSource={memberList} columns={columns} />
+      <Table
+        columns={columns}
+        dataSource={pagination(
+          memberList,
+          parseInt(searchParams.get("page") || "1"),
+          parseInt(searchParams.get("limit") || "10")
+        )}
+        pagination={{
+          showSizeChanger: true,
+          current: parseInt(searchParams.get("page") || "1"),
+          pageSize: parseInt(searchParams.get("limit") || "10"),
+          pageSizeOptions: [10, 20, 50, 100],
+          total: memberList?.length,
+          onChange: onChangePage,
+          className: "px-5 !mb-0",
+        }}
+      />
+      <ReAssignModal
+        isOpen={isOpenModalReAssign}
+        handleClose={() => setOpenModalReAssign(false)}
+      />
       {contextHolder}
     </Card>
   );
