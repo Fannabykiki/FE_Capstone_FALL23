@@ -1,15 +1,6 @@
 import useListProjectOfUser from "@/hooks/useListProjectOfUser";
 import { useMemo, useState } from "react";
-import {
-  Avatar,
-  Col,
-  Dropdown,
-  Input,
-  Modal,
-  Row,
-  Space,
-  Typography,
-} from "antd";
+import { Col, Dropdown, Input, Modal, Row, Space, Typography } from "antd";
 import { useAuthContext } from "@/context/Auth";
 import { IProject } from "@/interfaces/project";
 import { generatePath, useNavigate } from "react-router-dom";
@@ -160,7 +151,10 @@ export default function UserDashboard() {
                         modal.confirm({
                           title: "Warning",
                           content: "Are you sure to restore this project?",
-                          onOk: () => restoreProject(key),
+                          onOk: () =>
+                            restoreProject({
+                              projectId: key,
+                            }),
                         }),
                     }}
                     placement="bottom"

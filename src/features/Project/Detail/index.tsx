@@ -5,7 +5,6 @@ import { paths } from "@/routers/paths";
 import { Avatar, Button, Descriptions, Tooltip, Typography } from "antd";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { faker } from "@faker-js/faker";
 import {
   FileAddOutlined,
   FileDoneOutlined,
@@ -61,7 +60,7 @@ export default function ProjectDetail() {
     if (!_detail) return;
     actions.updatePrivacyStatus(
       {
-        id: _detail?.projectId,
+        projectId: _detail?.projectId,
         privacyStatus: !_detail?.privacyStatus,
       },
       {

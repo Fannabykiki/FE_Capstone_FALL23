@@ -6,7 +6,6 @@ import {
   IProject,
   IProjectMember,
   IReportProject,
-  IUpdateInfoProjectPayload,
   IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
   IUpdateProjectPayload,
@@ -53,10 +52,11 @@ const getDetail = (
     signal,
   }).then((resp) => resp.data);
 
-const deleteProject = async (projectId: string) =>
+const deleteProject = async (data: { projectId: string }) =>
   axiosClient({
-    url: `/api/project-management/projects/${projectId}`,
-    method: HTTP_METHODS.DELETE,
+    url: "/api/project-management/projects/delete",
+    method: HTTP_METHODS.PUT,
+    data,
   }).then((resp) => resp.data);
 
 const getInfo = (
@@ -67,13 +67,6 @@ const getInfo = (
     url: `/api/project-management/projects/info/${projectId}`,
     method: HTTP_METHODS.GET,
     signal,
-  }).then((resp) => resp.data);
-
-const updateInfo = async ({ id, data }: IUpdateInfoProjectPayload) =>
-  axiosClient({
-    url: `/api/project-management/projects/privacy/${id}`,
-    method: HTTP_METHODS.PUT,
-    data: data,
   }).then((resp) => resp.data);
 
 const updateProject = async (data: IUpdateProjectPayload) =>
@@ -97,20 +90,18 @@ const updateMemberRole = async (data: IUpdateMemberRolePayload) =>
     data,
   }).then((resp) => resp.data);
 
-const updatePrivacy = async ({
-  id,
-  privacyStatus,
-}: IUpdatePrivacyProjectPayload) =>
+const updatePrivacy = async (data: IUpdatePrivacyProjectPayload) =>
   axiosClient({
-    url: `/api/project-management/projects/privacy/${id}`,
+    url: "api/project-management/projects/privacy",
     method: HTTP_METHODS.PUT,
-    data: { privacyStatus },
+    data,
   }).then((resp) => resp.data);
 
-const restoreProject = async (projectId: string) =>
+const restoreProject = async (data: { projectId: string }) =>
   axiosClient({
-    url: `/api/project-management/project/restoration/${projectId}`,
+    url: "/api/project-management/project/restoration",
     method: HTTP_METHODS.PUT,
+    data,
   }).then((resp) => resp.data);
 
 const getAdminProjects = async (
@@ -263,8 +254,6 @@ export const projectApi = {
   deleteProjectKey: "deleteProjectKey",
   getInfo,
   getInfoKey: "projectGetInfo",
-  updateInfo,
-  updateInfoKey: "projectUpdateInfo",
   createRole,
   createRoleKey: "projectCreateRole",
   updateMemberRole,
