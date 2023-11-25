@@ -35,9 +35,8 @@ const CreateEditPermissionScheme = ({
       toast.success("Create permission scheme successfully");
       handleClose();
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Create permission scheme failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Create permission scheme failed");
     },
   });
 
@@ -50,9 +49,8 @@ const CreateEditPermissionScheme = ({
         toast.success("Update permission scheme successfully");
         handleClose();
       },
-      onError: (err) => {
-        console.error(err);
-        toast.error("Update permission scheme failed");
+      onError: (err: any) => {
+        toast.error(err?.response?.data || "Update permission scheme failed");
       },
     }
   );

@@ -1,14 +1,8 @@
 import { useAuthContext } from "@/context/Auth";
 import { userApi } from "@/utils/api/user";
 import { handleValidatePassword } from "@/utils/common";
-import {
-  REGEX_CHARACTER,
-  REGEX_NUMBER,
-  REGEX_SPECIAL_CHARACTER,
-} from "@/utils/constants";
 import { useMutation } from "@tanstack/react-query";
 import { Form, Input, Modal } from "antd";
-import { RuleObject } from "antd/es/form";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
@@ -38,7 +32,7 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
       },
       onError: (err: AxiosError<any>) => {
         console.error(err);
-        toast.error(err.response?.data);
+        toast.error(err.response?.data || "Change password failed");
       },
     }
   );

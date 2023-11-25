@@ -31,9 +31,8 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
       toast.success("Create role successfully");
       handleClose();
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Create role failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Create role failed");
     },
   });
 
@@ -45,9 +44,8 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
       toast.success("Update role successfully");
       handleClose();
     },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Update role failed");
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Update role failed");
     },
   });
 
