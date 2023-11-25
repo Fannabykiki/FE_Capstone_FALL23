@@ -36,7 +36,7 @@ export default function PageContainer({
     queryKey: [taskApi.getTaskStatusKey, projectId],
     queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId!),
     initialData: [],
-    enabled: Boolean(projectId),
+    enabled: Boolean(projectId) && Boolean(userInfo),
     staleTime: 60000,
   });
 

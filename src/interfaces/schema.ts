@@ -35,3 +35,7 @@ export interface IRevokePermissionRequest {
   permissionId: string;
   roleIds: string[];
 }
+
+export interface IProjectSchema extends IPermissionSchemes {
+  isCurrentProjectSchema: boolean;
+}

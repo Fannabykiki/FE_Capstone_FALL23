@@ -90,9 +90,9 @@ const createRole = async (data: ICreateMemberRolePayload) =>
     data,
   }).then((resp) => resp.data);
 
-const updateMemberRole = async ({ id, data }: IUpdateMemberRolePayload) =>
+const updateMemberRole = async (data: IUpdateMemberRolePayload) =>
   axiosClient({
-    url: `/api/project-management/roles/${id}`,
+    url: "/api/project-management/roles",
     method: HTTP_METHODS.PUT,
     data,
   }).then((resp) => resp.data);
@@ -235,6 +235,19 @@ const removeMember = (params: { memberId: string }) =>
     params,
   }).then((resp) => resp.data);
 
+const changeProjectSchema = ({
+  projectId,
+  data,
+}: {
+  projectId: string;
+  data: { schemaId: string };
+}) =>
+  axiosClient({
+    url: `/api/project-management/project/change-schema/${projectId}`,
+    method: HTTP_METHODS.PUT,
+    data,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -287,4 +300,6 @@ export const projectApi = {
   checkEmailInviteKey: "checkEmailInviteKey",
   getReportProjectByProjectId,
   getReportProjectByProjectIdKey: "getReportProjectByProjectIdKey",
+  changeProjectSchema,
+  changeProjectSchemaKey: "changeProjectSchemaKey",
 };

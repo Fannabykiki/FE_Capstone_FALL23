@@ -226,7 +226,7 @@ const Report = () => {
                     params.seriesName + ": " + params.value,
                 },
                 legend: {
-                  data: data?.reportRecordByWeerk[0]?.reportStatuses.map(
+                  data: data?.reportRecordByWeek[0]?.reportStatuses.map(
                     (status) => ({
                       name: status.title,
                       itemStyle: {
@@ -246,7 +246,7 @@ const Report = () => {
                 },
                 xAxis: {
                   type: "category",
-                  data: data?.reportRecordByWeerk.map((record) =>
+                  data: data?.reportRecordByWeek.map((record) =>
                     dayjs(record.dateTime).format("DD/MM")
                   ),
                 },
@@ -254,12 +254,12 @@ const Report = () => {
                   type: "value",
                   interval: 1,
                 },
-                series: data?.reportRecordByWeerk[0]?.reportStatuses.map(
+                series: data?.reportRecordByWeek[0]?.reportStatuses.map(
                   (status) => ({
                     name: status.title,
                     stack: "status",
                     type: "bar",
-                    data: data?.reportRecordByWeerk.map((item) => ({
+                    data: data?.reportRecordByWeek.map((item) => ({
                       value: item.reportStatuses.find(
                         (s) => s.title === status.title
                       )?.numberTask,

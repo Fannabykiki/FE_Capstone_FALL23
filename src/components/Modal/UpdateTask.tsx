@@ -73,17 +73,20 @@ export default function UpdateTask({
 
   const onSubmit = (values: ICreateTaskRequest) => {
     if (!projectId) return;
-    updateTaskMutation.mutate(values, {
-      onSuccess: async () => {
-        onSuccess();
-        toast.success("Edit task successfully");
-        handleClose();
-      },
-      onError: (err: any) => {
-        console.error(err);
-        toast.error(err.response?.data || "Edit task failed");
-      },
-    });
+    updateTaskMutation.mutate(
+      { ...values, taskId: initTaskData.taskId },
+      {
+        onSuccess: async () => {
+          onSuccess();
+          toast.success("Edit task successfully");
+          handleClose();
+        },
+        onError: (err: any) => {
+          console.error(err);
+          toast.error(err.response?.data || "Edit task failed");
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -129,7 +132,7 @@ export default function UpdateTask({
   useEffect(() => {
     if (memberList) {
       const selectingMember = memberList.find(
-        (member) => member.fullname === initTaskData.assignTo
+        (member) => member.userName === initTaskData.assignTo
       )?.memberId;
       form.setFieldValue("assignTo", selectingMember);
     }
