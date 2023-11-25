@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Input, Modal, Space, Typography } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import useProjectDetail from "@/hooks/useProjectDetail";
@@ -15,6 +15,9 @@ interface Props {
 }
 
 export default function DeleteProject({ isOpen, handleClose }: Props) {
+  const [inputValue, setInputValue] = useState("");
+  const [isInputValid, setIsInputValid] = useState(false);
+
   const { userInfo } = useAuthContext();
 
   const { projectId } = useParams();
@@ -23,14 +26,11 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
 
   const queryClient = useQueryClient();
 
-  const [inputValue, setInputValue] = useState("");
-  const [isInputValid, setIsInputValid] = useState(false);
-
   const navigate = useNavigate();
 
   const { mutate: deleteProject, isLoading: isRemoving } = useMutation({
-    mutationFn: projectApi.updateProject,
-    mutationKey: [projectApi.updateProjectKey],
+    mutationFn: projectApi.deleteProject,
+    mutationKey: [projectApi.deleteProjectKey],
     onSuccess: async () => {
       await queryClient.refetchQueries([
         projectApi.getListByUserKey,
@@ -60,10 +60,6 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
     if (!projectId) return;
     deleteProject({
       projectId,
-      projectName: detail!.projectName,
-      description: detail!.description,
-      isDeleted: true,
-      isDelete: true,
     });
   };
 
