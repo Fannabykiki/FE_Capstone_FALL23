@@ -16,6 +16,7 @@
     "dayjs": "^1.11.9",
     "echarts": "^5.4.3",
     "echarts-for-react": "^3.0.2",
+    "js-file-download": "^0.4.12",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "odata-query": "^7.0.4",

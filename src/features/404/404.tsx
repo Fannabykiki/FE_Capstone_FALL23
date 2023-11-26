@@ -24,7 +24,7 @@ export default function NotFound() {
         <div className="mt-4">
           <Button
             className="rounded-3xl bg-blue-500 shadow-2xl h-12 w-48"
-            onClick={() => navigate(paths.dashboard)}
+            onClick={() => navigate(paths.user)}
           >
             <Text className="font-bold text-white">GO TO HOMEPAGE</Text>
           </Button>

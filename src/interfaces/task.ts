@@ -1,7 +1,9 @@
 import { IComment } from "./comment";
+import { IAttachment } from "./attachment";
 
 export interface ITask {
   commentResponse?: IComment[];
+  attachmentResponse?: IAttachment[];
   taskId: string;
   title: string;
   decription: string;
@@ -20,6 +22,14 @@ export interface ITask {
   priorityName: string;
   interationName: string;
   subTask?: ITask[];
+  taskHistories?: ITaskHistory[];
+}
+
+interface ITaskHistory {
+  historyId: string;
+  changeAt: Date;
+  taskId: string;
+  title: string;
 }
 
 export interface ITaskStatus {
@@ -78,11 +88,13 @@ export interface IUpdateTaskPayload {
   statusId: string;
   typeId: string;
   taskId?: string;
+  memberId?: string;
 }
 
 export interface IChangeTaskStatusPayload {
   id: string;
   statusId: string;
+  memberId?: string;
 }
 export interface ITrashBinRecord {
   taskId: string;

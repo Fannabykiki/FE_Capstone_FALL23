@@ -33,7 +33,7 @@ export default function Login() {
       setAuthenticate({ isAuthenticated: true, userInfo: null });
       navigate({
         pathname:
-          location.state?.from || (isAdmin ? paths.dashboard : paths.user),
+          location.state?.from || (isAdmin ? paths.admin.index : paths.user),
         search: location.state?.search,
       });
     },
@@ -58,7 +58,7 @@ export default function Login() {
       setAuthenticate({ isAuthenticated: true, userInfo: null });
       navigate({
         pathname:
-          location.state?.from || (isAdmin ? paths.dashboard : paths.user),
+          location.state?.from || (isAdmin ? paths.admin.index : paths.user),
         search: location.state?.search,
       });
     },

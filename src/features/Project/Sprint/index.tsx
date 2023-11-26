@@ -85,7 +85,6 @@ const TaskBoard = () => {
         <>
           <div className="flex justify-between items-center mb-4">
             <Typography.Title className="flex gap-x-2 !mb-0">
-              <span className="flex-shrink-0">Sprints</span>
               <IterationDisplayName iteration={selectedIteration} />
             </Typography.Title>
             <div>

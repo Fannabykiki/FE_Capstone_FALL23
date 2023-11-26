@@ -13,6 +13,8 @@ import {
   IGetTypeListResponse,
   ITaskStatus,
 } from "@/interfaces/task";
+import { IProject } from "@/interfaces/project";
+import { useAuthContext } from "@/context/Auth";
 
 const { TextArea } = Input;
 
@@ -71,10 +73,20 @@ export default function UpdateTask({
     handleClose();
   };
 
+  const project: IProject | undefined = queryClient.getQueryData([
+    projectApi.getInfoKey,
+    projectId,
+  ]);
+
+  const { userInfo } = useAuthContext();
+
   const onSubmit = (values: ICreateTaskRequest) => {
     if (!projectId) return;
+    const member = project?.projectMembers.find(
+      (mem) => mem.userId === userInfo!.id
+    );
     updateTaskMutation.mutate(
-      { ...values, taskId: initTaskData.taskId },
+      { ...values, taskId: initTaskData.taskId, memberId: member?.memberId },
       {
         onSuccess: async () => {
           onSuccess();
