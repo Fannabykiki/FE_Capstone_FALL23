@@ -78,6 +78,7 @@ export default function CreateTask({
         {
           ...values,
           taskId: initTaskData.taskId,
+          projectId,
         },
         {
           onSuccess: async () => {

@@ -80,7 +80,7 @@ export default function PageContainer({
           location
         )
           ? location.pathname
-          : paths.dashboard;
+          : paths.user;
 
         navigate({ pathname: redirectPath, search: location.search });
       }
