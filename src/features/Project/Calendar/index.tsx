@@ -22,6 +22,7 @@ import {
   Space,
   Typography,
   DatePicker,
+  Spin,
 } from "antd";
 import {
   LeftOutlined,
@@ -87,12 +88,10 @@ const ProjectCalendar = () => {
     });
   }, 1000);
 
-  const { data } = useQuery<IWorkItemList[]>({
+  const { data, isLoading } = useQuery<IWorkItemList[]>({
     queryKey: [
       projectApi.getWorkItemListByProjectIdKey,
-      // searchParams.get("type"),
       searchParams.get("status"),
-      // searchParams.get("interation"),
       searchParams.get("startDate"),
       searchParams.get("endDate"),
       searchParams.get("search"),
@@ -224,7 +223,7 @@ const ProjectCalendar = () => {
           </Row>
         </Card>
       )}
-      <div className="bg-white shadow-custom">
+      <div className="relative bg-white shadow-custom">
         <WrapperCalendar
           localizer={localizer}
           events={data}
@@ -234,7 +233,7 @@ const ProjectCalendar = () => {
           views={["month"]}
           components={{ toolbar: CustomToolbar }}
           onSelectEvent={(event) => console.log("event", event)}
-          // onShowMore={onShowMore}
+          popup
           eventPropGetter={(myEventsList) => {
             const { backgroundColor, color } = STATUS_COLOR[
               myEventsList.taskStatus as keyof typeof STATUS_COLOR
@@ -245,6 +244,11 @@ const ProjectCalendar = () => {
             return { style: { backgroundColor, color, borderRadius: 3 } };
           }}
         />
+        {isLoading ? (
+          <div className="absolute top-0 left-0 z-10 w-full h-full flex justify-center items-center bg-gray-200 opacity-80">
+            <Spin />
+          </div>
+        ) : null}
       </div>
     </Space>
   );
