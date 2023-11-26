@@ -1,15 +1,13 @@
 import { ITask, ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 import { classNames } from "@/utils/common";
-import { DATE_FORMAT } from "@/utils/constants";
+import { DATETIME_FORMAT, DATE_FORMAT } from "@/utils/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Avatar,
   Button,
   Col,
   Descriptions,
   Divider,
-  Image,
   Modal,
   Row,
   Select,
@@ -19,7 +17,6 @@ import {
 import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import PriorityStatus from "./PriorityStatus";
-import { faker } from "@faker-js/faker";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
@@ -30,6 +27,8 @@ import DisplayComment from "./DisplayComment";
 import { iterationApi } from "@/utils/api/iteration";
 import { IIteration } from "@/interfaces/iteration";
 import AvatarWithColor from "../AvatarWithColor";
+import UploadAttachment from "./UploadAttachment";
+import AttachmentDisplay from "./AttachmentDisplay";
 
 interface Props {
   taskId: string;
@@ -43,6 +42,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     queryFn: ({ signal }) => taskApi.getDetail(signal, taskId),
     enabled: Boolean(taskId),
   });
+
   const { projectId } = useParams();
   const queryClient = useQueryClient();
   const statusList =
@@ -171,64 +171,15 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Divider />
               <div>
                 <Typography.Title level={5}>Attachments</Typography.Title>
-                <div className="flex gap-x-4 overflow-x-auto pb-4">
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
+                <div className="flex flex-col gap-2 mb-4">
+                  {task.attachmentResponse?.map((attachment) => (
+                    <AttachmentDisplay
+                      attachment={attachment}
+                      key={attachment.attachmentId}
                     />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
-                  <div className="basis-[200px] flex-shrink-0">
-                    <Image
-                      src={faker.image.urlLoremFlickr()}
-                      width={200}
-                      height={200}
-                    />
-                  </div>
+                  ))}
                 </div>
+                <UploadAttachment taskId={task.taskId} />
               </div>
               <Divider />
               <div>
@@ -297,7 +248,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                   </div>
                 </Descriptions.Item>
                 <Descriptions.Item label="Created at">
-                  {dayjs(task.createTime).format(DATE_FORMAT)}
+                  {dayjs(task.createTime).format(DATETIME_FORMAT)}
                 </Descriptions.Item>
               </Descriptions>
             </Col>

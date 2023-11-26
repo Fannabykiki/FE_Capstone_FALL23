@@ -1,7 +1,9 @@
 import { IComment } from "./comment";
+import { IAttachment } from "./attachment";
 
 export interface ITask {
   commentResponse?: IComment[];
+  attachmentResponse?: IAttachment[];
   taskId: string;
   title: string;
   decription: string;
