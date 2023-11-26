@@ -22,6 +22,14 @@ export interface ITask {
   priorityName: string;
   interationName: string;
   subTask?: ITask[];
+  taskHistories?: ITaskHistory[];
+}
+
+interface ITaskHistory {
+  historyId: string;
+  changeAt: Date;
+  taskId: string;
+  title: string;
 }
 
 export interface ITaskStatus {

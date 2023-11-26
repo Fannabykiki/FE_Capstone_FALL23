@@ -11,6 +11,7 @@ import {
   Modal,
   Row,
   Select,
+  Tabs,
   Tooltip,
   Typography,
 } from "antd";
@@ -22,8 +23,6 @@ import { toast } from "react-toastify";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import useDetailView from "@/hooks/useDetailView";
 import UpdateTask from "../Modal/UpdateTask";
-import AddComment from "./AddComment";
-import DisplayComment from "./DisplayComment";
 import { iterationApi } from "@/utils/api/iteration";
 import { IIteration } from "@/interfaces/iteration";
 import AvatarWithColor from "../AvatarWithColor";
@@ -32,7 +31,9 @@ import AttachmentDisplay from "./AttachmentDisplay";
 import { IProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useAuthContext } from "@/context/Auth";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import CommentTab from "./CommentTab";
+import HistoryTab from "./HistoryTab";
 
 interface Props {
   taskId: string;
@@ -49,6 +50,8 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
 
   const { projectId } = useParams();
   const queryClient = useQueryClient();
+
+  const [activeTab, setActiveTab] = useState("comment");
 
   const project: IProject | undefined = queryClient.getQueryData([
     projectApi.getInfoKey,
@@ -137,6 +140,17 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     }
   };
 
+  const tabItems = [
+    {
+      key: "comment",
+      label: "Comment",
+    },
+    {
+      key: "history",
+      label: "History",
+    },
+  ];
+
   if (task) {
     return (
       <>
@@ -203,21 +217,13 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 <UploadAttachment taskId={task.taskId} />
               </div>
               <Divider />
-              <div>
-                <Typography.Title level={5}>Comments</Typography.Title>
-                <AddComment taskId={task.taskId} />
-                <div className="mt-8 flex flex-col gap-2">
-                  {task.commentResponse
-                    ?.sort((a, b) => (a.createAt < b.createAt ? 1 : -1))
-                    .map((comment) => (
-                      <DisplayComment
-                        task={task}
-                        comment={comment}
-                        key={comment.commentId}
-                      />
-                    ))}
-                </div>
-              </div>
+              <Tabs
+                items={tabItems}
+                activeKey={activeTab}
+                onChange={(key) => setActiveTab(key)}
+              />
+              {activeTab === "comment" && <CommentTab task={task} />}
+              {activeTab === "history" && <HistoryTab task={task} />}
             </Col>
             <Col span={8}>
               <Descriptions column={1} bordered>

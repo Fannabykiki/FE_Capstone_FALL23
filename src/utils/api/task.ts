@@ -134,9 +134,9 @@ const changeTaskStatus = ({
   memberId,
 }: IChangeTaskStatusPayload): Promise<any> => {
   return axiosClient({
-    url: `/api/task-management/tasks/change-status/${id}`,
+    url: `/api/task-management/tasks/status`,
     method: HTTP_METHODS.PUT,
-    data: { statusId, memberId },
+    data: { taskId: id, statusId, memberId },
   });
 };
 const getAllTaskInTrashBin = (
