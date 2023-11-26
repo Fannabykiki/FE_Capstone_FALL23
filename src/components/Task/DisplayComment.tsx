@@ -20,24 +20,15 @@ export default function DisplayComment({ comment, task }: Props) {
   return (
     <div className="flex gap-x-2">
       <AvatarWithColor
-        stringContent={
-          comment.user.fullname ||
-          comment.user.userName ||
-          comment.user.email ||
-          "Unknown"
-        }
+        stringContent={comment.user.userName || comment.user.email || "Unknown"}
         className="flex-shrink-0"
       >
-        {(comment.user.fullname ||
-          comment.user.userName ||
-          comment.user.email)[0].toUpperCase()}
+        {(comment.user.userName || comment.user.email)[0].toUpperCase()}
       </AvatarWithColor>
       <div className="flex-grow">
         <div className="flex gap-x-2">
           <span className="font-semibold">
-            {comment.user.fullname ||
-              comment.user.userName ||
-              comment.user.email}
+            {comment.user.userName || comment.user.email}
           </span>
           <span>{dayjs(comment.createAt).fromNow()}</span>
         </div>

@@ -80,6 +80,8 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
     setMemberId(e.target.value);
   };
 
+  const projectOwner = memberList?.find((member) => member.roleName === "PO");
+
   return (
     <Modal
       title="ReAssign PO Role"
@@ -101,7 +103,7 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
           </Col>
           <Col span={16}>
             <Typography.Title level={5} className="!m-0">
-              {memberList?.find((member) => member.roleName === "PO")?.fullname}
+              {projectOwner?.userName || projectOwner?.email}
             </Typography.Title>
           </Col>
         </Row>
@@ -117,7 +119,7 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
               options={memberList
                 ?.filter((member) => member.roleName !== "PO")
                 ?.map((member) => ({
-                  label: member.fullname,
+                  label: member.userName || member.email,
                   value: member.memberId,
                 }))}
               onChange={onChange}

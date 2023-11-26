@@ -62,23 +62,26 @@ const Report = () => {
       title: "MEMBER",
       dataIndex: "fullname",
       width: "20%",
-      render: (name: string, record: IReportProject["memberTaks"][number]) => (
-        <Row gutter={4}>
-          <Col span={5} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: record.avatarColor }}>
-              {name?.charAt(0).toUpperCase()}
-            </Avatar>
-          </Col>
-          <Col span={19}>
-            <Typography.Title level={5} className="!m-0 min-h-[24px]">
-              {name}
-            </Typography.Title>
-            <Typography.Text className="min-h-[19px]">
-              {record.roleName}
-            </Typography.Text>
-          </Col>
-        </Row>
-      ),
+      render: (_: string, record: IReportProject["memberTaks"][number]) => {
+        const name = record.fullname || record.userName;
+        return (
+          <Row gutter={4}>
+            <Col span={5} className="flex justify-center items-center">
+              <Avatar style={{ backgroundColor: record.avatarColor }}>
+                {name?.[0].toUpperCase()}
+              </Avatar>
+            </Col>
+            <Col span={19}>
+              <Typography.Title level={5} className="!m-0 min-h-[24px]">
+                {name}
+              </Typography.Title>
+              <Typography.Text className="min-h-[19px]">
+                {record.roleName}
+              </Typography.Text>
+            </Col>
+          </Row>
+        );
+      },
     },
     {
       key: "totalTasks",

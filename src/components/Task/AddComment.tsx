@@ -97,17 +97,10 @@ export default function AddComment({
     return (
       <div className="flex gap-x-2">
         <AvatarWithColor
-          stringContent={
-            userInfo!.fullname ||
-            userInfo!.userName ||
-            userInfo!.email ||
-            "Unknown"
-          }
+          stringContent={userInfo!.userName || userInfo!.email || "Unknown"}
           className="flex-shrink-0"
         >
-          {(userInfo!.fullname ||
-            userInfo!.userName ||
-            userInfo!.email)[0].toUpperCase()}
+          {(userInfo!.userName || userInfo!.email)[0].toUpperCase()}
         </AvatarWithColor>
         <Input.TextArea placeholder="Add a comment" onFocus={onStartComment} />
       </div>
@@ -118,16 +111,9 @@ export default function AddComment({
     <div>
       <div className="flex gap-x-2">
         <AvatarWithColor
-          stringContent={
-            userInfo!.fullname ||
-            userInfo!.userName ||
-            userInfo!.email ||
-            "Unknown"
-          }
+          stringContent={userInfo!.userName || userInfo!.email || "Unknown"}
         >
-          {(userInfo!.fullname ||
-            userInfo!.userName ||
-            userInfo!.email)[0].toUpperCase()}
+          {(userInfo!.userName || userInfo!.email)[0].toUpperCase()}
         </AvatarWithColor>
         <ReactQuill
           theme="snow"
