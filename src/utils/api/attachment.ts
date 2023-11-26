@@ -23,9 +23,17 @@ const download = async (fileName: string) =>
     responseType: "blob",
   }).then((resp) => fileDownload(resp.data, fileName));
 
+const remove = async (fileName: string) =>
+  axiosClient({
+    url: `/api/attachment-management/attachments/${fileName}`,
+    method: HTTP_METHODS.DELETE,
+  }).then((resp) => resp.data);
+
 export const attachmentApi = {
   create,
   createKey: "attachmentCreate",
   download,
   downloadKey: "attachmentDownload",
+  remove,
+  removeKey: "attachmentRemove",
 };

@@ -11,5 +11,5 @@ export interface IAttachment {
   expireTime: Date | null;
   isDeleted: boolean;
   taskId: string;
-  title: string | null;
+  title: string;
 }
