@@ -95,13 +95,15 @@ export default function ProjectDetail() {
               ? EProjectPrivacyStatusLabel.Public
               : EProjectPrivacyStatusLabel.Private}
           </Button>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={handleOpenInviteMemberModal}
-          >
-            Invite
-          </Button>
+          {detail?.privacyStatus && (
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleOpenInviteMemberModal}
+            >
+              Invite
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex gap-4">

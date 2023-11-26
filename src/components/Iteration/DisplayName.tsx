@@ -35,8 +35,19 @@ export default function DisplayName({ iteration }: Props) {
     },
   });
 
+  const iterations: IIteration[] =
+    queryClient.getQueryData([iterationApi.getListKey, projectId]) || [];
+
   const onUpdateName = () => {
     if (newName && newName !== iteration.interationName) {
+      if (
+        iterations.find((iteration) => iteration.interationName === newName)
+      ) {
+        toast.error("Name duplicated! Please choose another name");
+        setNewName(iteration.interationName);
+        setIsEditing(false);
+        return;
+      }
       const newIterationData = pick(iteration, [
         "interationId",
         "startDate",
