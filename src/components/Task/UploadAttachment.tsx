@@ -24,12 +24,19 @@ const UploadAttachment = ({ taskId }: Props) => {
   const { mutate: uploadFile, isLoading } = useMutation({
     mutationKey: [attachmentApi.createKey],
     mutationFn: attachmentApi.create,
-    onSuccess: () => {
-      toast.success("File uploaded successfully");
-      setSelectedFile(undefined);
-      queryClient.invalidateQueries({
-        queryKey: [taskApi.getDetailKey, taskId],
-      });
+    onSuccess: (data: any) => {
+      if (Object.hasOwn(data, "isSucceed") && !data.isSucceed) {
+        toast.error(
+          data?.message || "Upload file failed! Please try again later"
+        );
+        setSelectedFile(undefined);
+      } else {
+        toast.success("File uploaded successfully");
+        setSelectedFile(undefined);
+        queryClient.invalidateQueries({
+          queryKey: [taskApi.getDetailKey, taskId],
+        });
+      }
     },
     onError: (error: any) => {
       console.error(error);
