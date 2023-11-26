@@ -29,6 +29,10 @@ import { IIteration } from "@/interfaces/iteration";
 import AvatarWithColor from "../AvatarWithColor";
 import UploadAttachment from "./UploadAttachment";
 import AttachmentDisplay from "./AttachmentDisplay";
+import { IProject } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { useAuthContext } from "@/context/Auth";
+import { useMemo } from "react";
 
 interface Props {
   taskId: string;
@@ -45,6 +49,18 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
 
   const { projectId } = useParams();
   const queryClient = useQueryClient();
+
+  const project: IProject | undefined = queryClient.getQueryData([
+    projectApi.getInfoKey,
+    projectId,
+  ]);
+
+  const { userInfo } = useAuthContext();
+
+  const member = useMemo(() => {
+    return project?.projectMembers.find((mem) => mem.userId === userInfo!.id);
+  }, [userInfo, project]);
+
   const statusList =
     queryClient.getQueryData<ITaskStatus[]>([
       taskApi.getTaskStatusKey,
@@ -58,6 +74,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
       {
         id: task!.taskId,
         statusId,
+        memberId: member?.memberId || "",
       },
       {
         onSuccess: () => refetchTaskDetail(),
@@ -92,25 +109,29 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
         title: "Delete task",
         content: "Are you sure to delete this task?",
         onOk: () => {
-          deleteTaskMutation.mutate(task.taskId, {
-            onSuccess: async () => {
-              toast.success("Delete task succeed!");
-              const currentIteration = iterations?.find(
-                (iteration) => iteration.interationName === task.interationName
-              );
-              await queryClient.refetchQueries({
-                queryKey: [
-                  iterationApi.getTasksKey,
-                  currentIteration?.interationId || "",
-                ],
-              });
-              onClose();
-            },
-            onError: (err) => {
-              console.error(err);
-              toast.error("Delete task failed! Please try again later");
-            },
-          });
+          deleteTaskMutation.mutate(
+            { taskId: task.taskId, memberId: member?.memberId || "" },
+            {
+              onSuccess: async () => {
+                toast.success("Delete task succeed!");
+                const currentIteration = iterations?.find(
+                  (iteration) =>
+                    iteration.interationName === task.interationName
+                );
+                await queryClient.refetchQueries({
+                  queryKey: [
+                    iterationApi.getTasksKey,
+                    currentIteration?.interationId || "",
+                  ],
+                });
+                onClose();
+              },
+              onError: (err) => {
+                console.error(err);
+                toast.error("Delete task failed! Please try again later");
+              },
+            }
+          );
         },
       });
     }

@@ -83,13 +83,14 @@ const updateTask = (data: IUpdateTaskPayload): Promise<ITask> => {
   }).then((resp) => resp.data);
 };
 
-const deleteTask = (taskId: string): Promise<void> => {
+const deleteTask = (data: {
+  taskId: string;
+  memberId: string;
+}): Promise<void> => {
   return axiosClient({
     url: `/api/task-management/tasks/deletion`,
     method: HTTP_METHODS.PUT, // This should be DELETE if you are actually deleting the resource
-    data: {
-      taskId,
-    },
+    data,
   }).then((resp) => resp.data);
 };
 
@@ -130,11 +131,12 @@ const getTaskType = (
 const changeTaskStatus = ({
   id,
   statusId,
+  memberId,
 }: IChangeTaskStatusPayload): Promise<any> => {
   return axiosClient({
     url: `/api/task-management/tasks/change-status/${id}`,
     method: HTTP_METHODS.PUT,
-    data: { statusId },
+    data: { statusId, memberId },
   });
 };
 const getAllTaskInTrashBin = (

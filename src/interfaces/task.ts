@@ -80,11 +80,13 @@ export interface IUpdateTaskPayload {
   statusId: string;
   typeId: string;
   taskId?: string;
+  memberId?: string;
 }
 
 export interface IChangeTaskStatusPayload {
   id: string;
   statusId: string;
+  memberId?: string;
 }
 export interface ITrashBinRecord {
   taskId: string;

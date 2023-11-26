@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   DragDropContext,
   OnDragEndResponder,
@@ -23,6 +23,9 @@ import { CreateStatus, CreateTask } from "../Modal";
 import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
+import { IProject } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import { useAuthContext } from "@/context/Auth";
 
 export enum TaskType {
   Main = "Work Item",
@@ -105,6 +108,17 @@ const IterationDisplay = ({ iterationId }: Props) => {
 
   const { changeTaskStatusMutation } = useTaskActions();
 
+  const project: IProject | undefined = queryClient.getQueryData([
+    projectApi.getInfoKey,
+    projectId,
+  ]);
+
+  const { userInfo } = useAuthContext();
+
+  const member = useMemo(() => {
+    return project?.projectMembers.find((mem) => mem.userId === userInfo!.id);
+  }, [userInfo, project]);
+
   const onDragEnd: OnDragEndResponder = (result) => {
     if (selectedIteration) {
       const { source, destination, draggableId } = result;
@@ -149,6 +163,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
           {
             id: selectedSubtask!.taskId,
             statusId: newStatusId,
+            memberId: member?.memberId || "",
           },
           {
             onSuccess: () => {
