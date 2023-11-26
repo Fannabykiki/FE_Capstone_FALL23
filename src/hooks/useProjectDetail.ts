@@ -1,6 +1,5 @@
 import { iterationApi } from "@/utils/api/iteration";
 import { projectApi } from "@/utils/api/project";
-import { taskApi } from "@/utils/api/task";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export default function useProjectDetail(projectId: string | undefined) {

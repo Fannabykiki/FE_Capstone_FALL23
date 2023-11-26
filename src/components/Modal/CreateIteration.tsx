@@ -3,6 +3,7 @@ import { paths } from "@/routers/paths";
 import { iterationApi } from "@/utils/api/iteration";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Col, DatePicker, Form, Input, Modal, Row } from "antd";
+import { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { useLayoutEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,11 +36,17 @@ export default function CreateIteration({ open, onClose }: Props) {
     mutationFn: iterationApi.create,
     mutationKey: [iterationApi.createKey],
     onSuccess: (_, variables) => {
-      toast.success(`Create Iteration '${variables.interationName}' succeed`);
+      toast.success(`Create Sprint '${variables.interationName}' succeed!`);
       queryClient.refetchQueries({
         queryKey: [iterationApi.getListKey, projectId],
       });
       onClose();
+    },
+    onError: (err: AxiosError<string>) => {
+      console.error(err);
+      toast.error(
+        err?.response?.data || "Create Sprint failed! Please try again later"
+      );
     },
   });
 
@@ -59,7 +66,7 @@ export default function CreateIteration({ open, onClose }: Props) {
       okText="Create"
       okButtonProps={{ loading: isLoading }}
       onCancel={onClose}
-      title="Create new Iteration"
+      title="Create new Sprint"
     >
       <Form<ICreateIterationPayload>
         form={form}
