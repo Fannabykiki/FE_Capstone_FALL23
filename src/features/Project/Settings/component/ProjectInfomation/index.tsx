@@ -151,8 +151,11 @@ export default function ProjectInformation() {
             <Row>
               <Col span={1} className="flex justify-center items-center">
                 {projectAdmin ? (
-                  <AvatarWithColor stringContent={projectAdmin.fullname}>
-                    {projectAdmin.fullname.charAt(0).toUpperCase()}
+                  <AvatarWithColor
+                    stringContent={projectAdmin.userName || projectAdmin.email}
+                  >
+                    {(projectAdmin.userName ||
+                      projectAdmin.email)?.[0].toUpperCase()}
                   </AvatarWithColor>
                 ) : null}
               </Col>
@@ -160,7 +163,7 @@ export default function ProjectInformation() {
                 {projectAdmin ? (
                   <>
                     <Typography.Title level={5} className="!m-0 min-h-[24px]">
-                      {projectAdmin.fullname}
+                      {projectAdmin.userName}
                     </Typography.Title>
                     <Typography.Text className="min-h-[19px]">
                       {projectAdmin.email}

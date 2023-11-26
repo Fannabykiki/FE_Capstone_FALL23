@@ -112,7 +112,7 @@ export default function ProjectDetail() {
           <Descriptions>
             <Descriptions.Item label="Owner">
               <div className="flex gap-x-2 items-center">
-                {projectOwner?.fullname || "Unknown"}
+                {projectOwner?.userName || "Unknown"}
               </div>
             </Descriptions.Item>
             <Descriptions.Item label="Start date">
@@ -156,14 +156,15 @@ export default function ProjectDetail() {
               {detail?.projectMembers.map((member) => (
                 <Tooltip
                   key={member.memberId}
-                  title={member.fullname || "Unknown"}
+                  title={member.userName || member.email || "Unknown"}
                   placement="top"
                 >
                   <AvatarWithColor
                     key={member.userId}
-                    stringContent={member.fullname || "Unknown"}
+                    stringContent={member.userName || member.email || "Unknown"}
                   >
-                    {member.fullname?.[0].toUpperCase() || "U"}
+                    {(member.userName || member.email)?.[0].toUpperCase() ||
+                      "U"}
                   </AvatarWithColor>
                 </Tooltip>
               ))}

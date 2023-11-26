@@ -77,23 +77,26 @@ export default function ProjectMember() {
       title: "Name",
       dataIndex: "fullname",
       width: "40%",
-      render: (name, record) => (
-        <Row>
-          <Col span={4} className="flex justify-center items-center">
-            <AvatarWithColor stringContent={name || "Unknown"}>
-              {name?.charAt(0).toUpperCase()}
-            </AvatarWithColor>
-          </Col>
-          <Col span={20}>
-            <Typography.Title level={5} className="!m-0 min-h-[24px]">
-              {name}
-            </Typography.Title>
-            <Typography.Text className="min-h-[19px]">
-              {record.email}
-            </Typography.Text>
-          </Col>
-        </Row>
-      ),
+      render: (_, record) => {
+        const name = record.fullname || record.userName;
+        return (
+          <Row>
+            <Col span={4} className="flex justify-center items-center">
+              <AvatarWithColor stringContent={name || "Unknown"}>
+                {name?.[0].toUpperCase()}
+              </AvatarWithColor>
+            </Col>
+            <Col span={20}>
+              <Typography.Title level={5} className="!m-0 min-h-[24px]">
+                {name}
+              </Typography.Title>
+              <Typography.Text className="min-h-[19px]">
+                {record.email}
+              </Typography.Text>
+            </Col>
+          </Row>
+        );
+      },
     },
     {
       title: "Role",
@@ -149,8 +152,11 @@ export default function ProjectMember() {
         <Row>
           <Col span={1} className="flex justify-center items-center">
             {managerProject ? (
-              <AvatarWithColor stringContent={managerProject.fullname}>
-                {managerProject.fullname.charAt(0).toUpperCase()}
+              <AvatarWithColor
+                stringContent={managerProject.userName || managerProject.email}
+              >
+                {(managerProject.userName ||
+                  managerProject.email)?.[0].toUpperCase()}
               </AvatarWithColor>
             ) : null}
           </Col>
@@ -158,7 +164,7 @@ export default function ProjectMember() {
             {managerProject ? (
               <>
                 <Typography.Title level={5} className="!m-0 min-h-[24px]">
-                  {managerProject.fullname}
+                  {managerProject.userName}
                 </Typography.Title>
                 <Typography.Text className="min-h-[19px]">
                   {managerProject.email}

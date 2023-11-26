@@ -1,11 +1,12 @@
 import { IIteration, IUpdateIterationPayload } from "@/interfaces/iteration";
 import { iterationApi } from "@/utils/api/iteration";
 import { DATE_FORMAT } from "@/utils/constants";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DatePicker } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import { pick } from "lodash";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -17,15 +18,25 @@ export default function DisplayDate({ iteration, property }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [newDate, setNewDate] = useState(dayjs(iteration[property] as string));
 
+  const queryClient = useQueryClient();
+
+  const { projectId } = useParams();
+
   const { mutate: updateIteration } = useMutation({
     mutationKey: [iterationApi.updateKey],
     mutationFn: iterationApi.update,
     onSettled: () => setIsEditing(false),
+    onSuccess: () => {
+      toast.success("Update sprint date succeed!");
+      queryClient.invalidateQueries({
+        queryKey: [iterationApi.getListKey, projectId],
+      });
+    },
     onError: (err: any) => {
       console.error(err);
       toast.error(
         err.response?.data ||
-          "Update iteration date failed! Please try again later"
+          "Update sprint date failed! Please try again later"
       );
       setNewDate(dayjs(iteration[property] as string));
     },

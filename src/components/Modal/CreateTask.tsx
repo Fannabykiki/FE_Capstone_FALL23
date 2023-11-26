@@ -213,7 +213,7 @@ export default function CreateTask({
             size="large"
             allowClear
             options={memberList?.map((member) => ({
-              label: member.fullname,
+              label: member.userName,
               value: member.memberId,
             }))}
           />

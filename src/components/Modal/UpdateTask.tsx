@@ -240,7 +240,7 @@ export default function UpdateTask({
             size="large"
             allowClear
             options={memberList?.map((member) => ({
-              label: member.fullname,
+              label: member.userName,
               value: member.memberId,
             }))}
           />
