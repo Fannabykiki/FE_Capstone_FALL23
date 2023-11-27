@@ -13,6 +13,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import { paths } from "@/routers/paths";
 import { classNames, getPathSegments } from "@/utils/common";
 import Notification from "@/components/Notifications/Notification";
+import SignalRHandler from "../SignalRHandler";
 
 interface RouteObj {
   [key: string]: string;
@@ -33,8 +34,7 @@ export default function Header() {
     if (detail && projectId) {
       routeObject[generatePath(paths.project.detail, { projectId })] =
         "Summary";
-      routeObject[generatePath(paths.project.tasks, { projectId })] =
-        "Tasks";
+      routeObject[generatePath(paths.project.tasks, { projectId })] = "Tasks";
       routeObject[generatePath(paths.project.sprint, { projectId })] =
         "Sprints";
       routeObject[generatePath(paths.project.calendar, { projectId })] =
@@ -74,6 +74,11 @@ export default function Header() {
     return breadcrumbs;
   }, [location.pathname, routes, navigate, projectId]);
 
+  const notificationEventHandler = {
+    message: "EmitNotification",
+    handler: () => {},
+  };
+
   return (
     <Layout.Header className="flex items-center justify-between bg-white shadow-custom">
       <Breadcrumb
@@ -107,6 +112,7 @@ export default function Header() {
           </div>
         </UserMenu>
       </div>
+      <SignalRHandler eventHandlers={[notificationEventHandler]} />
     </Layout.Header>
   );
 }
