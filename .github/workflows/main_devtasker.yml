@@ -3,7 +3,7 @@ name: Build and deploy Node.js app to Azure Web App - devtasker
 on:
   push:
     branches:
-      - main
+      - DucNH
   workflow_dispatch:
 
 jobs:
