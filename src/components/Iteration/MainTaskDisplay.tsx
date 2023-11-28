@@ -159,7 +159,12 @@ export default function MainTaskDisplay({
                       {provided.placeholder}
                     </>
                     {index === 0 && (
-                      <div className="flex-grow flex flex-col items-start">
+                      <div
+                        className={classNames(
+                          "flex-grow flex flex-col items-start",
+                          task.subTask && task.subTask.length > 0 && "pt-4"
+                        )}
+                      >
                         <Button
                           type="text"
                           icon={<PlusOutlined />}

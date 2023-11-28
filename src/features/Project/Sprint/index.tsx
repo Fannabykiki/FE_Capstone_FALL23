@@ -82,7 +82,7 @@ const TaskBoard = () => {
         />
       </div>
       {selectedIteration ? (
-        <>
+        <React.Fragment key={selectedIteration.interationId}>
           <div className="flex justify-between items-center mb-4">
             <Typography.Title className="flex gap-x-2 !mb-0">
               <IterationDisplayName iteration={selectedIteration} />
@@ -100,7 +100,7 @@ const TaskBoard = () => {
             </div>
           </div>
           <IterationDisplay iterationId={selectedIteration.interationId} />
-        </>
+        </React.Fragment>
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
       )}

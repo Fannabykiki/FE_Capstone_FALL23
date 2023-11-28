@@ -33,7 +33,7 @@ import { projectApi } from "@/utils/api/project";
 import { STATUS_COLOR } from "@/utils/constants";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
-import { CreateTask } from "@/components";
+import { CreateTask, TaskDetail } from "@/components";
 
 export default function WorkItem() {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -44,6 +44,13 @@ export default function WorkItem() {
     page: "1",
     limit: "10",
   });
+
+  const {
+    openView: isModalDetailTaskOpen,
+    onOpenView: onOpenViewDetailTask,
+    onCloseView: onCloseViewDetailTask,
+    detail: taskId,
+  } = useDetailView<string>();
 
   const queryClient = useQueryClient();
 
@@ -126,6 +133,113 @@ export default function WorkItem() {
       return prev;
     });
   }, 1000);
+
+  const columns: ColumnsType<IWorkItemList> = [
+    {
+      dataIndex: "index",
+      width: "5%",
+      align: "center",
+      render: (_row, _record, index) => index + 1,
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      width: "30%",
+      render: (title, task) => (
+        <Typography.Link onClick={() => onOpenViewDetailTask(task.taskId)}>
+          {title}
+        </Typography.Link>
+      ),
+    },
+    {
+      title: "Type",
+      dataIndex: "taskType",
+      width: "10%",
+      render: (type) => {
+        let Component = null;
+
+        switch (type) {
+          case "Bug":
+            Component = <BugFilled className="text-red-500" />;
+            break;
+          case "Task":
+            Component = <CheckSquareFilled className="text-yellow-600" />;
+            break;
+          default:
+            break;
+        }
+
+        return (
+          <Row align="middle">
+            {Component}
+            <Typography.Text className="ml-2 font-medium text-[#3394D6]">
+              {type}
+            </Typography.Text>
+          </Row>
+        );
+      },
+    },
+    {
+      title: "Assign To",
+      dataIndex: "assignTo",
+      width: "15%",
+      render: (_, record) =>
+        record.assignTo?.userName ? (
+          <Row align="middle">
+            <Col span={5} className="flex items-center">
+              <Avatar style={{ backgroundColor: record.assignTo.avatarColor }}>
+                {record.assignTo?.userName?.charAt(0).toUpperCase()}
+              </Avatar>
+            </Col>
+            <Col span={19}>
+              <Typography.Title level={5} className="!m-0">
+                {record.assignTo?.userName}
+              </Typography.Title>
+            </Col>
+          </Row>
+        ) : null,
+    },
+    {
+      title: "State",
+      dataIndex: "taskStatus",
+      width: "10%",
+      render: (state) => {
+        const { backgroundColor, color } =
+          STATUS_COLOR[state as keyof typeof STATUS_COLOR];
+
+        return (
+          <Row align="middle" className="gap-2">
+            <Typography.Text
+              className="px-2 py-1 rounded font-medium"
+              style={{
+                color,
+                backgroundColor,
+              }}
+            >
+              {state}
+            </Typography.Text>
+          </Row>
+        );
+      },
+    },
+    {
+      title: "Priority",
+      dataIndex: "priority",
+      width: "10%",
+    },
+    {
+      title: "Interation",
+      dataIndex: "interation",
+      width: "10%",
+    },
+    {
+      title: "Created Date",
+      dataIndex: "createTime",
+      width: "10%",
+      render: (createTime) =>
+        createTime ? dayjs(createTime).format("DD/MM/YYYY") : createTime,
+    },
+  ];
 
   return (
     <>
@@ -229,111 +343,16 @@ export default function WorkItem() {
           }}
         />
       </Space>
+      {isModalDetailTaskOpen && (
+        <TaskDetail
+          taskId={taskId || ""}
+          isOpen={isModalDetailTaskOpen}
+          onClose={onCloseViewDetailTask}
+        />
+      )}
     </>
   );
 }
-
-const columns: ColumnsType<IWorkItemList> = [
-  {
-    dataIndex: "index",
-    width: "5%",
-    align: "center",
-    render: (_row, _record, index) => index + 1,
-  },
-  {
-    title: "Title",
-    dataIndex: "title",
-    width: "30%",
-  },
-  {
-    title: "Type",
-    dataIndex: "taskType",
-    width: "10%",
-    render: (type) => {
-      let Component = null;
-
-      switch (type) {
-        case "Bug":
-          Component = <BugFilled className="text-red-500" />;
-          break;
-        case "Task":
-          Component = <CheckSquareFilled className="text-yellow-600" />;
-          break;
-        default:
-          break;
-      }
-
-      return (
-        <Row align="middle">
-          {Component}
-          <Typography.Text className="ml-2 font-medium text-[#3394D6]">
-            {type}
-          </Typography.Text>
-        </Row>
-      );
-    },
-  },
-  {
-    title: "Assign To",
-    dataIndex: "assignTo",
-    width: "15%",
-    render: (_, record) =>
-      record.assignTo?.userName ? (
-        <Row align="middle">
-          <Col span={5} className="flex items-center">
-            <Avatar style={{ backgroundColor: record.assignTo.avatarColor }}>
-              {record.assignTo?.userName?.charAt(0).toUpperCase()}
-            </Avatar>
-          </Col>
-          <Col span={19}>
-            <Typography.Title level={5} className="!m-0">
-              {record.assignTo?.userName}
-            </Typography.Title>
-          </Col>
-        </Row>
-      ) : null,
-  },
-  {
-    title: "State",
-    dataIndex: "taskStatus",
-    width: "10%",
-    render: (state) => {
-      const { backgroundColor, color } =
-        STATUS_COLOR[state as keyof typeof STATUS_COLOR];
-
-      return (
-        <Row align="middle" className="gap-2">
-          <Typography.Text
-            className="px-2 py-1 rounded font-medium"
-            style={{
-              color,
-              backgroundColor,
-            }}
-          >
-            {state}
-          </Typography.Text>
-        </Row>
-      );
-    },
-  },
-  {
-    title: "Priority",
-    dataIndex: "priority",
-    width: "10%",
-  },
-  {
-    title: "Interation",
-    dataIndex: "interation",
-    width: "10%",
-  },
-  {
-    title: "Created Date",
-    dataIndex: "createTime",
-    width: "10%",
-    render: (createTime) =>
-      createTime ? dayjs(createTime).format("DD/MM/YYYY") : createTime,
-  },
-];
 
 const INTERATION_OPTION = [
   {

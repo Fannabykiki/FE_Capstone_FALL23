@@ -194,15 +194,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               className="overflow-y-auto max-h-[300px] md:max-h-[500px] lg:max-h-[700px]"
             >
               <Typography.Title level={5}>Description</Typography.Title>
-              <Typography.Paragraph>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </Typography.Paragraph>
+              <div dangerouslySetInnerHTML={{ __html: task.description }} />
               <Divider />
               <div>
                 <Typography.Title level={5}>Attachments</Typography.Title>

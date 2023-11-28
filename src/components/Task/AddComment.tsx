@@ -12,71 +12,98 @@ import { taskApi } from "@/utils/api/task";
 interface Props {
   taskId: string;
   parentComment?: IComment;
-  onCancelReplying?: VoidFunction;
+  onCancel?: VoidFunction;
+  isEditing?: boolean;
 }
 
 export default function AddComment({
   taskId,
   parentComment,
-  onCancelReplying,
+  onCancel,
+  isEditing = false,
 }: Props) {
   const [isCommenting, setIsCommenting] = useState(false);
 
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState(
+    isEditing ? parentComment?.content : ""
+  );
 
-  const { createCommentMutation, replyCommentMutation } = useCommentActions();
+  const { createCommentMutation, replyCommentMutation, updateCommentMutation } =
+    useCommentActions();
   const queryClient = useQueryClient();
 
   const onSubmit = () => {
-    if (!comment.trim()) {
+    if (!comment?.trim()) {
       toast.error("Please enter a comment.");
       return;
     }
-    if (!parentComment) {
-      // Add comment
-      createCommentMutation.mutate(
-        {
-          taskId,
-          content: comment,
-        },
-        {
-          onSuccess: async () => {
-            toast.success("Create new comment succeed");
-            await queryClient.refetchQueries({
-              queryKey: [taskApi.getDetailKey, taskId],
-            });
-            onCancelComment();
+    if (!isEditing) {
+      if (!parentComment) {
+        // Add comment
+        createCommentMutation.mutate(
+          {
+            taskId,
+            content: comment,
           },
-          onError: (err) => {
-            console.error(err);
-            toast.error("Create comment failed! Please try again later");
+          {
+            onSuccess: async () => {
+              await queryClient.refetchQueries({
+                queryKey: [taskApi.getDetailKey, taskId],
+              });
+              onCancelComment();
+            },
+            onError: (err) => {
+              console.error(err);
+              toast.error("Create comment failed! Please try again later");
+            },
+          }
+        );
+      } else {
+        // Reply comment
+        replyCommentMutation.mutate(
+          {
+            id: parentComment.commentId,
+            data: {
+              commentId: parentComment.commentId,
+              content: comment,
+            },
           },
-        }
-      );
+          {
+            onSuccess: async () => {
+              toast.success("Reply to comment succeed");
+              await queryClient.refetchQueries({
+                queryKey: [taskApi.getDetailKey, taskId],
+              });
+              onCancelComment();
+            },
+            onError: (err) => {
+              console.error(err);
+              toast.error("Reply to comment failed! Please try again later");
+            },
+          }
+        );
+      }
     } else {
-      // Reply comment
-      replyCommentMutation.mutate(
-        {
-          id: parentComment.commentId,
-          data: {
+      parentComment &&
+        updateCommentMutation.mutate(
+          {
             commentId: parentComment.commentId,
             content: comment,
           },
-        },
-        {
-          onSuccess: async () => {
-            toast.success("Reply to comment succeed");
-            await queryClient.refetchQueries({
-              queryKey: [taskApi.getDetailKey, taskId],
-            });
-            onCancelComment();
-          },
-          onError: (err) => {
-            console.error(err);
-            toast.error("Reply to comment failed! Please try again later");
-          },
-        }
-      );
+          {
+            onSuccess: async () => {
+              toast.success("Update comment succeed");
+              await queryClient.refetchQueries({
+                queryKey: [taskApi.getDetailKey, taskId],
+              });
+              onCancelComment();
+            },
+            onError: (err) => {
+              console.error(err);
+              toast.error("Update comment failed! Please try again later");
+            },
+          }
+        );
     }
   };
 
@@ -88,7 +115,7 @@ export default function AddComment({
   const onCancelComment = () => {
     setIsCommenting(false);
     setComment("");
-    onCancelReplying?.();
+    onCancel?.();
   };
 
   const { userInfo } = useAuthContext();
@@ -110,11 +137,13 @@ export default function AddComment({
   return (
     <div>
       <div className="flex gap-x-2">
-        <AvatarWithColor
-          stringContent={userInfo!.userName || userInfo!.email || "Unknown"}
-        >
-          {(userInfo!.userName || userInfo!.email)[0].toUpperCase()}
-        </AvatarWithColor>
+        {!isEditing && (
+          <AvatarWithColor
+            stringContent={userInfo!.userName || userInfo!.email || "Unknown"}
+          >
+            {(userInfo!.userName || userInfo!.email)[0].toUpperCase()}
+          </AvatarWithColor>
+        )}
         <ReactQuill
           theme="snow"
           value={comment}

@@ -45,7 +45,7 @@ export interface IProject {
   projectId: string;
   projectName: string;
   description: string;
-  projectStatus: EProjectStatus;
+  projectStatus: EProjectStatus | string;
   startDate: string;
   endDate: string;
   createBy: string;
@@ -146,7 +146,7 @@ export interface IAdminUserProjectList {
 export interface IWorkItemList {
   taskId: string;
   title: string;
-  decription: string;
+  description: string;
   startDate: Date;
   dueDate: Date;
   createTime: Date;
