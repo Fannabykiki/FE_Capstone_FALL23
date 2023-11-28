@@ -42,16 +42,6 @@ const getPermission = (
     },
   }).then((resp) => resp.data);
 
-const getDetail = (
-  signal: AbortSignal | undefined,
-  projectId: string
-): Promise<IProjectMember[]> =>
-  axiosClient({
-    url: `/api/project-management/projects/${projectId}`,
-    method: HTTP_METHODS.GET,
-    signal,
-  }).then((resp) => resp.data);
-
 const deleteProject = async (data: { projectId: string }) =>
   axiosClient({
     url: "/api/project-management/projects/delete",
@@ -246,8 +236,6 @@ export const projectApi = {
   getListByUserKey: "projectGetListByUser",
   getPermission,
   getPermissionKey: "projectGetPermission",
-  getDetail,
-  getDetailKey: "projectGetDetail",
   updateProject,
   updateProjectKey: "updateProject",
   deleteProject,
