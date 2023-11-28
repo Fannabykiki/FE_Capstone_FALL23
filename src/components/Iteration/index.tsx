@@ -72,11 +72,14 @@ const IterationDisplay = ({ iterationId }: Props) => {
     });
   };
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { data: iteration, refetch: refetchIteration } = useQuery({
     queryKey: [iterationApi.getTasksKey, iterationId],

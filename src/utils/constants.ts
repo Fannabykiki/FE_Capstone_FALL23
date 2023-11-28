@@ -52,24 +52,22 @@ export const SAFE_DAY_TIL_DUE_DATE = -7;
 export const WARNING_DAY_TIL_DUE_DATE = -2;
 
 export const STATUS_COLOR = {
-  "To do": {
-    backgroundColor: "#FFD700",
-    color: "#000000",
-  },
-  Doing: {
-    backgroundColor: "#87CEEB",
-    color: "#000000",
-  },
-  "In Progress": {
-    backgroundColor: "#87CEEB",
-    color: "#000000",
-  },
-  Done: {
-    backgroundColor: "#90EE90",
-    color: "#000000",
-  },
-  Close: {
-    backgroundColor: "#808080",
-    color: "#FFFFFF",
-  },
+  "To do": "#8DC63F",
+  Doing: "#FFA500",
+  "In Progress": "#FF6347",
+  Done: "#00BFFF",
+  Close: "#808080",
 };
+
+export const RANDOM_COLOR = [
+  "#FF6699",
+  "#009966",
+  "#FFCCCC",
+  "#EE0000",
+  "#C6E2FF",
+  "#97FFFF",
+  "#8B4513",
+  "#8B7765",
+  "#7FFFD4",
+  "#800080",
+];

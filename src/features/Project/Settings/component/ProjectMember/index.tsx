@@ -124,6 +124,7 @@ export default function ProjectMember() {
     {
       dataIndex: "action",
       width: "20%",
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Button
@@ -132,14 +133,6 @@ export default function ProjectMember() {
           >
             Remove
           </Button>
-          {record.roleName === "PO" ? (
-            <Button
-              icon={<UserSwitchOutlined />}
-              onClick={() => setOpenModalReAssign(true)}
-            >
-              ReAssign
-            </Button>
-          ) : null}
         </Space>
       ),
     },
@@ -149,7 +142,7 @@ export default function ProjectMember() {
     <Card className="min-h-screen">
       <Typography className="text-xl font-medium">Project Manager</Typography>
       <div className="mt-3">
-        <Row>
+        <Row gutter={12}>
           <Col span={1} className="flex justify-center items-center">
             {managerProject ? (
               <AvatarWithColor
@@ -160,7 +153,7 @@ export default function ProjectMember() {
               </AvatarWithColor>
             ) : null}
           </Col>
-          <Col className="ml-3" span={19}>
+          <Col span={19}>
             {managerProject ? (
               <>
                 <Typography.Title level={5} className="!m-0 min-h-[24px]">
@@ -172,6 +165,14 @@ export default function ProjectMember() {
               </>
             ) : null}
           </Col>
+          <Col span={4} className="flex justify-center items-center">
+            <Button
+              icon={<UserSwitchOutlined />}
+              onClick={() => setOpenModalReAssign(true)}
+            >
+              ReAssign
+            </Button>
+          </Col>
         </Row>
       </div>
       <Divider />
@@ -179,6 +180,7 @@ export default function ProjectMember() {
         Project Member
       </Typography>
       <Table
+        rowKey="userId"
         columns={columns}
         dataSource={pagination(
           memberList,

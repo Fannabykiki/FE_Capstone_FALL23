@@ -1,11 +1,11 @@
-import useTaskActions from "@/hooks/useTaskActions";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 
+import useTaskActions from "@/hooks/useTaskActions";
 import { projectApi } from "@/utils/api/project";
 import { taskApi } from "@/utils/api/task";
 import {
@@ -42,15 +42,22 @@ export default function CreateTask({
     enabled: Boolean(isOpen) && Boolean(projectId),
   });
 
-  const typeList = queryClient.getQueryData<IGetTypeListResponse[]>([
-    taskApi.getTaskTypeKey,
-  ]);
+  const typeList = useMemo(
+    () =>
+      queryClient.getQueryData<IGetTypeListResponse[]>([
+        taskApi.getTaskTypeKey,
+      ]) || [],
+    [queryClient]
+  );
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { data: memberList } = useQuery({
     queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],

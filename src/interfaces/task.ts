@@ -35,10 +35,12 @@ interface ITaskHistory {
 }
 
 export interface ITaskStatus {
-  boardStatusId: string;
-  title: string;
-  boardId: string;
   baseResponse: string | null;
+  boardId: string;
+  boardStatusId: string;
+  order: number;
+  title: string;
+  hexColor: string;
 }
 
 export interface ICreateTaskRequest {
@@ -116,5 +118,6 @@ export interface ITrashBinRecord {
   typeId: string;
   priorityName: string;
   interationName: string;
+  assignToAvtColor?: string;
   subTask: string[];
 }

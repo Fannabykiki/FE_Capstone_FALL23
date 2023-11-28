@@ -64,11 +64,14 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     return project?.projectMembers.find((mem) => mem.userId === userInfo!.id);
   }, [userInfo, project]);
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { changeTaskStatusMutation, deleteTaskMutation } = useTaskActions();
 

@@ -1,16 +1,9 @@
-import React, { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import {
-  useLocation,
-  useNavigate,
-  matchRoutes,
-  useParams,
-} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, matchRoutes } from "react-router-dom";
 
 import { adminPaths, paths, userPaths } from "@/routers/paths";
 import { checkTokenValid } from "@/utils/common";
 import { useAuthContext } from "@/context/Auth";
-import { taskApi } from "@/utils/api/task";
 
 interface Props {
   Component: React.FunctionComponent;
@@ -24,27 +17,13 @@ export default function PageContainer({
   requireAuth = true,
   ...props
 }: Props) {
+  const [mounted, setMounted] = useState(false);
+
   const { isAuthenticated, userInfo } = useAuthContext();
 
   const navigate = useNavigate();
 
   const location = useLocation();
-
-  const { projectId } = useParams();
-
-  const { refetch: refetchStatus } = useQuery({
-    queryKey: [taskApi.getTaskStatusKey, projectId],
-    queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId!),
-    initialData: [],
-    enabled: Boolean(projectId) && Boolean(userInfo),
-    staleTime: 60000,
-  });
-
-  useEffect(() => {
-    if (projectId) {
-      refetchStatus();
-    }
-  }, [projectId, refetchStatus]);
 
   useEffect(() => {
     document.title = `Dev Tasker - ${title}`;
@@ -85,10 +64,11 @@ export default function PageContainer({
         navigate({ pathname: redirectPath, search: location.search });
       }
     }
+    setMounted(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, requireAuth, isAuthenticated, userInfo?.isAdmin]);
 
-  if ((isAuthenticated && userInfo) || !requireAuth) {
+  if (mounted && ((isAuthenticated && userInfo) || !requireAuth)) {
     return <Component {...props} />;
   }
   return null;

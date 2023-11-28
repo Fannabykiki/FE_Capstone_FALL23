@@ -4,7 +4,7 @@ import { taskApi } from "@/utils/api/task";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form, Input, Modal, Typography } from "antd";
 import { AxiosError } from "axios";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -18,11 +18,14 @@ export default function CreateStatus({ open, onClose }: Props) {
   const { projectId } = useParams();
   const queryClient = useQueryClient();
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const initialValues = {
     title: "",

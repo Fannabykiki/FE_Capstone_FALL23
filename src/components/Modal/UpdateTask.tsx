@@ -48,11 +48,14 @@ export default function UpdateTask({
     taskApi.getTaskTypeKey,
   ]);
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { data: memberList } = useQuery({
     queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],

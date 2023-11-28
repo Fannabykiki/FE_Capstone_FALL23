@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -6,6 +6,7 @@ import { RangePickerProps } from "antd/es/date-picker";
 import debounce from "lodash/debounce";
 import buildQuery from "odata-query";
 import dayjs from "dayjs";
+import uniqBy from "lodash/uniqBy";
 import {
   Calendar,
   CalendarProps,
@@ -27,16 +28,12 @@ import {
 import {
   LeftOutlined,
   RightOutlined,
-  BugFilled,
-  CheckCircleOutlined,
-  EyeOutlined,
   FilterFilled,
   SearchOutlined,
 } from "@ant-design/icons";
 
 import { IWorkItemList } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
-import { STATUS_COLOR } from "@/utils/constants";
 import { ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 
@@ -60,11 +57,14 @@ const ProjectCalendar = () => {
 
   const queryClient = useQueryClient();
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const handleChange = (fieldName: string) => (value: string) => {
     setSearchParams((prev) => {
@@ -200,10 +200,17 @@ const ProjectCalendar = () => {
             <Col span={6}>
               <Select
                 bordered={false}
-                options={TYPE_OPTION}
+                options={uniqBy(data, (event) => event.assignTo.userId)?.map(
+                  (event) => ({
+                    label: event.assignTo.userName,
+                    value: event.assignTo.userName,
+                  })
+                )}
+                defaultValue={searchParams.get("assignee")}
+                onChange={handleChange("assignee")}
                 className="w-full"
-                placeholder="Filter by Role"
-                disabled
+                placeholder="Filter by Assignee"
+                allowClear
               />
             </Col>
             <Col span={10}>
@@ -226,7 +233,11 @@ const ProjectCalendar = () => {
       <div className="relative bg-white shadow-custom">
         <WrapperCalendar
           localizer={localizer}
-          events={data}
+          events={data?.filter((event) =>
+            searchParams.get("assignee")
+              ? event.assignTo.userName === searchParams.get("assignee")
+              : true
+          )}
           startAccessor="startDate"
           endAccessor="dueDate"
           style={{ height: "75vh" }}
@@ -235,13 +246,13 @@ const ProjectCalendar = () => {
           onSelectEvent={(event) => console.log("event", event)}
           popup
           eventPropGetter={(myEventsList) => {
-            const { backgroundColor, color } = STATUS_COLOR[
-              myEventsList.taskStatus as keyof typeof STATUS_COLOR
-            ] || {
-              backgroundColor: "blue",
-              color: "green",
+            const color = statusList.find(
+              (status) => status.boardStatusId === myEventsList.statusId
+            )?.hexColor;
+
+            return {
+              style: { backgroundColor: `${color}20`, color, borderRadius: 3 },
             };
-            return { style: { backgroundColor, color, borderRadius: 3 } };
           }}
         />
         {isLoading ? (
@@ -305,32 +316,5 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
     </Row>
   );
 };
-
-const TYPE_OPTION = [
-  {
-    label: (
-      <>
-        <EyeOutlined className="text-yellow-600 mr-2" /> Viewer
-      </>
-    ),
-    value: "viewer",
-  },
-  {
-    label: (
-      <>
-        <BugFilled className="text-red-500 mr-2" /> Creator
-      </>
-    ),
-    value: "creator",
-  },
-  {
-    label: (
-      <>
-        <CheckCircleOutlined className="text-red-500 mr-2" /> Assignee
-      </>
-    ),
-    value: "assignee",
-  },
-];
 
 export default ProjectCalendar;

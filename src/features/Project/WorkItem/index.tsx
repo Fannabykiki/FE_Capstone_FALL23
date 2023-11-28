@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
@@ -30,7 +30,6 @@ import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
 import { IWorkItemList } from "@/interfaces/project";
 import useDetailView from "@/hooks/useDetailView";
 import { projectApi } from "@/utils/api/project";
-import { STATUS_COLOR } from "@/utils/constants";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
 import { CreateTask, TaskDetail } from "@/components";
@@ -58,11 +57,14 @@ export default function WorkItem() {
     taskApi.getTaskTypeKey,
   ]);
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { data, isLoading, refetch } = useQuery<IWorkItemList[]>({
     queryKey: [
@@ -203,9 +205,10 @@ export default function WorkItem() {
       title: "State",
       dataIndex: "taskStatus",
       width: "10%",
-      render: (state) => {
-        const { backgroundColor, color } =
-          STATUS_COLOR[state as keyof typeof STATUS_COLOR];
+      render: (state, record) => {
+        const color = statusList.find(
+          (status) => status.boardStatusId === record.statusId
+        )?.hexColor;
 
         return (
           <Row align="middle" className="gap-2">
@@ -213,7 +216,7 @@ export default function WorkItem() {
               className="px-2 py-1 rounded font-medium"
               style={{
                 color,
-                backgroundColor,
+                backgroundColor: `${color}20`,
               }}
             >
               {state}
