@@ -1,17 +1,18 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Avatar, Col, Divider, Row, Space, Table, Typography } from "antd";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { ColumnsType, ColumnType } from "antd/es/table";
 import ReactECharts from "echarts-for-react";
-import { ColumnsType } from "antd/es/table";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { IReportProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
-import { STATUS_COLOR } from "@/utils/constants";
 import { pagination } from "@/utils/pagination";
+import { ITaskStatus } from "@/interfaces/task";
+import { taskApi } from "@/utils/api/task";
 
 const Report = () => {
   const [searchParams, setSearchParams] = useSearchParams({
@@ -25,6 +26,17 @@ const Report = () => {
 
   const pieChartRef = useRef<HTMLDivElement>(null);
   const lineChartRef = useRef<HTMLDivElement>(null);
+
+  const queryClient = useQueryClient();
+
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { data } = useQuery({
     queryKey: [projectApi.getReportProjectByProjectIdKey],
@@ -89,26 +101,27 @@ const Report = () => {
       dataIndex: "totalTasks",
       width: "10%",
     },
-  ].concat(
-    data?.memberTaks[0]?.reportStatuses.map((status) => ({
+    ...(data?.memberTaks[0]?.reportStatuses.map<
+      ColumnType<IReportProject["memberTaks"][number]>
+    >((status) => ({
       key: status.title,
       title: status.title,
       dataIndex: status.title,
       width: `${70 / data?.memberTaks[0]?.reportStatuses.length}%`,
-      render: (value) => (
+      render: (value, _record) => (
         <Typography
           className="font-bold"
           style={{
-            color:
-              STATUS_COLOR[status.title as keyof typeof STATUS_COLOR]
-                ?.backgroundColor,
+            color: statusList.find(
+              (s) => s.boardStatusId === status.boardStatusId
+            )?.hexColor,
           }}
         >
           {value}
         </Typography>
       ),
-    })) || []
-  );
+    })) || []),
+  ];
 
   return (
     <Space direction="vertical" className="w-full gap-5">
@@ -178,8 +191,9 @@ const Report = () => {
                     radius: ["40%", "70%"],
                     color: data?.reportProject.reportStatuses.map(
                       (status) =>
-                        STATUS_COLOR[status.title as keyof typeof STATUS_COLOR]
-                          ?.backgroundColor
+                        statusList.find(
+                          (s) => s.boardStatusId === status.boardStatusId
+                        )?.hexColor
                     ),
                     data: data?.reportProject.reportStatuses.map((status) => ({
                       name: status.title,
@@ -215,7 +229,7 @@ const Report = () => {
             <Typography.Title level={4} className="!m-0">
               All Task
             </Typography.Title>
-            <Typography.Text>Group task by day</Typography.Text>
+            <Typography.Text>Tasks of the week</Typography.Text>
             <ReactECharts
               style={{
                 width: `${
@@ -233,10 +247,9 @@ const Report = () => {
                     (status) => ({
                       name: status.title,
                       itemStyle: {
-                        color:
-                          STATUS_COLOR[
-                            status.title as keyof typeof STATUS_COLOR
-                          ]?.backgroundColor,
+                        color: statusList.find(
+                          (s) => s.boardStatusId === status.boardStatusId
+                        )?.hexColor,
                       },
                     })
                   ),
@@ -267,10 +280,9 @@ const Report = () => {
                         (s) => s.title === status.title
                       )?.numberTask,
                       itemStyle: {
-                        color:
-                          STATUS_COLOR[
-                            status.title as keyof typeof STATUS_COLOR
-                          ]?.backgroundColor,
+                        color: statusList.find(
+                          (s) => s.boardStatusId === status.boardStatusId
+                        )?.hexColor,
                       },
                     })),
                   })
@@ -291,7 +303,7 @@ const Report = () => {
         </Typography.Title>
         <Divider className="my-4" />
         <Table
-          id="userId"
+          rowKey="userId"
           columns={columns}
           dataSource={pagination(
             data?.memberTaks,

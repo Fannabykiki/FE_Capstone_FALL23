@@ -16,9 +16,11 @@ interface Params {
 export default function useAdminProjectManagement(params: Params) {
   const { userInfo } = useAuthContext();
 
-  const { data: project, isLoading: isLoadingGetAdminProjects } = useQuery<
-    IAdminProject[]
-  >({
+  const {
+    data: project,
+    isLoading: isLoadingGetAdminProjects,
+    refetch: refrestAdminProject,
+  } = useQuery<IAdminProject[]>({
     queryKey: [
       projectApi.getAdminProjectsKey,
       userInfo?.id,
@@ -63,6 +65,7 @@ export default function useAdminProjectManagement(params: Params) {
 
   return {
     project,
+    refrestAdminProject,
     analyzation,
     statusList,
     isLoading,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -36,7 +36,6 @@ import {
 
 import { IWorkItemList } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
-import { STATUS_COLOR } from "@/utils/constants";
 import { ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 
@@ -60,11 +59,14 @@ const ProjectCalendar = () => {
 
   const queryClient = useQueryClient();
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const handleChange = (fieldName: string) => (value: string) => {
     setSearchParams((prev) => {
@@ -235,13 +237,13 @@ const ProjectCalendar = () => {
           onSelectEvent={(event) => console.log("event", event)}
           popup
           eventPropGetter={(myEventsList) => {
-            const { backgroundColor, color } = STATUS_COLOR[
-              myEventsList.taskStatus as keyof typeof STATUS_COLOR
-            ] || {
-              backgroundColor: "blue",
-              color: "green",
+            const color = statusList.find(
+              (status) => status.boardStatusId === myEventsList.statusId
+            )?.hexColor;
+
+            return {
+              style: { backgroundColor: `${color}20`, color, borderRadius: 3 },
             };
-            return { style: { backgroundColor, color, borderRadius: 3 } };
           }}
         />
         {isLoading ? (

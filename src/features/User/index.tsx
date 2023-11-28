@@ -32,6 +32,7 @@ export default function UserDashboard() {
       toast.error(error?.response?.data || "Restore project failed");
     },
   });
+
   const navigateToProject = (projectId: string) => {
     navigate(
       generatePath(paths.project.detail, {
@@ -137,7 +138,8 @@ export default function UserDashboard() {
                   </span>
                 </Space>
               </Col>
-              {project.deleteAt ? (
+              {project.deleteAt &&
+              ["System Admin", "PO"].includes(project.memberRole) ? (
                 <Col span={2} className="flex justify-end">
                   <Dropdown
                     menu={{

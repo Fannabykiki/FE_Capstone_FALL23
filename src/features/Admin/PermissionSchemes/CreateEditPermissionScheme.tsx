@@ -36,7 +36,24 @@ const CreateEditPermissionScheme = ({
       handleClose();
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data || "Create permission scheme failed");
+      let errorString = undefined;
+      if (err.response?.data) {
+        if (err.response.data.errors) {
+          form.setFields(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: key.toLowerCase(),
+              errors: [value] as string[],
+            }))
+          );
+          errorString = Object.entries(err?.response?.data?.errors)
+            .map(([_, value]) => value)
+            .join(", ");
+        } else if (typeof err.response.data === "string") {
+          errorString = err?.response?.data;
+        }
+      }
+
+      toast.error(errorString || "Create permission scheme failed");
     },
   });
 
@@ -50,7 +67,24 @@ const CreateEditPermissionScheme = ({
         handleClose();
       },
       onError: (err: any) => {
-        toast.error(err?.response?.data || "Update permission scheme failed");
+        let errorString = undefined;
+        if (err.response?.data) {
+          if (err.response.data.errors) {
+            form.setFields(
+              Object.entries(err.response.data.errors).map(([key, value]) => ({
+                name: key.toLowerCase(),
+                errors: [value] as string[],
+              }))
+            );
+            errorString = Object.entries(err?.response?.data?.errors)
+              .map(([_, value]) => value)
+              .join(", ");
+          } else if (typeof err.response.data === "string") {
+            errorString = err?.response?.data;
+          }
+        }
+
+        toast.error(errorString || "Update permission scheme failed");
       },
     }
   );
