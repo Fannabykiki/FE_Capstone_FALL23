@@ -112,15 +112,12 @@ export default function ProjectSider() {
           key: generatePath(paths.project.report, { projectId }),
           icon: <LineChartOutlined width={iconSize} height={iconSize} />,
         },
-      ];
-      const owner = detail.projectMembers.find((member) => member.isOwner);
-      if (userInfo.isAdmin || userInfo.id === owner?.userId) {
-        menuItems.push({
+        {
           label: "Settings",
           key: generatePath(paths.project.settings, { projectId }),
           icon: <SettingOutlined width={iconSize} height={iconSize} />,
-        });
-      }
+        },
+      ];
       return menuItems;
     }
     return [];

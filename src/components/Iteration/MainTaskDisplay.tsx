@@ -89,14 +89,30 @@ export default function MainTaskDisplay({
   return (
     <>
       <div>
-        <Button
-          type="text"
-          className="font-semibold"
-          onClick={onToggleCollapseTask}
-          icon={<DoubleLeftOutlined className="rotate-90" />}
-        >
-          {task.title}
-        </Button>
+        <div className="flex">
+          <Button
+            type="text"
+            className="font-semibold"
+            onClick={onToggleCollapseTask}
+            icon={<DoubleLeftOutlined className="rotate-90" />}
+          >
+            {task.title}
+          </Button>
+          <div className={"flex-grow flex flex-col items-start pb-4"}>
+            <Button
+              type="text"
+              icon={<PlusOutlined />}
+              className="w-fit"
+              onClick={() =>
+                onOpenCreateTaskModal({
+                  taskId: task.taskId,
+                })
+              }
+            >
+              New sub task
+            </Button>
+          </div>
+        </div>
         <div className="flex w-full gap-x-4">
           <div className="p-2">
             <div className={classNames("w-56 h-fit")}>
@@ -158,27 +174,6 @@ export default function MainTaskDisplay({
                       </div>
                       {provided.placeholder}
                     </>
-                    {index === 0 && (
-                      <div
-                        className={classNames(
-                          "flex-grow flex flex-col items-start",
-                          task.subTask && task.subTask.length > 0 && "pt-4"
-                        )}
-                      >
-                        <Button
-                          type="text"
-                          icon={<PlusOutlined />}
-                          className="w-fit"
-                          onClick={() =>
-                            onOpenCreateTaskModal({
-                              taskId: task.taskId,
-                            })
-                          }
-                        >
-                          New sub task
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 )}
               </DroppableComponent>

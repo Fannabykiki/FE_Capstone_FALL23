@@ -3,7 +3,7 @@ import { Tag, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
 import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { DATE_FORMAT, STATUS_COLOR } from "@/utils/constants";
+import { DATE_FORMAT, RANDOM_COLOR, STATUS_COLOR } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
 import { TaskType } from ".";
 import PriorityStatus from "../Task/PriorityStatus";
@@ -31,8 +31,7 @@ export default function TaskDraggableDisplay({
     default:
       break;
   }
-  const { backgroundColor = "gray", color = "white" } =
-    STATUS_COLOR[task.statusName as keyof typeof STATUS_COLOR] || {};
+  const hexColor = STATUS_COLOR[task.statusName as keyof typeof STATUS_COLOR];
   return (
     <div
       className={classNames(
@@ -53,7 +52,13 @@ export default function TaskDraggableDisplay({
           >
             <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
           </div>
-          <Tag className="border-0" style={{ backgroundColor, color }}>
+          <Tag
+            className="border-0"
+            style={{
+              backgroundColor: hexColor ? `${hexColor}20` : "gray",
+              color: hexColor || "white",
+            }}
+          >
             {task.statusName}
           </Tag>
         </div>
