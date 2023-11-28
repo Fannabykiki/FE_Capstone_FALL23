@@ -153,6 +153,12 @@ export default function UpdateTask({
     }
   }, [memberList, form, initTaskData]);
 
+  useEffect(() => {
+    if (statusList) {
+      form.setFieldValue("statusId", initTaskData.statusId);
+    }
+  }, [statusList, form, initTaskData]);
+
   return (
     <Modal
       title="Edit Task"
@@ -211,7 +217,6 @@ export default function UpdateTask({
           <Col span={8}>
             <Form.Item label="State" name="statusId">
               <Select
-                disabled
                 options={statusList?.map((status) => ({
                   label: status.title,
                   value: status.boardStatusId,

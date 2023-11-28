@@ -1,9 +1,9 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
-import { Avatar, Tooltip } from "antd";
+import { Tag, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
 import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { DATE_FORMAT } from "@/utils/constants";
+import { DATE_FORMAT, RANDOM_COLOR, STATUS_COLOR } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
 import { TaskType } from ".";
 import PriorityStatus from "../Task/PriorityStatus";
@@ -22,9 +22,6 @@ export default function TaskDraggableDisplay({
 }: Props) {
   let taskTypeBorderColor = "border-blue-400";
   switch (task.typeName) {
-    case TaskType.Main:
-      taskTypeBorderColor = "border-blue-400";
-      break;
     case TaskType.Task:
       taskTypeBorderColor = "border-green-400";
       break;
@@ -34,6 +31,7 @@ export default function TaskDraggableDisplay({
     default:
       break;
   }
+  const hexColor = STATUS_COLOR[task.statusName as keyof typeof STATUS_COLOR];
   return (
     <div
       className={classNames(
@@ -45,21 +43,32 @@ export default function TaskDraggableDisplay({
       onClick={() => onViewTask(task.taskId)}
     >
       <div className="flex flex-col gap-y-4">
-        <div
-          className={classNames(
-            "w-fit px-2 py-1 rounded-full text-xs",
-            calcTaskDueDateColor(task.dueDate)
-          )}
-        >
-          <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
+        <div className="flex justify-between items-center">
+          <div
+            className={classNames(
+              "w-fit px-2 py-1 rounded-full text-xs",
+              calcTaskDueDateColor(task.dueDate)
+            )}
+          >
+            <span>{dayjs(task.dueDate).format(DATE_FORMAT)}</span>
+          </div>
+          <Tag
+            className="border-0"
+            style={{
+              backgroundColor: hexColor ? `${hexColor}20` : "gray",
+              color: hexColor || "white",
+            }}
+          >
+            {task.statusName}
+          </Tag>
         </div>
         <p>{task.title}</p>
         <div className="flex gap-x-2 items-center">
           <div>
-            <PaperClipOutlined /> 0
+            <PaperClipOutlined /> {task.totalAttachment}
           </div>
           <div>
-            <CommentOutlined /> 0
+            <CommentOutlined /> {task.totalComment}
           </div>
           <div className="flex-grow text-right">
             <Tooltip title={`Priority: ${task.priorityName}`}>

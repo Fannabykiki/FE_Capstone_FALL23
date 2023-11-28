@@ -1,8 +1,10 @@
+import useErrorMessage from "@/hooks/useErrorMessage";
 import { ICreateIterationPayload } from "@/interfaces/iteration";
 import { paths } from "@/routers/paths";
 import { iterationApi } from "@/utils/api/iteration";
+import { lowerCaseFirstLetter } from "@/utils/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Col, DatePicker, Form, Input, Modal, Row } from "antd";
+import { Col, DatePicker, Form, Input, Modal, Row, Typography } from "antd";
 import { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { useLayoutEffect } from "react";
@@ -21,6 +23,7 @@ export default function CreateIteration({ open, onClose }: Props) {
     startDate: dayjs(),
     endDate: dayjs(),
   };
+  const { errorInfo, setErrorInfo } = useErrorMessage();
 
   const { projectId } = useParams();
   const queryClient = useQueryClient();
@@ -42,10 +45,31 @@ export default function CreateIteration({ open, onClose }: Props) {
       });
       onClose();
     },
-    onError: (err: AxiosError<string>) => {
+    onError: (err: AxiosError<any>) => {
       console.error(err);
+      if (err.response?.data) {
+        if (err.response.data.errors) {
+          console.log(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: lowerCaseFirstLetter(key),
+              errors: [value] as string[],
+            }))
+          );
+          form.setFields(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: lowerCaseFirstLetter(key),
+              errors: [value] as string[],
+            }))
+          );
+        } else if (typeof err.response.data === "string") {
+          setErrorInfo({
+            isError: true,
+            message: err.response.data,
+          });
+        }
+      }
       toast.error(
-        err?.response?.data || "Create Sprint failed! Please try again later"
+        err.response?.data || "Create Sprint failed! Please try again later"
       );
     },
   });
@@ -73,6 +97,11 @@ export default function CreateIteration({ open, onClose }: Props) {
         initialValues={initialValues}
         layout="vertical"
       >
+        {errorInfo.isError && (
+          <Typography.Paragraph className="text-center text-red-400 font-semibold">
+            {errorInfo.message}
+          </Typography.Paragraph>
+        )}
         <Form.Item
           name="interationName"
           label="Name"
@@ -80,6 +109,10 @@ export default function CreateIteration({ open, onClose }: Props) {
             {
               required: true,
               message: "Please enter the iteration name",
+            },
+            {
+              pattern: new RegExp(/^[A-Za-z0-9_ ]+$/), // No special character
+              message: "Sprint name should not contain special characters",
             },
           ]}
         >

@@ -13,6 +13,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import { paths } from "@/routers/paths";
 import { classNames, getPathSegments } from "@/utils/common";
 import Notification from "@/components/Notifications/Notification";
+import SignalRHandler from "../SignalRHandler";
 
 interface RouteObj {
   [key: string]: string;
@@ -33,8 +34,7 @@ export default function Header() {
     if (detail && projectId) {
       routeObject[generatePath(paths.project.detail, { projectId })] =
         "Summary";
-      routeObject[generatePath(paths.project.tasks, { projectId })] =
-        "Tasks";
+      routeObject[generatePath(paths.project.tasks, { projectId })] = "Tasks";
       routeObject[generatePath(paths.project.sprint, { projectId })] =
         "Sprints";
       routeObject[generatePath(paths.project.calendar, { projectId })] =
@@ -74,6 +74,11 @@ export default function Header() {
     return breadcrumbs;
   }, [location.pathname, routes, navigate, projectId]);
 
+  const notificationEventHandler = {
+    message: "EmitNotification",
+    handler: () => {},
+  };
+
   return (
     <Layout.Header className="flex items-center justify-between bg-white shadow-custom">
       <Breadcrumb
@@ -97,7 +102,7 @@ export default function Header() {
               <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
               <div className="flex flex-col">
                 <Typography.Text className="font-semibold text-base break-keep">
-                  {userInfo?.fullname || "User"}
+                  {userInfo?.userName || "User"}
                 </Typography.Text>
                 <Typography.Text className="break-keep">
                   {userInfo?.email || "Email"}
@@ -107,6 +112,7 @@ export default function Header() {
           </div>
         </UserMenu>
       </div>
+      <SignalRHandler eventHandlers={[notificationEventHandler]} />
     </Layout.Header>
   );
 }

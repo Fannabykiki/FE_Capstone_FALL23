@@ -15,6 +15,7 @@ export interface UserInfo {
   userName: string;
   isFirstTime: boolean;
   id: string;
+  userId: string;
   token: string;
 }
 

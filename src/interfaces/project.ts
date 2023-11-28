@@ -142,7 +142,7 @@ export interface IAdminUserProjectList {
 export interface IWorkItemList {
   taskId: string;
   title: string;
-  decription: string;
+  description: string;
   startDate: Date;
   dueDate: Date;
   createTime: Date;

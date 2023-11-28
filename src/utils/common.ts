@@ -137,6 +137,10 @@ const stringToColor = (str: string) => {
   return { color, hue };
 };
 
+const lowerCaseFirstLetter = (str: string) => {
+  return str.charAt(0).toLowerCase() + str.slice(1);
+};
+
 export {
   classNames,
   makePath,
@@ -148,4 +152,5 @@ export {
   handleValidatePassword,
   handleValidatePhoneNumber,
   stringToColor,
+  lowerCaseFirstLetter,
 };

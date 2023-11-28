@@ -1,10 +1,10 @@
 import useErrorMessage from "@/hooks/useErrorMessage";
-import { ICreateStatusPayload, ITaskStatus } from "@/interfaces/task";
+import { ICreateStatusPayload } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
+import { lowerCaseFirstLetter } from "@/utils/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form, Input, Modal, Typography } from "antd";
 import { AxiosError } from "axios";
-import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -18,18 +18,8 @@ export default function CreateStatus({ open, onClose }: Props) {
   const { projectId } = useParams();
   const queryClient = useQueryClient();
 
-  const statusList = useMemo(
-    () =>
-      queryClient.getQueryData<ITaskStatus[]>([
-        taskApi.getTaskStatusKey,
-        projectId,
-      ]) || [],
-    [projectId, queryClient]
-  );
-
   const initialValues = {
     title: "",
-    order: 1,
     projectId,
   };
   const { errorInfo, setErrorInfo } = useErrorMessage();
@@ -53,7 +43,7 @@ export default function CreateStatus({ open, onClose }: Props) {
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );
@@ -78,12 +68,6 @@ export default function CreateStatus({ open, onClose }: Props) {
       console.error("Validation Failed:", error);
     }
   };
-
-  useEffect(() => {
-    if (statusList?.length > 0) {
-      form.setFieldValue("order", statusList.length + 1);
-    }
-  }, [statusList, form]);
 
   return (
     <Modal
@@ -115,9 +99,6 @@ export default function CreateStatus({ open, onClose }: Props) {
           ]}
         >
           <Input />
-        </Form.Item>
-        <Form.Item name="order" label="Order">
-          <Input type="number" />
         </Form.Item>
       </Form>
     </Modal>

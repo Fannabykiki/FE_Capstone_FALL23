@@ -70,12 +70,12 @@ const Report = () => {
 
   const columns: ColumnsType<IReportProject["memberTaks"][number]> = [
     {
-      key: "fullname",
+      key: "userName",
       title: "MEMBER",
-      dataIndex: "fullname",
+      dataIndex: "userName",
       width: "20%",
       render: (_: string, record: IReportProject["memberTaks"][number]) => {
-        const name = record.fullname || record.userName;
+        const name = record.userName || record.email;
         return (
           <Row gutter={4}>
             <Col span={5} className="flex justify-center items-center">

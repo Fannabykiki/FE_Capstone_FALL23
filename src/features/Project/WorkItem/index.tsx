@@ -32,7 +32,7 @@ import useDetailView from "@/hooks/useDetailView";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
-import { CreateTask } from "@/components";
+import { CreateTask, TaskDetail } from "@/components";
 
 export default function WorkItem() {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -43,6 +43,13 @@ export default function WorkItem() {
     page: "1",
     limit: "10",
   });
+
+  const {
+    openView: isModalDetailTaskOpen,
+    onOpenView: onOpenViewDetailTask,
+    onCloseView: onCloseViewDetailTask,
+    detail: taskId,
+  } = useDetailView<string>();
 
   const queryClient = useQueryClient();
 
@@ -140,6 +147,11 @@ export default function WorkItem() {
       title: "Title",
       dataIndex: "title",
       width: "30%",
+      render: (title, task) => (
+        <Typography.Link onClick={() => onOpenViewDetailTask(task.taskId)}>
+          {title}
+        </Typography.Link>
+      ),
     },
     {
       title: "Type",
@@ -334,6 +346,13 @@ export default function WorkItem() {
           }}
         />
       </Space>
+      {isModalDetailTaskOpen && (
+        <TaskDetail
+          taskId={taskId || ""}
+          isOpen={isModalDetailTaskOpen}
+          onClose={onCloseViewDetailTask}
+        />
+      )}
     </>
   );
 }

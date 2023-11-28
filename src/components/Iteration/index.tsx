@@ -3,6 +3,10 @@ import {
   DragDropContext,
   OnDragEndResponder,
   DragDropContextProps,
+  Draggable,
+  Droppable,
+  DroppableProps,
+  DraggableProps,
 } from "react-beautiful-dnd";
 import MainTaskDisplay from "./MainTaskDisplay";
 import {
@@ -34,7 +38,8 @@ export enum TaskType {
 }
 const DragDropContextComponent =
   DragDropContext as React.ComponentClass<DragDropContextProps>;
-
+const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
+const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 interface Props {
   iterationId: string;
 }
@@ -125,69 +130,76 @@ const IterationDisplay = ({ iterationId }: Props) => {
   const onDragEnd: OnDragEndResponder = (result) => {
     if (selectedIteration) {
       const { source, destination, draggableId } = result;
-
+      console.log(result);
       // Dropped outside the list
       if (!destination) {
         return;
       }
 
-      const sourceTask = selectedIteration.tasks.find(
-        (task) =>
-          task.subTask?.some((subtask) => subtask.taskId === draggableId)
-      );
-
-      // Moving within the same list
-      if (source.droppableId !== destination.droppableId) {
-        // Moving to a different status
-        const newStatusId = destination.droppableId.split("/")[1];
-        const selectedSubtask = sourceTask!.subTask!.find(
-          (subtask) => subtask.taskId === draggableId
+      if (
+        source.droppableId === "status-drop-zone" &&
+        destination.droppableId === "status-drop-zone"
+      ) {
+        // TODO: Change status order
+      } else {
+        const sourceTask = selectedIteration.tasks.find(
+          (task) =>
+            task.subTask?.some((subtask) => subtask.taskId === draggableId)
         );
-        setSelectedIteration((c) => {
-          return {
-            ...c!,
-            tasks: c!.tasks.map((task) => {
-              if (task.taskId === sourceTask!.taskId) {
-                return {
-                  ...task,
-                  subTask: task.subTask!.map((subTask) => {
-                    if (subTask.taskId === selectedSubtask!.taskId) {
-                      return { ...selectedSubtask!, statusId: newStatusId }!;
-                    }
-                    return subTask;
-                  }),
-                };
-              }
-              return task;
-            }),
-          };
-        });
-        changeTaskStatusMutation.mutate(
-          {
-            id: selectedSubtask!.taskId,
-            statusId: newStatusId,
-            memberId: member?.memberId || "",
-          },
-          {
-            onSuccess: () => {
-              toast.success("Change task status succeed!");
+
+        // Moving within the same list
+        if (source.droppableId !== destination.droppableId) {
+          // Moving to a different status
+          const newStatusId = destination.droppableId.split("/")[1];
+          const selectedSubtask = sourceTask!.subTask!.find(
+            (subtask) => subtask.taskId === draggableId
+          );
+          setSelectedIteration((c) => {
+            return {
+              ...c!,
+              tasks: c!.tasks.map((task) => {
+                if (task.taskId === sourceTask!.taskId) {
+                  return {
+                    ...task,
+                    subTask: task.subTask!.map((subTask) => {
+                      if (subTask.taskId === selectedSubtask!.taskId) {
+                        return { ...selectedSubtask!, statusId: newStatusId }!;
+                      }
+                      return subTask;
+                    }),
+                  };
+                }
+                return task;
+              }),
+            };
+          });
+          changeTaskStatusMutation.mutate(
+            {
+              id: selectedSubtask!.taskId,
+              statusId: newStatusId,
+              memberId: member?.memberId || "",
             },
-            onError: () => {
-              toast.error("Change task status failed!");
-            },
-            onSettled: () => {
-              queryClient
-                .invalidateQueries({
-                  queryKey: [iterationApi.getTasksKey, iterationId],
-                })
-                .then(() =>
-                  queryClient.refetchQueries({
+            {
+              onSuccess: () => {
+                toast.success("Change task status succeed!");
+              },
+              onError: () => {
+                toast.error("Change task status failed!");
+              },
+              onSettled: () => {
+                queryClient
+                  .invalidateQueries({
                     queryKey: [iterationApi.getTasksKey, iterationId],
                   })
-                );
-            },
-          }
-        );
+                  .then(() =>
+                    queryClient.refetchQueries({
+                      queryKey: [iterationApi.getTasksKey, iterationId],
+                    })
+                  );
+              },
+            }
+          );
+        }
       }
     }
   };
@@ -234,10 +246,10 @@ const IterationDisplay = ({ iterationId }: Props) => {
             </div>
           </div>
           <div className="overflow-x-auto">
-            <div className="flex gap-x-4">
-              <div className="p-2">
+            <div className="flex gap-x-4 items-center">
+              <div>
                 <h4
-                  className="select-none cursor-pointer w-56"
+                  className="select-none cursor-pointer w-56 mb-0"
                   onClick={onToggleCollapseAllTask}
                 >
                   {collapsedTasks.length === selectedIteration.tasks.length ? (
@@ -248,23 +260,52 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   Collapse all
                 </h4>
               </div>
-              {statusList.map((status) => (
-                <div
-                  className="basis-[250px] rounded p-2 shrink-0"
-                  key={status.boardStatusId}
-                >
-                  <h4>{status.title}</h4>
-                </div>
-              ))}
-              <div className="basis-[250px] rounded p-2 shrink-0">
-                <Button
-                  icon={<PlusOutlined />}
-                  type="text"
-                  onClick={() => handleOpenModalCreateStatus()}
-                >
-                  New status
-                </Button>
-              </div>
+              <DroppableComponent
+                droppableId="status-drop-zone"
+                direction="horizontal"
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    className={classNames("flex gap-x-4 items-center")}
+                    {...provided.droppableProps}
+                  >
+                    {statusList.map((status, index) => (
+                      <DraggableComponent
+                        draggableId={status.boardStatusId}
+                        index={index}
+                        key={status.boardStatusId}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={{
+                              ...provided.draggableProps.style,
+                            }}
+                            className="basis-[250px] shrink-0"
+                          >
+                            <div>
+                              <h4 className="mb-0">{status.title}</h4>
+                            </div>
+                          </div>
+                        )}
+                      </DraggableComponent>
+                    ))}
+                    {provided.placeholder}
+                    <div className="basis-[250px] rounded p-2">
+                      <Button
+                        icon={<PlusOutlined />}
+                        type="text"
+                        onClick={() => handleOpenModalCreateStatus()}
+                      >
+                        New status
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </DroppableComponent>
             </div>
             {selectedIteration.tasks.map((task) => (
               <div

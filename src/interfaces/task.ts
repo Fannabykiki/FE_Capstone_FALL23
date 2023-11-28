@@ -6,7 +6,7 @@ export interface ITask {
   attachmentResponse?: IAttachment[];
   taskId: string;
   title: string;
-  decription: string;
+  description: string;
   startDate: Date;
   dueDate: Date;
   expireTime: Date | null;
@@ -23,6 +23,8 @@ export interface ITask {
   interationName: string;
   subTask?: ITask[];
   taskHistories?: ITaskHistory[];
+  totalAttachment: number;
+  totalComment: number;
 }
 
 interface ITaskHistory {
@@ -43,7 +45,7 @@ export interface ITaskStatus {
 
 export interface ICreateTaskRequest {
   title: string;
-  decription: string;
+  description: string;
   startDate: Date;
   dueDate: Date;
   assignTo: string;
@@ -77,7 +79,7 @@ export interface ICreateStatusPayload {
 
 export interface IUpdateTaskPayload {
   title: string;
-  decription: string;
+  description: string;
   startDate: Date;
   dueDate: Date;
   assignTo: string;

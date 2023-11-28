@@ -21,6 +21,7 @@ import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { AvatarWithColor } from "@/components";
 import ReAssignModal from "./ReAssignModal";
+import { useAuthContext } from "@/context/Auth";
 
 export default function ProjectMember() {
   const [isOpenModalReAssign, setOpenModalReAssign] = useState(false);
@@ -72,13 +73,21 @@ export default function ProjectMember() {
     });
   };
 
+  const { userInfo } = useAuthContext();
+
+  const memberSelfInfo = memberList?.find(
+    (member) => member.userId === userInfo!.id
+  );
+
+  const adminRoles = ["PO", "System Admin"];
+
   const columns: ColumnsType<IProjectMember> = [
     {
       title: "Name",
-      dataIndex: "fullname",
+      dataIndex: "userName",
       width: "40%",
       render: (_, record) => {
-        const name = record.fullname || record.userName;
+        const name = record.userName || record.email;
         return (
           <Row>
             <Col span={4} className="flex justify-center items-center">
@@ -125,16 +134,18 @@ export default function ProjectMember() {
       dataIndex: "action",
       width: "20%",
       align: "center",
-      render: (_, record) => (
-        <Space size="middle">
-          <Button
-            icon={<UserDeleteOutlined />}
-            onClick={() => handleDelete(record.memberId)}
-          >
-            Remove
-          </Button>
-        </Space>
-      ),
+      render: (_, record) =>
+        !adminRoles.includes(record?.roleName || "") &&
+        adminRoles.includes(memberSelfInfo?.roleName || "") && (
+          <Space size="middle">
+            <Button
+              icon={<UserDeleteOutlined />}
+              onClick={() => handleDelete(record.memberId)}
+            >
+              Remove
+            </Button>
+          </Space>
+        ),
     },
   ];
 

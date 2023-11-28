@@ -79,7 +79,9 @@ export default function UserDashboard() {
                 "basis-1/4 bg-white rounded p-4 pb-12 shadow",
                 project.deleteAt
                   ? "cursor-not-allowed opacity-40"
-                  : "cursor-pointer hover:shadow-lg"
+                  : "cursor-pointer hover:shadow-lg",
+                project.projectStatus === "Done" &&
+                  "border-2 border-solid border-green-500"
               )}
             >
               <div className="flex gap-4 items-center">
@@ -121,7 +123,9 @@ export default function UserDashboard() {
                 "bg-white rounded p-4 flex items-center shadow",
                 project.deleteAt
                   ? "cursor-not-allowed opacity-40"
-                  : "cursor-pointer hover:shadow-lg"
+                  : "cursor-pointer hover:shadow-lg",
+                project.projectStatus === "Done" &&
+                  "border-2 border-solid border-green-500"
               )}
             >
               <Col span={22} className="flex gap-4">
