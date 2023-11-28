@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { authApi } from "@/utils/api/auth";
 import { paths } from "@/routers/paths";
 import { useMutation } from "@tanstack/react-query";
-import { classNames, handleValidatePassword } from "@/utils/common";
+import {
+  classNames,
+  handleValidatePassword,
+  lowerCaseFirstLetter,
+} from "@/utils/common";
 import BrandFull from "@/assets/images/BrandFull.png";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
@@ -34,7 +38,7 @@ export default function Register() {
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import { IAdminRoles } from "@/interfaces/role";
 import { roleApi } from "@/utils/api/role";
+import { lowerCaseFirstLetter } from "@/utils/common";
 
 interface Props {
   isOpen: boolean;
@@ -37,7 +38,7 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );
@@ -67,7 +68,7 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );

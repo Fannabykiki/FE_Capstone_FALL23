@@ -1,6 +1,7 @@
 import useErrorMessage from "@/hooks/useErrorMessage";
 import { ICreateStatusPayload } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
+import { lowerCaseFirstLetter } from "@/utils/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Form, Input, Modal, Typography } from "antd";
 import { AxiosError } from "axios";
@@ -42,7 +43,7 @@ export default function CreateStatus({ open, onClose }: Props) {
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );

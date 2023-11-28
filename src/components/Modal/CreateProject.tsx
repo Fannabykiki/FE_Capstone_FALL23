@@ -6,6 +6,7 @@ import {
 } from "@/interfaces/project";
 import { IErrorInfoState } from "@/interfaces/shared/state";
 import { projectApi } from "@/utils/api/project";
+import { lowerCaseFirstLetter } from "@/utils/common";
 import { useMutation } from "@tanstack/react-query";
 import {
   Col,
@@ -54,7 +55,7 @@ export default function CreateProject({ open, onClose }: Props) {
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );

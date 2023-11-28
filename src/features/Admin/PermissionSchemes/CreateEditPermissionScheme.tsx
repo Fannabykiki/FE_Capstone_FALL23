@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import { IPermissionSchemes } from "@/interfaces/schema";
 import { schemaApi } from "@/utils/api/schema";
+import { lowerCaseFirstLetter } from "@/utils/common";
 
 interface Props {
   isOpen: boolean;
@@ -41,7 +42,7 @@ const CreateEditPermissionScheme = ({
         if (err.response.data.errors) {
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: key.toLowerCase(),
+              name: lowerCaseFirstLetter(key),
               errors: [value] as string[],
             }))
           );
@@ -72,7 +73,7 @@ const CreateEditPermissionScheme = ({
           if (err.response.data.errors) {
             form.setFields(
               Object.entries(err.response.data.errors).map(([key, value]) => ({
-                name: key.toLowerCase(),
+                name: lowerCaseFirstLetter(key),
                 errors: [value] as string[],
               }))
             );

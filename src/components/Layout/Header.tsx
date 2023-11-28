@@ -102,7 +102,7 @@ export default function Header() {
               <UserOutlined className="h-10 w-10 bg-neutral-200 border border-solid rounded-full flex justify-center" />
               <div className="flex flex-col">
                 <Typography.Text className="font-semibold text-base break-keep">
-                  {userInfo?.fullname || "User"}
+                  {userInfo?.userName || "User"}
                 </Typography.Text>
                 <Typography.Text className="break-keep">
                   {userInfo?.email || "Email"}

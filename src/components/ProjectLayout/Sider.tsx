@@ -15,6 +15,7 @@ import {
   TableOutlined,
 } from "@ant-design/icons";
 import {
+  Link,
   generatePath,
   useLocation,
   useNavigate,
@@ -27,6 +28,7 @@ import { paths } from "@/routers/paths";
 import Brand from "../Layout/Brand";
 import { useAuthContext } from "@/context/Auth";
 import AvatarWithColor from "../AvatarWithColor";
+import { classNames } from "@/utils/common";
 
 type PathKeys = keyof typeof paths;
 type PathValues = (typeof paths)[PathKeys];
@@ -112,11 +114,6 @@ export default function ProjectSider() {
           key: generatePath(paths.project.report, { projectId }),
           icon: <LineChartOutlined width={iconSize} height={iconSize} />,
         },
-        {
-          label: "Settings",
-          key: generatePath(paths.project.settings, { projectId }),
-          icon: <SettingOutlined width={iconSize} height={iconSize} />,
-        },
       ];
       return menuItems;
     }
@@ -197,9 +194,29 @@ export default function ProjectSider() {
                 className="!border-none font-semibold text-base overflow-y-auto overflow-x-hidden"
               />
             </div>
-            <Button type="text" onClick={onToggleMenu}>
-              {menuCollapse ? <DoubleRightOutlined /> : <DoubleLeftOutlined />}
-            </Button>
+            <div className="flex gap-x-2 justify-between items-center mx-1 px-4">
+              <Link
+                className={classNames(
+                  "font-semibold",
+                  !selectedKeys.includes(
+                    generatePath(paths.project.settings, { projectId })
+                  ) && "text-black"
+                )}
+                to={generatePath(paths.project.settings, { projectId })}
+              >
+                <div className="flex gap-x-2 items-center">
+                  <SettingOutlined width={iconSize} height={iconSize} />
+                  {!menuCollapse && <span>Project Settings</span>}
+                </div>
+              </Link>
+              <Button type="text" onClick={onToggleMenu}>
+                {menuCollapse ? (
+                  <DoubleRightOutlined />
+                ) : (
+                  <DoubleLeftOutlined />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </Layout.Sider>
