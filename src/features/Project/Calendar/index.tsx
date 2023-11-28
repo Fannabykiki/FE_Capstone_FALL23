@@ -6,6 +6,7 @@ import { RangePickerProps } from "antd/es/date-picker";
 import debounce from "lodash/debounce";
 import buildQuery from "odata-query";
 import dayjs from "dayjs";
+import uniqBy from "lodash/uniqBy";
 import {
   Calendar,
   CalendarProps,
@@ -27,9 +28,6 @@ import {
 import {
   LeftOutlined,
   RightOutlined,
-  BugFilled,
-  CheckCircleOutlined,
-  EyeOutlined,
   FilterFilled,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -202,10 +200,17 @@ const ProjectCalendar = () => {
             <Col span={6}>
               <Select
                 bordered={false}
-                options={TYPE_OPTION}
+                options={uniqBy(data, (event) => event.assignTo.userId)?.map(
+                  (event) => ({
+                    label: event.assignTo.userName,
+                    value: event.assignTo.userName,
+                  })
+                )}
+                defaultValue={searchParams.get("assignee")}
+                onChange={handleChange("assignee")}
                 className="w-full"
-                placeholder="Filter by Role"
-                disabled
+                placeholder="Filter by Assignee"
+                allowClear
               />
             </Col>
             <Col span={10}>
@@ -228,7 +233,11 @@ const ProjectCalendar = () => {
       <div className="relative bg-white shadow-custom">
         <WrapperCalendar
           localizer={localizer}
-          events={data}
+          events={data?.filter((event) =>
+            searchParams.get("assignee")
+              ? event.assignTo.userName === searchParams.get("assignee")
+              : true
+          )}
           startAccessor="startDate"
           endAccessor="dueDate"
           style={{ height: "75vh" }}
@@ -307,32 +316,5 @@ const CustomToolbar = (toolbar: ToolbarProps) => {
     </Row>
   );
 };
-
-const TYPE_OPTION = [
-  {
-    label: (
-      <>
-        <EyeOutlined className="text-yellow-600 mr-2" /> Viewer
-      </>
-    ),
-    value: "viewer",
-  },
-  {
-    label: (
-      <>
-        <BugFilled className="text-red-500 mr-2" /> Creator
-      </>
-    ),
-    value: "creator",
-  },
-  {
-    label: (
-      <>
-        <CheckCircleOutlined className="text-red-500 mr-2" /> Assignee
-      </>
-    ),
-    value: "assignee",
-  },
-];
 
 export default ProjectCalendar;
