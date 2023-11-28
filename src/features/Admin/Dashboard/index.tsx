@@ -1,5 +1,7 @@
 import { generatePath, useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
+import { toast } from "react-toastify";
 import debounce from "lodash/debounce";
 import buildQuery from "odata-query";
 import {
@@ -7,6 +9,7 @@ import {
   Button,
   Col,
   Input,
+  Modal,
   Row,
   Select,
   Space,
@@ -24,6 +27,7 @@ import {
 
 import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
 import { IAdminProject } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { paths } from "@/routers/paths";
 
@@ -33,7 +37,11 @@ const AdminDashboard = () => {
     limit: "10",
   });
 
-  const { project, analyzation, statusList, isLoading } =
+  const [modal, contextHolder] = Modal.useModal();
+
+  const navigate = useNavigate();
+
+  const { project, analyzation, statusList, isLoading, refrestAdminProject } =
     useAdminProjectManagement({
       queryString: buildQuery({
         filter: {
@@ -45,7 +53,21 @@ const AdminDashboard = () => {
       }),
     });
 
-  const navigate = useNavigate();
+  const { mutate: restoreProject } = useMutation({
+    mutationKey: [projectApi.restoreProjectKey],
+    mutationFn: projectApi.restoreProject,
+    onSuccess: (_data, { projectId }) => {
+      navigate(
+        generatePath(paths.project.detail, {
+          projectId,
+        })
+      );
+      toast.success("Restore project successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data || "Restore project failed");
+    },
+  });
 
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
@@ -96,11 +118,20 @@ const AdminDashboard = () => {
             type="link"
             className="p-0 min-h-[24px]"
             onClick={() => {
-              navigate(
-                generatePath(paths.project.detail, {
-                  projectId: record.projectId,
-                })
-              );
+              record.projectStatus === "Deleted"
+                ? modal.confirm({
+                    title: "Warning",
+                    content: "Are you sure to restore this project?",
+                    onOk: () =>
+                      restoreProject({
+                        projectId: record.projectId,
+                      }),
+                  })
+                : navigate(
+                    generatePath(paths.project.detail, {
+                      projectId: record.projectId,
+                    })
+                  );
             }}
           >
             <Typography.Title
@@ -319,6 +350,7 @@ const AdminDashboard = () => {
           }}
         />
       </Space>
+      {contextHolder}
     </Space>
   );
 };

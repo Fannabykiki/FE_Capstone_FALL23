@@ -1,21 +1,20 @@
+import { Row, Space, Typography, Table, Button, Card } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
+import { PlusOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { PlusOutlined } from "@ant-design/icons";
-import { Row, Space, Typography, Table, Button, Card } from "antd";
 
-import { ITaskStatus } from "@/interfaces/task";
 import useDetailView from "@/hooks/useDetailView";
-import { STATUS_COLOR } from "@/utils/constants";
-import { taskApi } from "@/utils/api/task";
+import { ITaskStatus } from "@/interfaces/task";
 import { CreateStatus } from "@/components";
+import { taskApi } from "@/utils/api/task";
 
 export default function StatusManagement() {
   const { projectId } = useParams();
 
   const queryClient = useQueryClient();
 
-  const data =
+  const statusList =
     queryClient.getQueryData<ITaskStatus[]>([
       taskApi.getTaskStatusKey,
       projectId,
@@ -53,7 +52,7 @@ export default function StatusManagement() {
         <Table
           rowKey="boardStatusId"
           columns={columns}
-          dataSource={data}
+          dataSource={statusList}
           pagination={false}
         />
       </Space>
@@ -73,9 +72,8 @@ const columns: ColumnsType<ITaskStatus> = [
     title: "Title",
     dataIndex: "title",
     width: "10%",
-    render: (state) => {
-      const { backgroundColor = "gray", color = "white" } =
-        STATUS_COLOR[state as keyof typeof STATUS_COLOR] || {};
+    render: (state, record) => {
+      const color = record.hexColor;
 
       return (
         <Row align="middle" className="gap-2">
@@ -83,7 +81,7 @@ const columns: ColumnsType<ITaskStatus> = [
             className="px-2 py-1 rounded font-medium"
             style={{
               color,
-              backgroundColor,
+              backgroundColor: `${color}20`,
             }}
           >
             {state}

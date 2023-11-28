@@ -32,7 +32,24 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
       handleClose();
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data || "Create role failed");
+      let errorString = undefined;
+      if (err.response?.data) {
+        if (err.response.data.errors) {
+          form.setFields(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: key.toLowerCase(),
+              errors: [value] as string[],
+            }))
+          );
+          errorString = Object.entries(err?.response?.data?.errors)
+            .map(([_, value]) => value)
+            .join(", ");
+        } else if (typeof err.response.data === "string") {
+          errorString = err?.response?.data;
+        }
+      }
+
+      toast.error(errorString || "Create role failed");
     },
   });
 
@@ -45,7 +62,24 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
       handleClose();
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data || "Update role failed");
+      let errorString = undefined;
+      if (err.response?.data) {
+        if (err.response.data.errors) {
+          form.setFields(
+            Object.entries(err.response.data.errors).map(([key, value]) => ({
+              name: key.toLowerCase(),
+              errors: [value] as string[],
+            }))
+          );
+          errorString = Object.entries(err?.response?.data?.errors)
+            .map(([_, value]) => value)
+            .join(", ");
+        } else if (typeof err.response.data === "string") {
+          errorString = err?.response?.data;
+        }
+      }
+
+      toast.error(errorString || "Update role failed");
     },
   });
 

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import { faker } from "@faker-js/faker";
 import debounce from "lodash/debounce";
 import buildQuery from "odata-query";
 import dayjs from "dayjs";
@@ -28,10 +29,13 @@ import {
   Typography,
 } from "antd";
 
-import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
-import { STATUS_COLOR } from "@/utils/constants";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
+import {
+  IGetTypeListResponse,
+  ITaskStatus,
+  ITrashBinRecord,
+} from "@/interfaces/task";
 
 const TrashBin = () => {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -47,15 +51,22 @@ const TrashBin = () => {
 
   const queryClient = useQueryClient();
 
-  const typeList = queryClient.getQueryData<IGetTypeListResponse[]>([
-    taskApi.getTaskTypeKey,
-  ]);
+  const typeList = useMemo(
+    () =>
+      queryClient.getQueryData<IGetTypeListResponse[]>([
+        taskApi.getTaskTypeKey,
+      ]),
+    [queryClient]
+  );
 
-  const statusList =
-    queryClient.getQueryData<ITaskStatus[]>([
-      taskApi.getTaskStatusKey,
-      projectId,
-    ]) || [];
+  const statusList = useMemo(
+    () =>
+      queryClient.getQueryData<ITaskStatus[]>([
+        taskApi.getTaskStatusKey,
+        projectId,
+      ]) || [],
+    [projectId, queryClient]
+  );
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -65,8 +76,8 @@ const TrashBin = () => {
       searchParams.get("interation"),
       searchParams.get("search"),
     ],
-    queryFn: ({ signal }) =>
-      taskApi.getAllTaskInTrashBin(
+    queryFn: async ({ signal }) => {
+      const data = await taskApi.getAllTaskInTrashBin(
         signal,
         projectId,
         buildQuery({
@@ -79,7 +90,13 @@ const TrashBin = () => {
             },
           },
         })
-      ),
+      );
+
+      return data.map((task) => ({
+        ...task,
+        assignToAvtColor: faker.color.rgb(),
+      }));
+    },
     enabled: Boolean(projectId),
   });
 
@@ -123,7 +140,7 @@ const TrashBin = () => {
     });
   };
 
-  const columns: ColumnsType<any> = [
+  const columns: ColumnsType<ITrashBinRecord> = [
     {
       dataIndex: "index",
       width: "5%",
@@ -168,16 +185,16 @@ const TrashBin = () => {
       dataIndex: "assignTo",
       width: "15%",
       render: (_, record) =>
-        record.assignTo?.userName ? (
+        record.assignTo ? (
           <Row align="middle">
             <Col span={5} className="flex items-center">
-              <Avatar style={{ backgroundColor: record.assignTo.avatarColor }}>
-                {record.assignTo?.userName?.charAt(0).toUpperCase()}
+              <Avatar style={{ backgroundColor: record.assignToAvtColor }}>
+                {record.assignTo?.charAt(0).toUpperCase()}
               </Avatar>
             </Col>
             <Col span={19}>
               <Typography.Title level={5} className="!m-0">
-                {record.assignTo?.userName}
+                {record.assignTo}
               </Typography.Title>
             </Col>
           </Row>
@@ -187,9 +204,10 @@ const TrashBin = () => {
       title: "State",
       dataIndex: "statusName",
       width: "10%",
-      render: (state) => {
-        const { backgroundColor, color } =
-          STATUS_COLOR[state as keyof typeof STATUS_COLOR];
+      render: (state, record) => {
+        const color = statusList.find(
+          (s) => s.boardStatusId === record.statusId
+        )?.hexColor;
 
         return (
           <Row align="middle" className="gap-2">
@@ -197,7 +215,7 @@ const TrashBin = () => {
               className="px-2 py-1 rounded font-medium"
               style={{
                 color,
-                backgroundColor,
+                backgroundColor: `${color}20`,
               }}
             >
               {state}

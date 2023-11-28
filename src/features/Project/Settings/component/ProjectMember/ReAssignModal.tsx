@@ -64,16 +64,10 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
     const oldPOMemberId = memberList?.find((member) => member.roleName === "PO")
       ?.memberId;
     if (!memberId || !rolePOId || !roleMemberId || !oldPOMemberId) return;
-    Promise.all([
-      updateMemberRole({
-        roleId: rolePOId,
-        memberId,
-      }),
-      // updateMemberRole({
-      //   roleId: roleMemberId,
-      //   memberId: oldPOMemberId,
-      // }),
-    ]);
+    updateMemberRole({
+      roleId: rolePOId,
+      memberId,
+    });
   };
 
   const onChange = (e: RadioChangeEvent) => {
