@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "antd/dist/reset.css";
+
+.auth {
+  background-image: url("../../assets/images/login-bg.jpg");
+  background-size: cover;
+}
+
+@font-face {
+  font-family: "Batangas";
+  src: url(./../font/BatangasBold700.otf) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
