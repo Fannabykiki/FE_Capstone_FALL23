@@ -121,3 +121,8 @@ export interface ITrashBinRecord {
   assignToAvtColor?: string;
   subTask: string[];
 }
+
+export interface IUpdateStatusOrderPayload {
+  statusId: string;
+  order: number;
+}

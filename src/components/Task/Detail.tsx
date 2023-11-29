@@ -197,7 +197,11 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               className="overflow-y-auto max-h-[300px] md:max-h-[500px] lg:max-h-[700px]"
             >
               <Typography.Title level={5}>Description</Typography.Title>
-              <div dangerouslySetInnerHTML={{ __html: task.description }} />
+              {task.description ? (
+                <div dangerouslySetInnerHTML={{ __html: task.description }} />
+              ) : (
+                <span>This task does not have any description.</span>
+              )}
               <Divider />
               <div>
                 <Typography.Title level={5}>Attachments</Typography.Title>

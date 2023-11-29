@@ -15,6 +15,9 @@ import {
 } from "@/interfaces/task";
 import { IProject } from "@/interfaces/project";
 import { useAuthContext } from "@/context/Auth";
+import ReactQuill from "react-quill";
+import QuillWrapper from "../QuillWrapper";
+import { isQuillEmpty } from "@/utils/common";
 
 const { TextArea } = Input;
 
@@ -89,7 +92,14 @@ export default function UpdateTask({
       (mem) => mem.userId === userInfo!.id
     );
     updateTaskMutation.mutate(
-      { ...values, taskId: initTaskData.taskId, memberId: member?.memberId },
+      {
+        ...values,
+        taskId: initTaskData.taskId,
+        memberId: member?.memberId,
+        description: !isQuillEmpty(values.description)
+          ? values.description
+          : "",
+      },
       {
         onSuccess: async () => {
           onSuccess();
@@ -288,7 +298,7 @@ export default function UpdateTask({
           </Col>
         </Row>
         <Form.Item label="Description" name="description">
-          <TextArea showCount maxLength={100} />
+          <QuillWrapper />
         </Form.Item>
       </Form>
     </Modal>

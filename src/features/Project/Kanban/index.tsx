@@ -7,6 +7,7 @@ import { CreateIteration } from "@/components/Modal";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { IIteration } from "@/interfaces/iteration";
 import { IterationDisplay } from "@/components";
+import KanbanDisplay from "@/components/Kanban";
 
 export enum TaskType {
   Main = "Work Item",
@@ -33,7 +34,7 @@ const Kanban = () => {
     <>
       <Typography.Title>Kanban</Typography.Title>
       {selectedIteration ? (
-        <IterationDisplay iterationId={selectedIteration.interationId} />
+        <KanbanDisplay iterationId={selectedIteration.interationId} />
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
       )}

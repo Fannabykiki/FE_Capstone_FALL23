@@ -13,6 +13,8 @@ import {
   IGetTypeListResponse,
   ITaskStatus,
 } from "@/interfaces/task";
+import QuillWrapper from "../QuillWrapper";
+import { isQuillEmpty } from "@/utils/common";
 
 const { TextArea } = Input;
 
@@ -86,6 +88,9 @@ export default function CreateTask({
           ...values,
           taskId: initTaskData.taskId,
           projectId,
+          description: !isQuillEmpty(values.description)
+            ? values.description
+            : "",
         },
         {
           onSuccess: async () => {
@@ -101,7 +106,14 @@ export default function CreateTask({
       );
     } else {
       createTaskMutation.mutate(
-        { ...values, projectId, prevId: null },
+        {
+          ...values,
+          projectId,
+          prevId: null,
+          description: !isQuillEmpty(values.description)
+            ? values.description
+            : "",
+        },
         {
           onSuccess: async () => {
             onSuccess();
@@ -260,7 +272,7 @@ export default function CreateTask({
           </Col>
         </Row>
         <Form.Item label="Description" name="description">
-          <TextArea showCount maxLength={100} />
+          <QuillWrapper />
         </Form.Item>
       </Form>
     </Modal>

@@ -8,6 +8,7 @@ import { IComment } from "@/interfaces/comment";
 import { useAuthContext } from "@/context/Auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "@/utils/api/task";
+import { isQuillEmpty } from "@/utils/common";
 
 interface Props {
   taskId: string;
@@ -25,7 +26,7 @@ export default function AddComment({
   const [isCommenting, setIsCommenting] = useState(false);
 
   const [comment, setComment] = useState(
-    isEditing ? parentComment?.content : ""
+    isEditing ? parentComment?.content || "" : ""
   );
 
   const { createCommentMutation, replyCommentMutation, updateCommentMutation } =
@@ -152,7 +153,11 @@ export default function AddComment({
         />
       </div>
       <div className="flex gap-x-2 justify-end mt-4">
-        <Button type="primary" onClick={onSubmit}>
+        <Button
+          type="primary"
+          onClick={onSubmit}
+          disabled={isQuillEmpty(comment)}
+        >
           Submit
         </Button>
         <Button onClick={onCancelComment}>Cancel</Button>

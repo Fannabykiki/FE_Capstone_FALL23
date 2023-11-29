@@ -27,11 +27,17 @@ export default function useTaskActions() {
     mutationFn: taskApi.changeTaskStatus,
   });
 
+  const updateStatusOrderMutation = useMutation({
+    mutationKey: [taskApi.updateStatusOrderKey],
+    mutationFn: taskApi.updateStatusOrder,
+  });
+
   return {
     createTaskMutation,
     createSubtaskMutation,
     updateTaskMutation,
     deleteTaskMutation,
     changeTaskStatusMutation,
+    updateStatusOrderMutation,
   };
 }
