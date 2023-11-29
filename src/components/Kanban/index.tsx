@@ -31,6 +31,8 @@ import { IProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useAuthContext } from "@/context/Auth";
 import { sortBy } from "lodash";
+import TaskDraggableDisplay from "./TaskDraggableDisplay";
+import useDebounceValue from "@/hooks/useDebounceValue";
 
 export enum TaskType {
   Main = "Work Item",
@@ -45,7 +47,7 @@ interface Props {
   iterationId: string;
 }
 
-const IterationDisplay = ({ iterationId }: Props) => {
+const KanbanDisplay = ({ iterationId }: Props) => {
   const [collapsedTasks, setCollapsedTasks] = useState<string[]>([]);
   const [selectedIteration, setSelectedIteration] = useState<IIteration>();
   const [filterData, setFilterData] = useState({
@@ -195,32 +197,19 @@ const IterationDisplay = ({ iterationId }: Props) => {
           );
         }
       } else {
-        const sourceTask = selectedIteration.tasks.find(
-          (task) =>
-            task.subTask?.some((subtask) => subtask.taskId === draggableId)
-        );
-
         // Moving within the same list
         if (source.droppableId !== destination.droppableId) {
           // Moving to a different status
-          const newStatusId = destination.droppableId.split("/")[1];
-          const selectedSubtask = sourceTask!.subTask!.find(
-            (subtask) => subtask.taskId === draggableId
-          );
+          const newStatusId = destination.droppableId;
           const originalIteration = { ...selectedIteration };
           setSelectedIteration((c) => {
             return {
               ...c!,
               tasks: c!.tasks.map((task) => {
-                if (task.taskId === sourceTask!.taskId) {
+                if (task.taskId === draggableId) {
                   return {
                     ...task,
-                    subTask: task.subTask!.map((subTask) => {
-                      if (subTask.taskId === selectedSubtask!.taskId) {
-                        return { ...selectedSubtask!, statusId: newStatusId }!;
-                      }
-                      return subTask;
-                    }),
+                    statusId: newStatusId,
                   };
                 }
                 return task;
@@ -229,7 +218,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
           });
           changeTaskStatusMutation.mutate(
             {
-              id: selectedSubtask!.taskId,
+              id: draggableId,
               statusId: newStatusId,
               memberId: member?.memberId || "",
             },
@@ -264,6 +253,8 @@ const IterationDisplay = ({ iterationId }: Props) => {
     onCloseView: handleCloseModalCreateStatus,
     openView: isModalCreateStatusOpen,
   } = useDetailView();
+
+  const filterTaskName = useDebounceValue(filterData.name, 1000);
 
   if (selectedIteration)
     return (
@@ -302,19 +293,6 @@ const IterationDisplay = ({ iterationId }: Props) => {
           </div>
           <div className="overflow-x-auto">
             <div className="flex gap-x-4 items-center">
-              <div>
-                <h4
-                  className="select-none cursor-pointer w-56 mb-0"
-                  onClick={onToggleCollapseAllTask}
-                >
-                  {collapsedTasks.length === selectedIteration.tasks.length ? (
-                    <DoubleRightOutlined className="rotate-90" />
-                  ) : (
-                    <DoubleLeftOutlined className="rotate-90" />
-                  )}{" "}
-                  Collapse all
-                </h4>
-              </div>
               <DroppableComponent
                 droppableId="status-drop-zone"
                 direction="horizontal"
@@ -365,25 +343,72 @@ const IterationDisplay = ({ iterationId }: Props) => {
                 )}
               </DroppableComponent>
             </div>
-            {selectedIteration.tasks.map((task) => (
-              <div
-                key={task.taskId}
-                className={classNames(
-                  "py-4 border-0 border-b border-solid border-neutral-300",
-                  !collapsedTasks.includes(task.taskId) && "w-fit"
-                )}
-              >
-                <MainTaskDisplay
-                  task={task}
-                  statusList={displayStatusList}
-                  isCollapsed={collapsedTasks.includes(task.taskId)}
-                  onToggleCollapseTask={() => onToggleCollapseTask(task.taskId)}
-                  onOpenCreateTaskModal={handleOpenCreateTaskModal}
-                  onViewTask={onOpenViewDetailTask}
-                  filterData={filterData}
-                />
+            <div>
+              <div className="flex w-full gap-x-4">
+                {displayStatusList.map((status, index) => (
+                  <div className="flex flex-col" key={status.boardStatusId}>
+                    <DroppableComponent
+                      key={status.boardStatusId}
+                      droppableId={status.boardStatusId}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          className={classNames(
+                            "w-[250px] rounded p-2 flex-grow",
+                            snapshot.isDraggingOver && "bg-neutral-200"
+                          )}
+                          {...provided.droppableProps}
+                        >
+                          <>
+                            <div className="flex flex-col gap-y-4">
+                              {(
+                                selectedIteration.tasks?.filter(
+                                  (task) =>
+                                    task.statusId === status.boardStatusId &&
+                                    (!filterTaskName ||
+                                      task.title
+                                        .toLowerCase()
+                                        .includes(
+                                          filterTaskName.toLowerCase()
+                                        )) &&
+                                    (!filterData.statusId ||
+                                      filterData.statusId === task.statusId)
+                                ) || []
+                              ).map((task, index) => (
+                                <DraggableComponent
+                                  key={task.taskId}
+                                  draggableId={task.taskId}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={{
+                                        ...provided.draggableProps.style,
+                                      }}
+                                    >
+                                      <TaskDraggableDisplay
+                                        snapshot={snapshot}
+                                        task={task}
+                                        onViewTask={onOpenViewDetailTask}
+                                      />
+                                    </div>
+                                  )}
+                                </DraggableComponent>
+                              ))}
+                            </div>
+                            {provided.placeholder}
+                          </>
+                        </div>
+                      )}
+                    </DroppableComponent>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </DragDropContextComponent>
         {isModalCreateTaskOpen && (
@@ -412,4 +437,4 @@ const IterationDisplay = ({ iterationId }: Props) => {
   return null;
 };
 
-export default IterationDisplay;
+export default KanbanDisplay;

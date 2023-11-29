@@ -10,6 +10,7 @@ import {
   IUpdateTaskPayload,
   IChangeTaskStatusPayload,
   ICreateStatusPayload,
+  IUpdateStatusOrderPayload,
 } from "@/interfaces/task";
 import { sortBy } from "lodash";
 
@@ -154,6 +155,13 @@ const getAllTaskInTrashBin = (
   }).then((resp) => resp.data);
 };
 
+const updateStatusOrder = (data: IUpdateStatusOrderPayload) =>
+  axiosClient({
+    url: "/api/task-management/tasks/status/order",
+    method: HTTP_METHODS.PUT,
+    data,
+  }).then((resp) => resp.data);
+
 export const taskApi = {
   getKanbanTasks,
   getKanbanTasksKey: "taskGetKanbanTasks",
@@ -174,13 +182,15 @@ export const taskApi = {
   deleteTask,
   deleteTaskKey: "taskDeleteTask",
   getTaskPriority,
-  getTaskPriorityKey: "taskgetTaskPriorityKey",
+  getTaskPriorityKey: "taskGetTaskPriority",
   getTaskStatus,
-  getTaskStatusKey: "taskgetTaskStatusKey",
+  getTaskStatusKey: "taskGetTaskStatus",
   getTaskType,
-  getTaskTypeKey: "taskgetTaskTypeKey",
+  getTaskTypeKey: "taskGetTaskType",
   changeTaskStatus,
   changeTaskStatusKey: "taskChangeTaskStatus",
   getAllTaskInTrashBin,
-  getAllTaskInTrashBinKey: "taskgetAllTaskInTrashBinKey",
+  getAllTaskInTrashBinKey: "taskGetAllTaskInTrashBin",
+  updateStatusOrder,
+  updateStatusOrderKey: "taskUpdateStatusOrder",
 };

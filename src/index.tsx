@@ -35,7 +35,7 @@ root.render(
     >
       <App />
     </ConfigProvider>
-    <ToastContainer />
+    <ToastContainer autoClose={false} />
   </QueryClientProvider>
 );
 // test
