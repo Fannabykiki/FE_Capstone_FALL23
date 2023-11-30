@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { faker } from "@faker-js/faker";
 
 import { projectApi } from "@/utils/api/project";
 import { useAuthContext } from "@/context/Auth";
@@ -16,31 +15,16 @@ interface Params {
 export default function useAdminProjectManagement(params: Params) {
   const { userInfo } = useAuthContext();
 
-  const {
-    data: project,
-    isLoading: isLoadingGetAdminProjects,
-    refetch: refrestAdminProject,
-  } = useQuery<IAdminProject[]>({
+  const { data: project, isLoading: isLoadingGetAdminProjects } = useQuery<
+    IAdminProject[]
+  >({
     queryKey: [
       projectApi.getAdminProjectsKey,
       userInfo?.id,
       params.queryString,
     ],
-    queryFn: async ({ signal }) => {
-      const data: IAdminProject[] = await projectApi.getAdminProjects(
-        signal,
-        params.queryString
-      );
-
-      return data.map((prj) => ({
-        ...prj,
-        manager: { ...prj.manager, avatarColor: faker.color.rgb() },
-        member: prj.member.map((mem) => ({
-          ...mem,
-          avatarColor: faker.color.rgb(),
-        })),
-      }));
-    },
+    queryFn: ({ signal }) =>
+      projectApi.getAdminProjects(signal, params.queryString),
     enabled: Boolean(userInfo),
   });
 
@@ -65,7 +49,6 @@ export default function useAdminProjectManagement(params: Params) {
 
   return {
     project,
-    refrestAdminProject,
     analyzation,
     statusList,
     isLoading,

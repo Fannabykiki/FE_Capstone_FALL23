@@ -229,6 +229,20 @@ const changeProjectSchema = ({
     data,
   }).then((resp) => resp.data);
 
+const outProject = (data: { projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/exit-project",
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
+const setDoneProject = (data: { projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/close-project",
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -279,4 +293,8 @@ export const projectApi = {
   getReportProjectByProjectIdKey: "getReportProjectByProjectIdKey",
   changeProjectSchema,
   changeProjectSchemaKey: "changeProjectSchemaKey",
+  outProject,
+  outProjectKey: "outProjectKey",
+  setDoneProject,
+  setDoneProjectKey: "setDoneProjectKey",
 };

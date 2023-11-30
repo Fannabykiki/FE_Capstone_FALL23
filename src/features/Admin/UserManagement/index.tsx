@@ -7,7 +7,6 @@ import debounce from "lodash/debounce";
 import { toast } from "react-toastify";
 import buildQuery from "odata-query";
 import {
-  Avatar,
   Col,
   Input,
   Row,
@@ -24,6 +23,7 @@ import activeUser from "@/assets/images/active-user.png";
 import { IAdminUsers } from "@/interfaces/user";
 import UserDetailModal from "./UserDetailModal";
 import { pagination } from "@/utils/pagination";
+import { AvatarWithColor } from "@/components";
 import { userApi } from "@/utils/api/user";
 
 const UserManagement = () => {
@@ -118,9 +118,9 @@ const UserManagement = () => {
       render: (name, record) => (
         <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: record.avatarColor }}>
+            <AvatarWithColor stringContent={name}>
               {name?.charAt(0).toUpperCase()}
-            </Avatar>
+            </AvatarWithColor>
           </Col>
           <Col span={20}>
             <Typography.Title level={5} className="!m-0 min-h-[24px]">

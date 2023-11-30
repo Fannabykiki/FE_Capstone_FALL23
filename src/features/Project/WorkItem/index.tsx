@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { faker } from "@faker-js/faker";
 import buildQuery from "odata-query";
 import { debounce } from "lodash";
 import dayjs from "dayjs";
@@ -20,19 +19,18 @@ import {
   Table,
   Button,
   Col,
-  Avatar,
   Card,
   Input,
   Select,
 } from "antd";
 
+import { AvatarWithColor, CreateTask, TaskDetail } from "@/components";
 import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
 import { IWorkItemList } from "@/interfaces/project";
 import useDetailView from "@/hooks/useDetailView";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
-import { CreateTask, TaskDetail } from "@/components";
 
 export default function WorkItem() {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -74,8 +72,8 @@ export default function WorkItem() {
       searchParams.get("interation"),
       searchParams.get("search"),
     ],
-    queryFn: async ({ signal }) => {
-      const data: IWorkItemList[] = await projectApi.getWorkItemListByProjectId(
+    queryFn: ({ signal }) =>
+      projectApi.getWorkItemListByProjectId(
         signal,
         projectId,
         buildQuery({
@@ -88,12 +86,7 @@ export default function WorkItem() {
             },
           },
         })
-      );
-      return data.map((user) => ({
-        ...user,
-        assignTo: { ...user.assignTo, avatarColor: faker.color.rgb() },
-      }));
-    },
+      ),
     enabled: Boolean(projectId),
   });
 
@@ -189,9 +182,9 @@ export default function WorkItem() {
         record.assignTo?.userName ? (
           <Row align="middle">
             <Col span={5} className="flex items-center">
-              <Avatar style={{ backgroundColor: record.assignTo.avatarColor }}>
+              <AvatarWithColor stringContent={record.assignTo?.userName}>
                 {record.assignTo?.userName?.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
             </Col>
             <Col span={19}>
               <Typography.Title level={5} className="!m-0">

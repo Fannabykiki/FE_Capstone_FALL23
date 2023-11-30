@@ -29,6 +29,7 @@ import useAdminProjectManagement from "@/hooks/useAdminProjectManagement";
 import { IAdminProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
+import { AvatarWithColor } from "@/components";
 import { paths } from "@/routers/paths";
 
 const AdminDashboard = () => {
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
 
-  const { project, analyzation, statusList, isLoading, refrestAdminProject } =
+  const { project, analyzation, statusList, isLoading } =
     useAdminProjectManagement({
       queryString: buildQuery({
         filter: {
@@ -202,9 +203,9 @@ const AdminDashboard = () => {
         record.manager?.userName ? (
           <Row align="middle">
             <Col span={5} className="flex items-center">
-              <Avatar style={{ backgroundColor: record.manager?.avatarColor }}>
+              <AvatarWithColor stringContent={record.manager?.userName}>
                 {record.manager?.userName?.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
             </Col>
             <Col span={19}>
               <Typography.Title level={5} className="!m-0">
@@ -229,9 +230,9 @@ const AdminDashboard = () => {
               title={member.userName}
               placement="top"
             >
-              <Avatar style={{ backgroundColor: member.avatarColor }}>
+              <AvatarWithColor stringContent={member.userName}>
                 {member.userName?.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
             </Tooltip>
           ))}
         </Avatar.Group>

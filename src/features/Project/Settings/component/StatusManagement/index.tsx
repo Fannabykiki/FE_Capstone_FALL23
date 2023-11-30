@@ -9,7 +9,11 @@ import { ITaskStatus } from "@/interfaces/task";
 import { CreateStatus } from "@/components";
 import { taskApi } from "@/utils/api/task";
 
-export default function StatusManagement() {
+interface IProp {
+  isAdminOrPO: boolean;
+}
+
+export default function StatusManagement({ isAdminOrPO }: IProp) {
   const { projectId } = useParams();
 
   const queryClient = useQueryClient();
@@ -42,6 +46,7 @@ export default function StatusManagement() {
             title="New Status"
             onClick={() => handleOpenModalCreate()}
             icon={<PlusOutlined />}
+            disabled={!isAdminOrPO}
           >
             New Status
           </Button>

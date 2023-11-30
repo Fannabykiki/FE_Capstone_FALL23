@@ -14,15 +14,29 @@ import { paths } from "@/routers/paths";
 import { classNames, getPathSegments } from "@/utils/common";
 import Notification from "@/components/Notifications/Notification";
 import SignalRHandler from "../SignalRHandler";
+import { schemaApi } from "@/utils/api/schema";
+import { useQuery } from "@tanstack/react-query";
+import { ISchema } from "@/interfaces/schema";
 
 interface RouteObj {
   [key: string]: string;
 }
 
 export default function Header() {
-  const { projectId } = useParams();
+  const { projectId, schemaId } = useParams();
+
   const { detail } = useProjectDetail(projectId);
+
   const navigate = useNavigate();
+
+  const { userInfo } = useAuthContext();
+
+  const { data: schema } = useQuery<ISchema>({
+    queryKey: [schemaApi.getAdminSchemaDetailKey, userInfo?.id, schemaId],
+    queryFn: ({ signal }) => schemaApi.getAdminSchemaDetail(signal, schemaId!),
+    enabled: Boolean(userInfo?.id) && Boolean(schemaId),
+  });
+
   const routes = useMemo<RouteObj>(() => {
     const routeObject = {
       [paths.user]: "Projects",
@@ -47,10 +61,12 @@ export default function Header() {
       routeObject[generatePath(paths.project.detail, { projectId })] =
         detail.projectName;
     }
+    if (schemaId && schema) {
+      routeObject[generatePath(paths.admin.projectPermission, { schemaId })] =
+        schema.schemaName;
+    }
     return routeObject;
-  }, [detail, projectId]);
-
-  const { userInfo } = useAuthContext();
+  }, [detail, schema, projectId, schemaId]);
 
   const location = useLocation();
 

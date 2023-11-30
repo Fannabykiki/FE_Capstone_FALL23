@@ -7,8 +7,7 @@ import {
   PaperClipOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { faker } from "@faker-js/faker";
-import { Avatar, Button } from "antd";
+import { Button } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 import {
