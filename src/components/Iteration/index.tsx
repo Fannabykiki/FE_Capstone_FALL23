@@ -78,22 +78,11 @@ const IterationDisplay = ({ iterationId }: Props) => {
     });
   };
 
-  const [displayStatusList, setDisplayStatusList] = useState<ITaskStatus[]>([]);
-
-  const statusList = useMemo(
-    () =>
-      queryClient.getQueryData<ITaskStatus[]>([
-        taskApi.getTaskStatusKey,
-        projectId,
-      ]) || [],
-    [projectId, queryClient]
-  );
-
-  useEffect(() => {
-    if (statusList.length > 0 && displayStatusList.length === 0) {
-      setDisplayStatusList(statusList);
-    }
-  }, [statusList, displayStatusList]);
+  const { data: statusList } = useQuery({
+    queryKey: [taskApi.getTaskStatusKey, projectId],
+    queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId),
+    initialData: [],
+  });
 
   const { data: iteration, refetch: refetchIteration } = useQuery({
     queryKey: [iterationApi.getTasksKey, iterationId],
@@ -150,9 +139,9 @@ const IterationDisplay = ({ iterationId }: Props) => {
         destination.droppableId === "status-drop-zone"
       ) {
         if (source.index !== destination.index) {
-          const originalStatusList = [...displayStatusList];
+          const originalStatusList = [...statusList];
           const newStatusList = sortBy(
-            displayStatusList.map((status, index) => {
+            statusList.map((status, index) => {
               if (status.boardStatusId === draggableId) {
                 console.log("Dragging: ", status.title);
                 return { ...status, order: destination.index + 1 };
@@ -167,8 +156,10 @@ const IterationDisplay = ({ iterationId }: Props) => {
             }),
             "order"
           );
-          console.log(newStatusList);
-          setDisplayStatusList(newStatusList);
+          queryClient.setQueryData(
+            [taskApi.getTaskStatusKey, projectId],
+            newStatusList
+          );
           updateStatusOrderMutation.mutate(
             {
               statusId: draggableId,
@@ -189,7 +180,10 @@ const IterationDisplay = ({ iterationId }: Props) => {
                 toast.error(
                   "Change status order failed! Please try again later"
                 );
-                setDisplayStatusList(originalStatusList);
+                queryClient.setQueryData(
+                  [taskApi.getTaskStatusKey, projectId],
+                  originalStatusList
+                );
               },
             }
           );
@@ -279,7 +273,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
               }
             />
             <Select
-              options={displayStatusList.map((status) => ({
+              options={statusList.map((status) => ({
                 label: status.title,
                 value: status.boardStatusId,
               }))}
@@ -328,7 +322,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
                     )}
                     {...provided.droppableProps}
                   >
-                    {displayStatusList.map((status, index) => (
+                    {statusList.map((status, index) => (
                       <DraggableComponent
                         draggableId={status.boardStatusId}
                         index={index}
@@ -342,7 +336,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
                             style={{
                               ...provided.draggableProps.style,
                             }}
-                            className="basis-[250px] shrink-0"
+                            className="w-[250px] shrink-0"
                           >
                             <div>
                               <h4 className="mb-0">{status.title}</h4>
@@ -352,7 +346,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
                       </DraggableComponent>
                     ))}
                     {provided.placeholder}
-                    <div className="basis-[250px] rounded p-2">
+                    <div className="w-[250px] rounded p-2">
                       <Button
                         icon={<PlusOutlined />}
                         type="text"
@@ -375,7 +369,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
               >
                 <MainTaskDisplay
                   task={task}
-                  statusList={displayStatusList}
+                  statusList={statusList}
                   isCollapsed={collapsedTasks.includes(task.taskId)}
                   onToggleCollapseTask={() => onToggleCollapseTask(task.taskId)}
                   onOpenCreateTaskModal={handleOpenCreateTaskModal}

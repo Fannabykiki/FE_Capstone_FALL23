@@ -21,6 +21,7 @@ import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import { AvatarWithColor } from "@/components";
 import { DATE_FORMAT } from "@/utils/constants";
+import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 interface IProp {
   isAdminOrPO: boolean;
@@ -86,6 +87,8 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
   const handleCloseModalDelete = () => {
     setIsModalDeleteOpen(false);
   };
+
+  const isUserAdmin = useCheckProjectAdmin();
 
   const projectAdmin = detail?.projectMembers.find((member) => member.isOwner);
   if (detail)

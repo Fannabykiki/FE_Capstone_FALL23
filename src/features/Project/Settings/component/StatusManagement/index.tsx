@@ -8,6 +8,7 @@ import useDetailView from "@/hooks/useDetailView";
 import { ITaskStatus } from "@/interfaces/task";
 import { CreateStatus } from "@/components";
 import { taskApi } from "@/utils/api/task";
+import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 interface IProp {
   isAdminOrPO: boolean;
@@ -29,6 +30,8 @@ export default function StatusManagement({ isAdminOrPO }: IProp) {
     onCloseView: handleCloseModalCreate,
     openView: isModalCreateOpen,
   } = useDetailView();
+
+  const isUserAdmin = useCheckProjectAdmin();
 
   return (
     <Card className="min-h-screen">

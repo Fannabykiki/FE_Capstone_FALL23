@@ -38,6 +38,13 @@ export default function useProjectDetail(projectId: string | undefined) {
     placeholderData: [],
   });
 
+  const { data: memberList } = useQuery({
+    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+    queryFn: async ({ signal }) =>
+      projectApi.getListUserInProjectByProjectId(signal, projectId),
+    enabled: Boolean(projectId),
+  });
+
   const { mutate: updatePrivacyStatus, isLoading: isUpdatingPrivacyStatus } =
     useMutation({
       mutationKey: [projectApi.updatePrivacyKey],
@@ -47,6 +54,7 @@ export default function useProjectDetail(projectId: string | undefined) {
   return {
     detail,
     iterations,
+    memberList,
     actions: {
       isGettingDetail,
       updatePrivacyStatus,
