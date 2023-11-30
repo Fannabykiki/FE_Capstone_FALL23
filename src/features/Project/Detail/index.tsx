@@ -3,7 +3,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import { EProjectPrivacyStatusLabel, IProject } from "@/interfaces/project";
 import { paths } from "@/routers/paths";
 import { Avatar, Button, Descriptions, Tooltip, Typography } from "antd";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FileAddOutlined,
@@ -80,31 +80,40 @@ export default function ProjectDetail() {
 
   const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
 
+  const isAdminOrPO = useMemo(() => {
+    const owner = detail?.projectMembers.find((member) => member.isOwner);
+    return userInfo?.isAdmin || userInfo?.id === owner?.userId;
+  }, [detail?.projectMembers, userInfo]);
+
   return (
     <>
       <div className="flex justify-between items-center">
         <Typography.Title>{detail?.projectName}</Typography.Title>
-        <div className="flex gap-x-4">
-          <Button
-            icon={detail?.privacyStatus ? <UnlockOutlined /> : <LockOutlined />}
-            type={detail?.privacyStatus ? "primary" : "default"}
-            loading={actions.isUpdatingPrivacyStatus}
-            onClick={() => onUpdatePrivacyStatus(detail)}
-          >
-            {detail?.privacyStatus
-              ? EProjectPrivacyStatusLabel.Public
-              : EProjectPrivacyStatusLabel.Private}
-          </Button>
-          {detail?.privacyStatus && (
+        {isAdminOrPO ? (
+          <div className="flex gap-x-4">
             <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleOpenInviteMemberModal}
+              icon={
+                detail?.privacyStatus ? <UnlockOutlined /> : <LockOutlined />
+              }
+              type={detail?.privacyStatus ? "primary" : "default"}
+              loading={actions.isUpdatingPrivacyStatus}
+              onClick={() => onUpdatePrivacyStatus(detail)}
             >
-              Invite
+              {detail?.privacyStatus
+                ? EProjectPrivacyStatusLabel.Public
+                : EProjectPrivacyStatusLabel.Private}
             </Button>
-          )}
-        </div>
+            {detail?.privacyStatus && (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleOpenInviteMemberModal}
+              >
+                Invite
+              </Button>
+            )}
+          </div>
+        ) : null}
       </div>
       <div className="flex gap-4">
         <div className="bg-white shadow p-4 flex-grow h-fit rounded-md">

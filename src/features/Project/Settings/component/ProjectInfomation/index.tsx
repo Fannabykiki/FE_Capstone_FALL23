@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Button,
   Card,
   Col,
@@ -7,6 +6,7 @@ import {
   Divider,
   Form,
   Input,
+  Modal,
   Row,
   Space,
   Typography,
@@ -22,10 +22,16 @@ import { toast } from "react-toastify";
 import { AvatarWithColor } from "@/components";
 import { DATE_FORMAT } from "@/utils/constants";
 
-export default function ProjectInformation() {
+interface IProp {
+  isAdminOrPO: boolean;
+}
+
+export default function ProjectInformation({ isAdminOrPO }: IProp) {
   const [form] = Form.useForm();
   const { projectId } = useParams();
   const { detail } = useProjectDetail(projectId);
+
+  const [modal, contextHolder] = Modal.useModal();
 
   const initialValues = {
     projectName: detail?.projectName,
@@ -38,6 +44,18 @@ export default function ProjectInformation() {
     mutationFn: projectApi.updateProject,
     mutationKey: [projectApi.updateProjectKey],
   });
+
+  const { mutate: setDoneProject, isLoading: isLoadingSetDoneProject } =
+    useMutation({
+      mutationKey: [projectApi.setDoneProjectKey],
+      mutationFn: projectApi.setDoneProject,
+      onSuccess: async () => {
+        toast.success("This project is done");
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data || "Set project is done failed");
+      },
+    });
 
   const onSubmit = async () => {
     const formValues = await form.validateFields();
@@ -94,7 +112,7 @@ export default function ProjectInformation() {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input disabled={!isAdminOrPO} />
                 </Form.Item>
                 <Form.Item
                   label={<b>Description</b>}
@@ -105,7 +123,7 @@ export default function ProjectInformation() {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input disabled={!isAdminOrPO} />
                 </Form.Item>
                 <Row gutter={16}>
                   <Col span={12}>
@@ -121,13 +139,34 @@ export default function ProjectInformation() {
                           const startDate = form.getFieldValue("startDate");
                           return current.isBefore(startDate);
                         }}
+                        disabled={!isAdminOrPO}
                       />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Space className="mt-5">
-                  <Button loading={isLoading} onClick={onSubmit} type="primary">
+                <Space className="flex mt-5 justify-between">
+                  <Button
+                    loading={isLoading || isLoadingSetDoneProject}
+                    onClick={onSubmit}
+                    type="primary"
+                    disabled={!isAdminOrPO}
+                  >
                     Save
+                  </Button>
+                  <Button
+                    loading={isLoading || isLoadingSetDoneProject}
+                    onClick={() =>
+                      modal.confirm({
+                        title: "Warning",
+                        content:
+                          "Are you sure to set status this project is done?",
+                        onOk: () => setDoneProject({ projectId: projectId! }),
+                      })
+                    }
+                    disabled={!isAdminOrPO}
+                    type="primary"
+                  >
+                    Done Project
                   </Button>
                 </Space>
               </Form>
@@ -185,10 +224,12 @@ export default function ProjectInformation() {
             className="mt-5"
             type="primary"
             danger
+            disabled={!isAdminOrPO}
           >
             Delete
           </Button>
         </Card>
+        {contextHolder}
       </>
     );
   return <></>;

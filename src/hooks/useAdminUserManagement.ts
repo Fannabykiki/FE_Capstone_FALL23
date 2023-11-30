@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { faker } from "@faker-js/faker";
 
 import { IAdminUsers, IAdminUsersAnalyzation } from "@/interfaces/user";
 import { useAuthContext } from "@/context/Auth";
@@ -16,17 +15,7 @@ export default function useAdminUserManagement(params: Params) {
     IAdminUsers[]
   >({
     queryKey: [userApi.getAdminUsersKey, userInfo?.id, params.queryString],
-    queryFn: async ({ signal }) => {
-      const data: IAdminUsers[] = await userApi.getAdminUsers(
-        signal,
-        params.queryString
-      );
-
-      return data.map((user) => ({
-        ...user,
-        avatarColor: faker.color.rgb(),
-      }));
-    },
+    queryFn: ({ signal }) => userApi.getAdminUsers(signal, params.queryString),
     enabled: Boolean(userInfo),
   });
 

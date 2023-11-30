@@ -1,24 +1,15 @@
 import { useState } from "react";
+import { Col, Divider, Modal, Row, Space, Table, Typography } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
-import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
-import {
-  Avatar,
-  Col,
-  Divider,
-  Modal,
-  Row,
-  Space,
-  Table,
-  Typography,
-} from "antd";
 
 import { IAdminUserProjectList } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { IAdminUsers } from "@/interfaces/user";
 import { useAuthContext } from "@/context/Auth";
 import { pagination } from "@/utils/pagination";
+import { AvatarWithColor } from "@/components";
 
 interface Props {
   userDetail: IAdminUsers | undefined;
@@ -40,17 +31,8 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       projectApi.getAdminUsersAnalyzationByUserIdKey,
       userDetail?.userId,
     ],
-    queryFn: async ({ signal }) => {
-      const data: IAdminUserProjectList[] =
-        await projectApi.getAdminUsersAnalyzationByUserId(
-          signal,
-          userDetail?.userId
-        );
-      return data.map((user) => ({
-        ...user,
-        manager: { ...user.manager, avatarColor: faker.color.rgb() },
-      }));
-    },
+    queryFn: ({ signal }) =>
+      projectApi.getAdminUsersAnalyzationByUserId(signal, userDetail?.userId),
     enabled: Boolean(userInfo) && Boolean(userDetail),
   });
 
@@ -75,9 +57,9 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       render: (projectName, record) => (
         <Row>
           <Col span={4} className="flex justify-center items-center">
-            <Avatar style={{ backgroundColor: "" }}>
+            <AvatarWithColor stringContent={projectName}>
               {projectName?.charAt(0).toUpperCase()}
-            </Avatar>
+            </AvatarWithColor>
           </Col>
           <Col span={20}>
             <Typography.Title level={5} className="!m-0 min-h-[24px]">
@@ -138,9 +120,9 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       render: (_, record) => (
         <Row align="middle">
           <Col span={6} className="flex items-center">
-            <Avatar style={{ backgroundColor: record.manager.avatarColor }}>
+            <AvatarWithColor stringContent={record.manager?.userName}>
               {record.manager?.userName?.charAt(0).toUpperCase()}
-            </Avatar>
+            </AvatarWithColor>
           </Col>
           <Col span={18}>
             <Typography.Title level={5} className="!m-0">
@@ -181,13 +163,14 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
               direction="vertical"
               className="flex justify-center items-center w-full"
             >
-              <Avatar
+              <AvatarWithColor
+                stringContent={userDetail?.userName}
                 shape="square"
                 className="w-[80px] h-[80px] flex justify-center items-center text-3xl"
-                style={{ backgroundColor: userDetail?.avatarColor }}
               >
                 {userDetail?.userName?.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
+
               <Typography.Text className="font-medium">
                 {userDetail?.userName}
               </Typography.Text>

@@ -10,7 +10,11 @@ import { IPermissionSchemes } from "@/interfaces/schema";
 import { projectApi } from "@/utils/api/project";
 import { schemaApi } from "@/utils/api/schema";
 
-const PermissionRole = () => {
+interface IProp {
+  isAdminOrPO: boolean;
+}
+
+const PermissionRole = ({ isAdminOrPO }: IProp) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [isPermissionId, setPermissionId] = useState<string>();
 
@@ -70,7 +74,7 @@ const PermissionRole = () => {
         </Space>
       ),
     },
-    Table.SELECTION_COLUMN,
+    isAdminOrPO ? Table.SELECTION_COLUMN : {},
   ];
 
   return (
@@ -103,7 +107,7 @@ const PermissionRole = () => {
       />
       <Row className="mt-5" justify="end">
         <Button
-          disabled={!selectedRowKeys[0]}
+          disabled={!selectedRowKeys[0] || !isAdminOrPO}
           loading={isChangingProjectSchema}
           onClick={onSubmit}
           type="primary"

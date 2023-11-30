@@ -71,3 +71,5 @@ export const RANDOM_COLOR = [
   "#7FFFD4",
   "#800080",
 ];
+
+export const ADMIN_ROLES = ["PO", "System Admin"];

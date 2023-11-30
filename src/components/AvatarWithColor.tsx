@@ -2,11 +2,11 @@ import { stringToColor } from "@/utils/common";
 import { Avatar, AvatarProps } from "antd";
 
 interface Props {
-  stringContent: string;
+  stringContent: string | undefined;
 }
 
 export default function AvatarWithColor({
-  stringContent,
+  stringContent = "",
   ...props
 }: AvatarProps & Props) {
   const colorInfo = stringToColor(stringContent);

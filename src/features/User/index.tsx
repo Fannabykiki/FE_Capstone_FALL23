@@ -12,6 +12,7 @@ import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import useDebounceValue from "@/hooks/useDebounceValue";
 import { AvatarWithColor } from "@/components";
+import { ADMIN_ROLES } from "@/utils/constants";
 
 export default function UserDashboard() {
   const { projects, refetchProjects } = useListProjectOfUser();
@@ -142,8 +143,7 @@ export default function UserDashboard() {
                   </span>
                 </Space>
               </Col>
-              {project.deleteAt &&
-              ["System Admin", "PO"].includes(project.memberRole) ? (
+              {project.deleteAt && ADMIN_ROLES.includes(project.memberRole) ? (
                 <Col span={2} className="flex justify-end">
                   <Dropdown
                     menu={{

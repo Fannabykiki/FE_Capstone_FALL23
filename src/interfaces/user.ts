@@ -53,7 +53,6 @@ export interface IAdminUsers {
   isAdmin: boolean;
   address: string;
   dob: Date | null;
-  avatarColor?: string;
 }
 
 export interface IAdminUsersAnalyzation {
