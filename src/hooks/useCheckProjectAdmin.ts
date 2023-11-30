@@ -14,20 +14,16 @@ export default function useCheckProjectAdmin() {
       projectApi.getListUserInProjectByProjectIdKey,
       projectId,
     ]) || [];
-    
+
   if (!projectId || memberList?.length === 0) {
     return false;
   }
-  
+
   const memberSelfInfo = memberList?.find(
     (member) => member.userId === userInfo!.id
   );
 
-  const adminRoles = ["PO", "System Admin"];
-
-  const isUserAdmin =
-    memberSelfInfo?.isOwner ||
-    adminRoles.includes(memberSelfInfo?.roleName || "");
+  const isUserAdmin = memberSelfInfo?.isOwner || userInfo?.isAdmin;
 
   return isUserAdmin;
 }
