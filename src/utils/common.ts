@@ -141,10 +141,11 @@ const lowerCaseFirstLetter = (str: string) => {
   return str.charAt(0).toLowerCase() + str.slice(1);
 };
 
-const isQuillEmpty = (value: string) => {
+const isQuillEmpty = (value: string | undefined) => {
   if (
-    value.replace(/<(.|\n)*?>/g, "").trim().length === 0 &&
-    !value.includes("<img")
+    !value ||
+    (value.replace(/<(.|\n)*?>/g, "").trim().length === 0 &&
+      !value.includes("<img"))
   ) {
     return true;
   }
