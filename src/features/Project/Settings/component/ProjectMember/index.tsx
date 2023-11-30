@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { UserDeleteOutlined, UserSwitchOutlined } from "@ant-design/icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
@@ -21,7 +21,7 @@ import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { AvatarWithColor } from "@/components";
 import ReAssignModal from "./ReAssignModal";
-import { useAuthContext } from "@/context/Auth";
+import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 export default function ProjectMember() {
   const [isOpenModalReAssign, setOpenModalReAssign] = useState(false);
@@ -34,28 +34,31 @@ export default function ProjectMember() {
 
   const [modal, contextHolder] = Modal.useModal();
 
-  const { data: memberList, refetch: refetchMemberList } = useQuery({
-    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
-    queryFn: async ({ signal }) =>
-      projectApi.getListUserInProjectByProjectId(signal, projectId),
-    enabled: Boolean(projectId),
-  });
+  const queryClient = useQueryClient();
+
+  const memberList =
+    queryClient.getQueryData<IProjectMember[]>([
+      projectApi.getListUserInProjectByProjectIdKey,
+      projectId,
+    ]) || [];
 
   const { mutate: removeMember } = useMutation({
     mutationKey: [projectApi.removeMemberKey],
     mutationFn: projectApi.removeMember,
     onSuccess: async () => {
-      await refetchMemberList();
+      await queryClient.invalidateQueries({
+        queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+      });
+      await queryClient.refetchQueries({
+        queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+      });
       toast.success("Delete member successfully");
     },
     onError: (err: any) => {
       toast.error(err?.response?.data || "Delete member failed");
     },
   });
-  const managerProject = useMemo(
-    () => memberList?.find((member) => member.isOwner),
-    [memberList]
-  );
+  const managerProject = memberList?.find((member) => member.isOwner);
 
   const handleDelete = (memberId: string) => {
     modal.confirm({
@@ -73,13 +76,9 @@ export default function ProjectMember() {
     });
   };
 
-  const { userInfo } = useAuthContext();
-
-  const memberSelfInfo = memberList?.find(
-    (member) => member.userId === userInfo!.id
-  );
-
   const adminRoles = ["PO", "System Admin"];
+
+  const isUserAdmin = useCheckProjectAdmin();
 
   const columns: ColumnsType<IProjectMember> = [
     {
@@ -136,7 +135,7 @@ export default function ProjectMember() {
       align: "center",
       render: (_, record) =>
         !adminRoles.includes(record?.roleName || "") &&
-        adminRoles.includes(memberSelfInfo?.roleName || "") && (
+        isUserAdmin && (
           <Space size="middle">
             <Button
               icon={<UserDeleteOutlined />}
@@ -177,12 +176,14 @@ export default function ProjectMember() {
             ) : null}
           </Col>
           <Col span={4} className="flex justify-center items-center">
-            <Button
-              icon={<UserSwitchOutlined />}
-              onClick={() => setOpenModalReAssign(true)}
-            >
-              ReAssign
-            </Button>
+            {isUserAdmin && (
+              <Button
+                icon={<UserSwitchOutlined />}
+                onClick={() => setOpenModalReAssign(true)}
+              >
+                ReAssign
+              </Button>
+            )}
           </Col>
         </Row>
       </div>

@@ -1,5 +1,4 @@
 import {
-  Avatar,
   Button,
   Card,
   Col,
@@ -21,6 +20,7 @@ import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import { AvatarWithColor } from "@/components";
 import { DATE_FORMAT } from "@/utils/constants";
+import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 export default function ProjectInformation() {
   const [form] = Form.useForm();
@@ -69,6 +69,8 @@ export default function ProjectInformation() {
     setIsModalDeleteOpen(false);
   };
 
+  const isUserAdmin = useCheckProjectAdmin();
+
   const projectAdmin = detail?.projectMembers.find((member) => member.isOwner);
   if (detail)
     return (
@@ -94,7 +96,7 @@ export default function ProjectInformation() {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input readOnly={!isUserAdmin} />
                 </Form.Item>
                 <Form.Item
                   label={<b>Description</b>}
@@ -105,7 +107,7 @@ export default function ProjectInformation() {
                     },
                   ]}
                 >
-                  <Input />
+                  <Input readOnly={!isUserAdmin} />
                 </Form.Item>
                 <Row gutter={16}>
                   <Col span={12}>
@@ -121,15 +123,22 @@ export default function ProjectInformation() {
                           const startDate = form.getFieldValue("startDate");
                           return current.isBefore(startDate);
                         }}
+                        disabled={!isUserAdmin}
                       />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Space className="mt-5">
-                  <Button loading={isLoading} onClick={onSubmit} type="primary">
-                    Save
-                  </Button>
-                </Space>
+                {isUserAdmin && (
+                  <Space className="mt-5">
+                    <Button
+                      loading={isLoading}
+                      onClick={onSubmit}
+                      type="primary"
+                    >
+                      Save
+                    </Button>
+                  </Space>
+                )}
               </Form>
             </Col>
             <Col span={9} offset={3}>
@@ -174,20 +183,24 @@ export default function ProjectInformation() {
             </Row>
           </div>
           <Divider />
-          <Typography className="text-xl font-medium">
-            Delete Project
-          </Typography>
-          <Typography className="mt-2">
-            This will affect all contents and members of this project.
-          </Typography>
-          <Button
-            onClick={handleOpenModalDelete}
-            className="mt-5"
-            type="primary"
-            danger
-          >
-            Delete
-          </Button>
+          {isUserAdmin && (
+            <>
+              <Typography className="text-xl font-medium">
+                Delete Project
+              </Typography>
+              <Typography className="mt-2">
+                This will affect all contents and members of this project.
+              </Typography>
+              <Button
+                onClick={handleOpenModalDelete}
+                className="mt-5"
+                type="primary"
+                danger
+              >
+                Delete
+              </Button>
+            </>
+          )}
         </Card>
       </>
     );

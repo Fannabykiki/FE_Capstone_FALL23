@@ -1,5 +1,5 @@
 import useErrorMessage from "@/hooks/useErrorMessage";
-import { ICreateStatusPayload } from "@/interfaces/task";
+import { ICreateStatusPayload, ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 import { lowerCaseFirstLetter } from "@/utils/common";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,11 +24,22 @@ export default function CreateStatus({ open, onClose }: Props) {
   };
   const { errorInfo, setErrorInfo } = useErrorMessage();
 
+  const statusList =
+    queryClient.getQueryData<ITaskStatus[]>([
+      taskApi.getTaskStatusKey,
+      projectId,
+    ]) || [];
+
   const { mutate: createStatus, isLoading } = useMutation({
     mutationFn: taskApi.createTaskStatus,
     mutationKey: [taskApi.createTaskStatusKey],
-    onSuccess: async (_, variables) => {
+    onSuccess: async (data, variables) => {
+      console.log(data);
       toast.success(`Create status '${variables.title}' succeed`);
+      queryClient.setQueryData(
+        [taskApi.getTaskStatusKey, projectId],
+        [...statusList, data]
+      );
       await queryClient.invalidateQueries({
         queryKey: [taskApi.getTaskStatusKey, projectId],
       });

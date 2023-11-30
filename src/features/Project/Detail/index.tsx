@@ -17,6 +17,7 @@ import InviteMemberModal from "./InviteMemberModal";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 import { AvatarWithColor } from "@/components";
+import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 export default function ProjectDetail() {
   const [isOpenInviteMemberModal, setOpenInviteMemberModal] =
@@ -80,31 +81,37 @@ export default function ProjectDetail() {
 
   const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
 
+  const isUserAdmin = useCheckProjectAdmin();
+
   return (
     <>
       <div className="flex justify-between items-center">
         <Typography.Title>{detail?.projectName}</Typography.Title>
-        <div className="flex gap-x-4">
-          <Button
-            icon={detail?.privacyStatus ? <UnlockOutlined /> : <LockOutlined />}
-            type={detail?.privacyStatus ? "primary" : "default"}
-            loading={actions.isUpdatingPrivacyStatus}
-            onClick={() => onUpdatePrivacyStatus(detail)}
-          >
-            {detail?.privacyStatus
-              ? EProjectPrivacyStatusLabel.Public
-              : EProjectPrivacyStatusLabel.Private}
-          </Button>
-          {detail?.privacyStatus && (
+        {isUserAdmin && (
+          <div className="flex gap-x-4">
             <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleOpenInviteMemberModal}
+              icon={
+                detail?.privacyStatus ? <UnlockOutlined /> : <LockOutlined />
+              }
+              type={detail?.privacyStatus ? "primary" : "default"}
+              loading={actions.isUpdatingPrivacyStatus}
+              onClick={() => onUpdatePrivacyStatus(detail)}
             >
-              Invite
+              {detail?.privacyStatus
+                ? EProjectPrivacyStatusLabel.Public
+                : EProjectPrivacyStatusLabel.Private}
             </Button>
-          )}
-        </div>
+            {detail?.privacyStatus && (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleOpenInviteMemberModal}
+              >
+                Invite
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       <div className="flex gap-4">
         <div className="bg-white shadow p-4 flex-grow h-fit rounded-md">

@@ -26,7 +26,6 @@ export default function ProjectLayout() {
         }));
     },
     initialData: [],
-    enabled: Boolean(projectId),
   });
 
   return (

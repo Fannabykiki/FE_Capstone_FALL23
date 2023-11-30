@@ -8,6 +8,7 @@ import useDetailView from "@/hooks/useDetailView";
 import { ITaskStatus } from "@/interfaces/task";
 import { CreateStatus } from "@/components";
 import { taskApi } from "@/utils/api/task";
+import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 export default function StatusManagement() {
   const { projectId } = useParams();
@@ -26,6 +27,8 @@ export default function StatusManagement() {
     openView: isModalCreateOpen,
   } = useDetailView();
 
+  const isUserAdmin = useCheckProjectAdmin();
+
   return (
     <Card className="min-h-screen">
       {isModalCreateOpen && (
@@ -36,16 +39,18 @@ export default function StatusManagement() {
       )}
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Status Management</Typography.Title>
-        <Space>
-          <Button
-            type="primary"
-            title="New Status"
-            onClick={() => handleOpenModalCreate()}
-            icon={<PlusOutlined />}
-          >
-            New Status
-          </Button>
-        </Space>
+        {isUserAdmin && (
+          <Space>
+            <Button
+              type="primary"
+              title="New Status"
+              onClick={() => handleOpenModalCreate()}
+              icon={<PlusOutlined />}
+            >
+              New Status
+            </Button>
+          </Space>
+        )}
       </div>
 
       <Space direction="vertical" className="w-full shadow-custom pb-5">

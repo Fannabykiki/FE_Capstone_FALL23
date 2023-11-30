@@ -60,7 +60,7 @@ export interface IProjectMember {
   userId: string;
   roleId: string;
   projectId: string;
-  roleName: string | null;
+  roleName: string;
   isOwner: boolean;
   fullname: string;
   email: string;
