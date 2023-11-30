@@ -10,7 +10,11 @@ import { CreateStatus } from "@/components";
 import { taskApi } from "@/utils/api/task";
 import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
-export default function StatusManagement() {
+interface IProp {
+  isAdminOrPO: boolean;
+}
+
+export default function StatusManagement({ isAdminOrPO }: IProp) {
   const { projectId } = useParams();
 
   const queryClient = useQueryClient();
@@ -39,18 +43,17 @@ export default function StatusManagement() {
       )}
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Status Management</Typography.Title>
-        {isUserAdmin && (
-          <Space>
-            <Button
-              type="primary"
-              title="New Status"
-              onClick={() => handleOpenModalCreate()}
-              icon={<PlusOutlined />}
-            >
-              New Status
-            </Button>
-          </Space>
-        )}
+        <Space>
+          <Button
+            type="primary"
+            title="New Status"
+            onClick={() => handleOpenModalCreate()}
+            icon={<PlusOutlined />}
+            disabled={!isAdminOrPO}
+          >
+            New Status
+          </Button>
+        </Space>
       </div>
 
       <Space direction="vertical" className="w-full shadow-custom pb-5">

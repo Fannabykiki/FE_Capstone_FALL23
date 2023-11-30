@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { UserDeleteOutlined, UserSwitchOutlined } from "@ant-design/icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { MoreOutlined, UserSwitchOutlined } from "@ant-design/icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
 import {
@@ -9,6 +9,7 @@ import {
   Card,
   Col,
   Divider,
+  Dropdown,
   Modal,
   Row,
   Space,
@@ -16,15 +17,24 @@ import {
   Typography,
 } from "antd";
 
+import ChangeMemberRoleModal from "./ChangeMemberRoleModal";
 import { IProjectMember } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
+import { useAuthContext } from "@/context/Auth";
+import { ADMIN_ROLES } from "@/utils/constants";
 import { AvatarWithColor } from "@/components";
 import ReAssignModal from "./ReAssignModal";
-import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
+import { paths } from "@/routers/paths";
 
-export default function ProjectMember() {
-  const [isOpenModalReAssign, setOpenModalReAssign] = useState(false);
+interface IProp {
+  isAdminOrPO: boolean;
+}
+
+export default function ProjectMember({ isAdminOrPO }: IProp) {
+  const [isOpenChangeRoleModal, setOpenChangeRoleModal] =
+    useState<IProjectMember>();
+  const [isOpenReAssignModal, setOpenReAssignModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams({
     page: "1",
     limit: "10",
@@ -32,41 +42,47 @@ export default function ProjectMember() {
 
   const { projectId } = useParams();
 
+  const { userInfo } = useAuthContext();
+
   const [modal, contextHolder] = Modal.useModal();
 
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const memberList =
-    queryClient.getQueryData<IProjectMember[]>([
-      projectApi.getListUserInProjectByProjectIdKey,
-      projectId,
-    ]) || [];
+  const { data: memberList, refetch: refetchMemberList } = useQuery({
+    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
+    queryFn: async ({ signal }) =>
+      projectApi.getListUserInProjectByProjectId(signal, projectId),
+    enabled: Boolean(projectId),
+  });
 
   const { mutate: removeMember } = useMutation({
     mutationKey: [projectApi.removeMemberKey],
     mutationFn: projectApi.removeMember,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
-      });
-      await queryClient.refetchQueries({
-        queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
-      });
+      await refetchMemberList();
       toast.success("Delete member successfully");
     },
     onError: (err: any) => {
       toast.error(err?.response?.data || "Delete member failed");
     },
   });
-  const managerProject = memberList?.find((member) => member.isOwner);
 
-  const handleDelete = (memberId: string) => {
-    modal.confirm({
-      title: "Warning",
-      content: "Are you sure to delete this member?",
-      onOk: () => removeMember({ memberId }),
-    });
-  };
+  const { mutate: outProject } = useMutation({
+    mutationKey: [projectApi.outProjectKey],
+    mutationFn: projectApi.outProject,
+    onSuccess: async () => {
+      navigate(paths.user);
+      toast.success("Out project successfully");
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data || "Out project failed");
+    },
+  });
+
+  const managerProject = useMemo(
+    () => memberList?.find((member) => member.isOwner),
+    [memberList]
+  );
 
   const onChangePage = (page: number, pageSize: number) => {
     setSearchParams((prev) => {
@@ -75,10 +91,6 @@ export default function ProjectMember() {
       return prev;
     });
   };
-
-  const adminRoles = ["PO", "System Admin"];
-
-  const isUserAdmin = useCheckProjectAdmin();
 
   const columns: ColumnsType<IProjectMember> = [
     {
@@ -109,12 +121,12 @@ export default function ProjectMember() {
     {
       title: "Role",
       dataIndex: "roleName",
-      width: "20%",
+      width: "25%",
     },
     {
       title: "Status",
       dataIndex: "statusName",
-      width: "20%",
+      width: "25%",
       render: (status) => (
         <Row align="middle" className="gap-2">
           <Typography.Text
@@ -131,20 +143,63 @@ export default function ProjectMember() {
     },
     {
       dataIndex: "action",
-      width: "20%",
+      width: "10%",
       align: "center",
-      render: (_, record) =>
-        !adminRoles.includes(record?.roleName || "") &&
-        isUserAdmin && (
-          <Space size="middle">
-            <Button
-              icon={<UserDeleteOutlined />}
-              onClick={() => handleDelete(record.memberId)}
-            >
-              Remove
-            </Button>
-          </Space>
-        ),
+      render: (_, record) => {
+        const items = [];
+        if (record.userId === userInfo?.id) {
+          items.push({
+            key: "out",
+            label: "Out project",
+          });
+        } else {
+          if (
+            record.roleName &&
+            !ADMIN_ROLES.includes(record.roleName) &&
+            isAdminOrPO
+          ) {
+            items.push(
+              {
+                key: "role",
+                label: "Change role",
+              },
+              {
+                key: "remove",
+                label: "Remove",
+              }
+            );
+          }
+        }
+        return record.userId === userInfo?.id ||
+          (record.roleName &&
+            !ADMIN_ROLES.includes(record.roleName) &&
+            isAdminOrPO) ? (
+          <Dropdown
+            menu={{
+              items,
+              onClick: ({ key }) =>
+                key === "role"
+                  ? setOpenChangeRoleModal(record)
+                  : modal.confirm({
+                      title: "Warning",
+                      content:
+                        key === "remove"
+                          ? "Are you sure to remove this member?"
+                          : "Are you sure to out this project?",
+                      onOk: () =>
+                        key === "remove"
+                          ? removeMember({ memberId: record.memberId })
+                          : outProject({ projectId: projectId! }),
+                    }),
+            }}
+            placement="bottom"
+            arrow
+            trigger={["click"]}
+          >
+            <MoreOutlined className="cursor-pointer p-2 hover:bg-gray-200" />
+          </Dropdown>
+        ) : null;
+      },
     },
   ];
 
@@ -152,38 +207,40 @@ export default function ProjectMember() {
     <Card className="min-h-screen">
       <Typography className="text-xl font-medium">Project Manager</Typography>
       <div className="mt-3">
-        <Row gutter={12}>
-          <Col span={1} className="flex justify-center items-center">
-            {managerProject ? (
-              <AvatarWithColor
-                stringContent={managerProject.userName || managerProject.email}
-              >
-                {(managerProject.userName ||
-                  managerProject.email)?.[0].toUpperCase()}
-              </AvatarWithColor>
-            ) : null}
-          </Col>
-          <Col span={19}>
-            {managerProject ? (
-              <>
-                <Typography.Title level={5} className="!m-0 min-h-[24px]">
-                  {managerProject.userName}
-                </Typography.Title>
-                <Typography.Text className="min-h-[19px]">
-                  {managerProject.email}
-                </Typography.Text>
-              </>
-            ) : null}
+        <Row>
+          <Col span={20}>
+            <Row className="flex items-center gap-3">
+              {managerProject ? (
+                <AvatarWithColor
+                  stringContent={
+                    managerProject.userName || managerProject.email
+                  }
+                >
+                  {(managerProject.userName ||
+                    managerProject.email)?.[0].toUpperCase()}
+                </AvatarWithColor>
+              ) : null}
+              {managerProject ? (
+                <Space direction="vertical">
+                  <Typography.Title level={5} className="!m-0 min-h-[24px]">
+                    {managerProject.userName}
+                  </Typography.Title>
+                  <Typography.Text className="min-h-[19px]">
+                    {managerProject.email}
+                  </Typography.Text>
+                </Space>
+              ) : null}
+            </Row>
           </Col>
           <Col span={4} className="flex justify-center items-center">
-            {isUserAdmin && (
+            {isAdminOrPO ? (
               <Button
                 icon={<UserSwitchOutlined />}
-                onClick={() => setOpenModalReAssign(true)}
+                onClick={() => setOpenReAssignModal(true)}
               >
                 ReAssign
               </Button>
-            )}
+            ) : null}
           </Col>
         </Row>
       </div>
@@ -210,8 +267,12 @@ export default function ProjectMember() {
         }}
       />
       <ReAssignModal
-        isOpen={isOpenModalReAssign}
-        handleClose={() => setOpenModalReAssign(false)}
+        isOpen={isOpenReAssignModal}
+        handleClose={() => setOpenReAssignModal(false)}
+      />
+      <ChangeMemberRoleModal
+        currentMember={isOpenChangeRoleModal}
+        handleClose={() => setOpenChangeRoleModal(undefined)}
       />
       {contextHolder}
     </Card>

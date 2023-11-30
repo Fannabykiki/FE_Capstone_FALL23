@@ -3,7 +3,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import { EProjectPrivacyStatusLabel, IProject } from "@/interfaces/project";
 import { paths } from "@/routers/paths";
 import { Avatar, Button, Descriptions, Tooltip, Typography } from "antd";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   FileAddOutlined,
@@ -17,7 +17,6 @@ import InviteMemberModal from "./InviteMemberModal";
 import dayjs from "dayjs";
 import { DATE_FORMAT } from "@/utils/constants";
 import { AvatarWithColor } from "@/components";
-import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 export default function ProjectDetail() {
   const [isOpenInviteMemberModal, setOpenInviteMemberModal] =
@@ -81,13 +80,16 @@ export default function ProjectDetail() {
 
   const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
 
-  const isUserAdmin = useCheckProjectAdmin();
+  const isAdminOrPO = useMemo(() => {
+    const owner = detail?.projectMembers.find((member) => member.isOwner);
+    return userInfo?.isAdmin || userInfo?.id === owner?.userId;
+  }, [detail?.projectMembers, userInfo]);
 
   return (
     <>
       <div className="flex justify-between items-center">
         <Typography.Title>{detail?.projectName}</Typography.Title>
-        {isUserAdmin && (
+        {isAdminOrPO ? (
           <div className="flex gap-x-4">
             <Button
               icon={
@@ -111,7 +113,7 @@ export default function ProjectDetail() {
               </Button>
             )}
           </div>
-        )}
+        ) : null}
       </div>
       <div className="flex gap-4">
         <div className="bg-white shadow p-4 flex-grow h-fit rounded-md">

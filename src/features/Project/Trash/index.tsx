@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { faker } from "@faker-js/faker";
+import { AvatarWithColor } from "@/components";
 import debounce from "lodash/debounce";
 import buildQuery from "odata-query";
 import dayjs from "dayjs";
@@ -14,7 +14,6 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import {
-  Avatar,
   Button,
   Card,
   Col,
@@ -76,8 +75,8 @@ const TrashBin = () => {
       searchParams.get("interation"),
       searchParams.get("search"),
     ],
-    queryFn: async ({ signal }) => {
-      const data = await taskApi.getAllTaskInTrashBin(
+    queryFn: ({ signal }) =>
+      taskApi.getAllTaskInTrashBin(
         signal,
         projectId,
         buildQuery({
@@ -90,13 +89,7 @@ const TrashBin = () => {
             },
           },
         })
-      );
-
-      return data.map((task) => ({
-        ...task,
-        assignToAvtColor: faker.color.rgb(),
-      }));
-    },
+      ),
     enabled: Boolean(projectId),
   });
 
@@ -188,9 +181,9 @@ const TrashBin = () => {
         record.assignTo ? (
           <Row align="middle">
             <Col span={5} className="flex items-center">
-              <Avatar style={{ backgroundColor: record.assignToAvtColor }}>
+              <AvatarWithColor stringContent={record.assignTo}>
                 {record.assignTo?.charAt(0).toUpperCase()}
-              </Avatar>
+              </AvatarWithColor>
             </Col>
             <Col span={19}>
               <Typography.Title level={5} className="!m-0">

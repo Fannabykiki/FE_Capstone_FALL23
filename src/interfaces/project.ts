@@ -52,7 +52,6 @@ export interface IProject {
   totalTaskCreated: number;
   totalTaskCompleted: number;
   projectMembers: IProjectMember[];
-  bgColor?: string;
 }
 
 export interface IProjectMember {
@@ -85,7 +84,6 @@ export interface IAdminProject {
     isAdmin: boolean;
     address: string;
     dob: Date | null;
-    avatarColor?: string;
   };
   member: {
     userId: string;
@@ -96,7 +94,6 @@ export interface IAdminProject {
     isAdmin: boolean;
     address: string;
     dob: Date | null;
-    avatarColor?: string;
   }[];
   createAt: Date;
   deleteAt: null;
@@ -134,7 +131,6 @@ export interface IAdminUserProjectList {
     isAdmin: boolean;
     address: string;
     dob: Date | null;
-    avatarColor?: string;
   };
   startDate: Date;
 }
@@ -156,7 +152,6 @@ export interface IWorkItemList {
     isAdmin: boolean;
     address: string;
     dob: Date;
-    avatarColor?: string;
   };
   createBy: {
     userId: string;
@@ -228,7 +223,6 @@ export interface IReportProject {
     roleName: string;
     isOwner: boolean;
     totalTasks: number;
-    avatarColor?: string;
     reportStatuses: {
       boardStatusId: string;
       title: string;
@@ -237,4 +231,10 @@ export interface IReportProject {
     }[];
     [key: string]: any;
   }[];
+}
+
+export interface IRoleByProjectId {
+  roleId: string;
+  roleName: string;
+  description: string;
 }

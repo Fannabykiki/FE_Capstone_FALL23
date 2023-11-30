@@ -1,10 +1,9 @@
 import { useMemo, useRef } from "react";
-import { Avatar, Col, Divider, Row, Space, Table, Typography } from "antd";
+import { Col, Divider, Row, Space, Table, Typography } from "antd";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType, ColumnType } from "antd/es/table";
 import ReactECharts from "echarts-for-react";
-import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
 import useProjectDetail from "@/hooks/useProjectDetail";
@@ -12,6 +11,7 @@ import { IReportProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { ITaskStatus } from "@/interfaces/task";
+import { AvatarWithColor } from "@/components";
 import { taskApi } from "@/utils/api/task";
 
 const Report = () => {
@@ -53,7 +53,7 @@ const Report = () => {
             (prev, next) => ({ ...prev, [next.title]: next.numberTask }),
             {}
           );
-          return { ...member, avatarColor: faker.color.rgb(), ...statusObject };
+          return { ...member, ...statusObject };
         }),
       };
     },
@@ -79,9 +79,9 @@ const Report = () => {
         return (
           <Row gutter={4}>
             <Col span={5} className="flex justify-center items-center">
-              <Avatar style={{ backgroundColor: record.avatarColor }}>
-                {name?.[0].toUpperCase()}
-              </Avatar>
+              <AvatarWithColor stringContent={name}>
+                {name?.charAt(0).toUpperCase()}
+              </AvatarWithColor>
             </Col>
             <Col span={19}>
               <Typography.Title level={5} className="!m-0 min-h-[24px]">

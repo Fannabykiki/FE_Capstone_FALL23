@@ -1,11 +1,13 @@
 import { RoleInputType } from "@/features/Admin/RoleManagement/CreateEditRole";
 import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
+import { IAdminRoles } from "@/interfaces/role";
+import { IRoleByProjectId } from "@/interfaces/project";
 
 const getAdminRoles = async (
   signal: AbortSignal | undefined,
   queryString: string
-) =>
+): Promise<IAdminRoles[]> =>
   axiosClient({
     url: "/api/role-management/system/roles" + queryString,
     method: HTTP_METHODS.GET,
@@ -62,6 +64,16 @@ const getRevokeListBySchemaId = ({
     data,
   }).then((resp) => resp.data);
 
+const getRolesByProjectId = (
+  signal: AbortSignal | undefined,
+  projectId: string
+): Promise<IRoleByProjectId[]> =>
+  axiosClient({
+    url: `/api/role-management/project/roles/${projectId}`,
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data);
+
 export const roleApi = {
   getAdminRoles,
   getAdminRolesKey: "getAdminRolesKey",
@@ -75,4 +87,6 @@ export const roleApi = {
   getGrantListBySchemaIdKey: "getGrantListBySchemaIdKey",
   getRevokeListBySchemaId,
   getRevokeListBySchemaIdKey: "getRevokeListBySchemaIdKey",
+  getRolesByProjectId,
+  getRolesByProjectIdKey: "getRolesByProjectIdKey",
 };

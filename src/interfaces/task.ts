@@ -118,7 +118,6 @@ export interface ITrashBinRecord {
   typeId: string;
   priorityName: string;
   interationName: string;
-  assignToAvtColor?: string;
   subTask: string[];
 }
 

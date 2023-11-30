@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   InfoCircleOutlined,
   LockOutlined,
@@ -11,11 +11,11 @@ import { Content } from "antd/es/layout/layout";
 import ProjectInformation from "./component/ProjectInfomation";
 import ProjectMember from "./component/ProjectMember";
 import PermissionRole from "./component/PermissionRole";
-import useProjectDetail from "@/hooks/useProjectDetail";
-import { generatePath, useNavigate, useParams } from "react-router-dom";
-import { useAuthContext } from "@/context/Auth";
-import { paths } from "@/routers/paths";
+
 import StatusManagement from "./component/StatusManagement";
+import useProjectDetail from "@/hooks/useProjectDetail";
+import { useParams } from "react-router-dom";
+import { useAuthContext } from "@/context/Auth";
 
 interface MenuItem {
   label: string;
@@ -27,18 +27,11 @@ export default function ProjectSettings() {
   const { projectId } = useParams();
   const { detail } = useProjectDetail(projectId);
   const { userInfo } = useAuthContext();
-  const navigate = useNavigate();
 
-  useLayoutEffect(() => {
-    if (detail && userInfo) {
-      const owner = detail.projectMembers.find((member) => member.isOwner);
-      if (!userInfo.isAdmin && userInfo.id !== owner?.userId) {
-        navigate(
-          generatePath(paths.project.detail, { projectId: detail.projectId })
-        );
-      }
-    }
-  }, [userInfo, detail, navigate]);
+  const isAdminOrPO = useMemo(() => {
+    const owner = detail?.projectMembers.find((member) => member.isOwner);
+    return userInfo?.isAdmin || userInfo?.id === owner?.userId;
+  }, [detail?.projectMembers, userInfo]);
 
   const items: MenuItem[] = [
     {
@@ -70,34 +63,40 @@ export default function ProjectSettings() {
   };
 
   return (
-    <>
-      <Layout>
-        <Sider className="min-h-[calc(100vh_-_116px_-_4rem)] rounded-md">
-          <Menu
-            className="rounded-md"
-            mode="inline"
-            selectedKeys={[selectedKey]}
-            defaultSelectedKeys={["projectInformation"]}
-            style={{ height: "100%" }}
-          >
-            {items.map((item) => (
-              <Menu.Item
-                key={item.key}
-                icon={item.icon}
-                onClick={() => handleMenuClick(item.key)}
-              >
-                {item.label}
-              </Menu.Item>
-            ))}
-          </Menu>
-        </Sider>
-        <Content className="ml-2">
-          {selectedKey === "projectInformation" && <ProjectInformation />}
-          {selectedKey === "projectMember" && <ProjectMember />}
-          {selectedKey === "permission&role" && <PermissionRole />}
-          {selectedKey === "statusManagement" && <StatusManagement />}
-        </Content>
-      </Layout>
-    </>
+    <Layout>
+      <Sider className="min-h-[calc(100vh_-_116px_-_4rem)] rounded-md">
+        <Menu
+          className="rounded-md"
+          mode="inline"
+          selectedKeys={[selectedKey]}
+          defaultSelectedKeys={["projectInformation"]}
+          style={{ height: "100%" }}
+        >
+          {items.map((item) => (
+            <Menu.Item
+              key={item.key}
+              icon={item.icon}
+              onClick={() => handleMenuClick(item.key)}
+            >
+              {item.label}
+            </Menu.Item>
+          ))}
+        </Menu>
+      </Sider>
+      <Content className="ml-2">
+        {selectedKey === "projectInformation" && (
+          <ProjectInformation isAdminOrPO={isAdminOrPO} />
+        )}
+        {selectedKey === "projectMember" && (
+          <ProjectMember isAdminOrPO={isAdminOrPO} />
+        )}
+        {selectedKey === "permission&role" && (
+          <PermissionRole isAdminOrPO={isAdminOrPO} />
+        )}
+        {selectedKey === "statusManagement" && (
+          <StatusManagement isAdminOrPO={isAdminOrPO} />
+        )}
+      </Content>
+    </Layout>
   );
 }
