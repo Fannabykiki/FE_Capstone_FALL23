@@ -20,6 +20,10 @@ import TaskDraggableDisplay from "./TaskDraggableDisplay";
 import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
 import useDebounceValue from "@/hooks/useDebounceValue";
 import AvatarWithColor from "../AvatarWithColor";
+import { IProject } from "@/interfaces/project";
+import { useQueryClient } from "@tanstack/react-query";
+import { projectApi } from "@/utils/api/project";
+import { useParams } from "react-router-dom";
 
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
 const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
@@ -44,6 +48,12 @@ export default function MainTaskDisplay({
   filterData,
 }: Props) {
   const filterTaskName = useDebounceValue(filterData.name, 1000);
+  const queryClient = useQueryClient();
+  const { projectId } = useParams();
+  const project: IProject | undefined = queryClient.getQueryData([
+    projectApi.getInfoKey,
+    projectId,
+  ]);
   if (isCollapsed) {
     return (
       <div className="p-2">
@@ -85,6 +95,7 @@ export default function MainTaskDisplay({
       </div>
     );
   }
+
   return (
     <>
       <div>
@@ -97,20 +108,22 @@ export default function MainTaskDisplay({
           >
             {task.title}
           </Button>
-          <div className={"flex-grow flex flex-col items-start pb-4"}>
-            <Button
-              type="text"
-              icon={<PlusOutlined />}
-              className="w-fit"
-              onClick={() =>
-                onOpenCreateTaskModal({
-                  taskId: task.taskId,
-                })
-              }
-            >
-              New sub task
-            </Button>
-          </div>
+          {project?.projectStatus !== "Done" && (
+            <div className={"flex-grow flex flex-col items-start pb-4"}>
+              <Button
+                type="text"
+                icon={<PlusOutlined />}
+                className="w-fit"
+                onClick={() =>
+                  onOpenCreateTaskModal({
+                    taskId: task.taskId,
+                  })
+                }
+              >
+                New sub task
+              </Button>
+            </div>
+          )}
         </div>
         <div className="flex w-full gap-x-4">
           <div className="p-2">

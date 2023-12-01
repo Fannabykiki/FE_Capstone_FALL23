@@ -285,14 +285,16 @@ const IterationDisplay = ({ iterationId }: Props) => {
               allowClear
               value={filterData.statusId}
             />
-            <div className="flex flex-grow justify-end">
-              <Button
-                icon={<PlusOutlined />}
-                onClick={() => handleOpenCreateTaskModal()}
-              >
-                New task
-              </Button>
-            </div>
+            {project?.projectStatus !== "Done" && (
+              <div className="flex flex-grow justify-end">
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={() => handleOpenCreateTaskModal()}
+                >
+                  New task
+                </Button>
+              </div>
+            )}
           </div>
           <div className="overflow-x-auto">
             <div className="flex gap-x-4 items-center">
