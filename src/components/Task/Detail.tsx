@@ -208,6 +208,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 <div className="flex flex-col gap-2 mb-4">
                   {task.attachmentResponse?.map((attachment) => (
                     <AttachmentDisplay
+                      iterationId={task.interationId}
                       attachment={attachment}
                       key={attachment.attachmentId}
                     />

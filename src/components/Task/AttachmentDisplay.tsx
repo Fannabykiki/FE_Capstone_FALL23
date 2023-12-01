@@ -1,5 +1,6 @@
 import { IAttachment } from "@/interfaces/attachment";
 import { attachmentApi } from "@/utils/api/attachment";
+import { iterationApi } from "@/utils/api/iteration";
 import { taskApi } from "@/utils/api/task";
 import { DeleteOutlined, LinkOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,11 +9,12 @@ import { toast } from "react-toastify";
 
 interface Props {
   attachment: IAttachment;
+  iterationId: string;
 }
 
-export default function AttachmentDisplay({ attachment }: Props) {
+export default function AttachmentDisplay({ attachment, iterationId }: Props) {
   const onDownloadAttachment = async () => {
-    await attachmentApi.download(attachment.title);
+    await attachmentApi.download(attachment.title, attachment.taskId);
   };
 
   const queryClient = useQueryClient();
@@ -20,9 +22,13 @@ export default function AttachmentDisplay({ attachment }: Props) {
   const { mutate: removeAttachment, isLoading } = useMutation({
     mutationKey: [attachmentApi.removeKey],
     mutationFn: attachmentApi.remove,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries([
+        taskApi.getDetailKey,
+        attachment.taskId,
+      ]);
+      await queryClient.invalidateQueries([iterationApi.getTasksKey, iterationId]);
       toast.success("Delete attachment succeed!");
-      queryClient.invalidateQueries([taskApi.getDetailKey, attachment.taskId]);
     },
     onError: (err) => {
       console.error(err);
@@ -44,7 +50,7 @@ export default function AttachmentDisplay({ attachment }: Props) {
           danger
           icon={<DeleteOutlined />}
           loading={isLoading}
-          onClick={() => removeAttachment(attachment.title)}
+          onClick={() => removeAttachment(attachment)}
         />
       </div>
     </>

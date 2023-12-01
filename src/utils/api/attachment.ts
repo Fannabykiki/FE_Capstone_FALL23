@@ -1,6 +1,6 @@
 import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
-import { ICreateAttachmentPayload } from "@/interfaces/attachment";
+import { IAttachment, ICreateAttachmentPayload } from "@/interfaces/attachment";
 import fileDownload from "js-file-download";
 
 const create = async ({ taskId, data }: ICreateAttachmentPayload) =>
@@ -16,16 +16,16 @@ const create = async ({ taskId, data }: ICreateAttachmentPayload) =>
     },
   }).then((resp) => resp.data);
 
-const download = async (fileName: string) =>
+const download = async (fileName: string, taskId: string) =>
   axiosClient({
-    url: `/api/attachment-management/attachments/download/${fileName}`,
+    url: `/api/attachment-management/attachments/download/${fileName}/${taskId}`,
     method: HTTP_METHODS.GET,
     responseType: "blob",
   }).then((resp) => fileDownload(resp.data, fileName));
 
-const remove = async (fileName: string) =>
+const remove = async (attachment: IAttachment) =>
   axiosClient({
-    url: `/api/attachment-management/attachments/${fileName}`,
+    url: `/api/attachment-management/attachments/${attachment.title}/${attachment.taskId}`,
     method: HTTP_METHODS.DELETE,
   }).then((resp) => resp.data);
 

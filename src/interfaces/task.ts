@@ -21,6 +21,7 @@ export interface ITask {
   typeId: string;
   priorityName: string;
   interationName: string;
+  interationId: string;
   subTask?: ITask[];
   taskHistories?: ITaskHistory[];
   totalAttachment: number;
