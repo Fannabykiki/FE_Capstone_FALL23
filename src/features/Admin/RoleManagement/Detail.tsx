@@ -15,7 +15,7 @@ const RoleDetail = ({ isOpen, role, handleClose }: Props) => {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="Role detail"
       open={isOpen}
       onCancel={onCancel}

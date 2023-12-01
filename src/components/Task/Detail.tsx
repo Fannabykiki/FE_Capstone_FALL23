@@ -157,7 +157,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
   if (task) {
     return (
       <>
-        <Modal
+        <Modal maskClosable={false}
           okButtonProps={{ className: "hidden" }}
           cancelButtonProps={{ className: "hidden" }}
           open={isOpen}
@@ -174,7 +174,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 }))}
                 value={task.statusId}
                 className="min-w-[200px] mb-4"
-                onChange={onChangeTaskStatus}
+                disabled
               />
               <Tooltip title="Edit task">
                 <Button

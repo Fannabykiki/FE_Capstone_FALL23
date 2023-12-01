@@ -142,7 +142,7 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
   ];
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="User detail"
       open={!!userDetail}
       onCancel={onCancel}

@@ -55,7 +55,7 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
 
   return (
     <>
-      <Modal
+      <Modal maskClosable={false}
         open={true}
         title="Change Password"
         onCancel={onCancel}

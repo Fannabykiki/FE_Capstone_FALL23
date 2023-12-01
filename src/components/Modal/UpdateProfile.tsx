@@ -57,7 +57,7 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
   };
   return (
     <>
-      <Modal
+      <Modal maskClosable={false}
         open={true}
         title="Update User Profile"
         cancelButtonProps={{

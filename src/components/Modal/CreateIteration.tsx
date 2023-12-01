@@ -84,7 +84,7 @@ export default function CreateIteration({ open, onClose }: Props) {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       onOk={onCreate}
       okText="Create"

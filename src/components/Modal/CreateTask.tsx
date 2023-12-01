@@ -142,7 +142,7 @@ export default function CreateTask({
   }, [isOpen, statusList]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="New Task"
       onCancel={onCancel}
       open={isOpen}

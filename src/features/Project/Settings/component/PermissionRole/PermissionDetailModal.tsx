@@ -23,7 +23,7 @@ const PermissionDetailModal = ({ isPermissionId, handleClose }: Props) => {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={!!isPermissionId}
       onCancel={onCancel}
       width="70%"

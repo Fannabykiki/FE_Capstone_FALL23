@@ -81,7 +81,7 @@ export default function CreateStatus({ open, onClose }: Props) {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       onOk={onCreateStatus}
       okText="Create"

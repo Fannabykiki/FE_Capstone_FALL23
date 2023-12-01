@@ -59,7 +59,7 @@ const InviteMemberModal = ({ isOpen, handleClose }: Props) => {
   };
 
   return (
-    <Modal open={isOpen} onCancel={onCancel} width="700px" footer={false}>
+    <Modal maskClosable={false} open={isOpen} onCancel={onCancel} width="700px" footer={false}>
       <Space direction="vertical" className="w-full ">
         <Space direction="vertical" className="w-full text-center gap-0">
           <Typography.Title level={3}>

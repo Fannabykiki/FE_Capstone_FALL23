@@ -170,7 +170,7 @@ export default function UpdateTask({
   }, [statusList, form, initTaskData]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="Edit Task"
       onCancel={onCancel}
       open={isOpen}
