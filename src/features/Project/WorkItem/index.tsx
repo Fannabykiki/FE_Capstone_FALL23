@@ -26,7 +26,7 @@ import {
 
 import { AvatarWithColor, CreateTask, TaskDetail } from "@/components";
 import { IGetTypeListResponse, ITaskStatus } from "@/interfaces/task";
-import { IWorkItemList } from "@/interfaces/project";
+import { IProject, IWorkItemList } from "@/interfaces/project";
 import useDetailView from "@/hooks/useDetailView";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
@@ -51,6 +51,10 @@ export default function WorkItem() {
 
   const queryClient = useQueryClient();
 
+  const project: IProject | undefined = queryClient.getQueryData([
+    projectApi.getInfoKey,
+    projectId,
+  ]);
   const typeList = queryClient.getQueryData<IGetTypeListResponse[]>([
     taskApi.getTaskTypeKey,
   ]);
@@ -248,14 +252,16 @@ export default function WorkItem() {
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Tasks</Typography.Title>
         <Space>
-          <Button
-            type="primary"
-            title="New Task"
-            onClick={() => handleOpenModalCreate()}
-            icon={<PlusOutlined />}
-          >
-            New Task
-          </Button>
+          {project?.projectStatus !== "Done" && (
+            <Button
+              type="primary"
+              title="New Task"
+              onClick={() => handleOpenModalCreate()}
+              icon={<PlusOutlined />}
+            >
+              New Task
+            </Button>
+          )}
           <Button
             onClick={handleToggleCardVisibility}
             type="dashed"
