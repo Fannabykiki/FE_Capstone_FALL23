@@ -10,6 +10,7 @@ import useCommentActions from "@/hooks/useCommentActions";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { taskApi } from "@/utils/api/task";
+import { iterationApi } from "@/utils/api/iteration";
 
 interface Props {
   comment: IComment;
@@ -39,6 +40,10 @@ export default function DisplayComment({ comment, task }: Props) {
             await queryClient.refetchQueries({
               queryKey: [taskApi.getDetailKey, comment.taskId],
             });
+            await queryClient.invalidateQueries([
+              iterationApi.getTasksKey,
+              task.interationId,
+            ]);
           },
           onError: (err: any) => {
             console.error(err);
