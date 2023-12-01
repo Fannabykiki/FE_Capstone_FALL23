@@ -47,7 +47,7 @@ const ChangeMemberRoleModal = ({ currentMember, handleClose }: Props) => {
   });
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="Change member role"
       open={!!currentMember}
       onCancel={handleClose}

@@ -77,7 +77,7 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
   const projectOwner = memberList?.find((member) => member.roleName === "PO");
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="ReAssign PO Role"
       open={isOpen}
       onCancel={handleClose}

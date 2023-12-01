@@ -82,7 +82,7 @@ export default function CreateProject({ open, onClose }: Props) {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       open={open}
       onOk={onCreateProject}
       okText="Create"

@@ -81,7 +81,7 @@ const GrantPermission = ({
   }, [permission]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="Grant permission"
       open={isOpen}
       onCancel={handleClose}

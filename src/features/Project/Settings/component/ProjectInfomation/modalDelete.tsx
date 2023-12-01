@@ -64,7 +64,7 @@ export default function DeleteProject({ isOpen, handleClose }: Props) {
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="Delete Project"
       onCancel={onCancel}
       open={isOpen}

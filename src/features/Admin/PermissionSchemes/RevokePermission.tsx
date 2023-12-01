@@ -65,7 +65,7 @@ const RevokePermission = ({
   };
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title="Remove permission"
       open={isOpen}
       onCancel={handleClose}

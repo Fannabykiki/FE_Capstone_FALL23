@@ -107,7 +107,7 @@ const CreateEditRole = ({ isOpen, roleEdit, handleClose }: Props) => {
   }, [isOpen, roleEdit]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={roleEdit ? "Edit role" : "Create role"}
       open={isOpen}
       onCancel={onCancel}

@@ -118,7 +118,7 @@ const CreateEditPermissionScheme = ({
   }, [isOpen, permissionScheme]);
 
   return (
-    <Modal
+    <Modal maskClosable={false}
       title={
         permissionScheme ? "Edit permission scheme" : "Create permission scheme"
       }

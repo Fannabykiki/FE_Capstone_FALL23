@@ -90,10 +90,14 @@ export default function Header() {
     return breadcrumbs;
   }, [location.pathname, routes, navigate, projectId]);
 
-  const notificationEventHandler = {
-    message: "EmitNotification",
-    handler: () => {},
-  };
+  const notificationEventHandlers = useMemo(() => {
+    return [
+      {
+        message: "EmitNotification",
+        handler: () => {},
+      },
+    ];
+  }, []);
 
   return (
     <Layout.Header className="flex items-center justify-between bg-white shadow-custom">
@@ -128,7 +132,7 @@ export default function Header() {
           </div>
         </UserMenu>
       </div>
-      <SignalRHandler eventHandlers={[notificationEventHandler]} />
+      <SignalRHandler eventHandlers={notificationEventHandlers} />
     </Layout.Header>
   );
 }

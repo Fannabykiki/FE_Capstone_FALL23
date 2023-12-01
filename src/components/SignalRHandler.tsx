@@ -7,12 +7,12 @@ interface Props {
   eventHandlers: SocketEventHandler[];
 }
 
-const SIGNALR_URL = `${API_PATH}/notification`;
+const SIGNALR_URL = `https://devtasker-be.azurewebsites.net/notification`;
 
 export default function SignalRHandler({ eventHandlers }: Props) {
   useEffect(() => {
     const jwtToken = localStorage.getItem("token");
-    if (!jwtToken) {
+    if (!jwtToken || eventHandlers.length === 0) {
       return;
     }
     const connection = new HubConnectionBuilder()
