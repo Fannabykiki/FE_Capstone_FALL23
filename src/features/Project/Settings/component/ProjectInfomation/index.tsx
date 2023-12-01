@@ -117,15 +117,7 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                 >
                   <Input disabled={!isAdminOrPO} />
                 </Form.Item>
-                <Form.Item
-                  label={<b>Description</b>}
-                  name="description"
-                  rules={[
-                    {
-                      required: true,
-                    },
-                  ]}
-                >
+                <Form.Item label={<b>Description</b>} name="description">
                   <Input disabled={!isAdminOrPO} />
                 </Form.Item>
                 <Row gutter={16}>
