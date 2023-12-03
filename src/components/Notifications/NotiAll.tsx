@@ -1,36 +1,26 @@
 import CircleIcon from "@/assets/icons/iconCircle";
-import { Avatar, List } from "antd";
+import { INotification } from "@/interfaces/notification";
+import { classNames } from "@/utils/common";
+import { Avatar, List, Typography } from "antd";
+import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
-const data = [
-  {
-    title: "Ant Design Title 1 ",
-    time: "6 minutes ago",
-    status: 0,
-  },
-  {
-    title: "Ant Design Title 2",
-    time: "9 minutes ago",
-    status: 0,
-  },
-  {
-    title: "Ant Design Title 3",
-    time: "8 minutes ago",
-    status: 1,
-  },
-  {
-    title: "Ant Design Title 4",
-    time: "7 hours ago",
-    status: 1,
-  },
-];
+interface Props {
+  notifications: INotification[];
+}
 
-export default function NotiAll() {
+export default function NotiAll({ notifications }: Props) {
+  const navigate = useNavigate();
+
   return (
     <List
       itemLayout="horizontal"
-      dataSource={data}
+      dataSource={notifications}
       renderItem={(item, index) => (
-        <List.Item>
+        <List.Item
+          className="hover:bg-neutral-200 p-2"
+          onClick={() => navigate(item.targetUrl)}
+        >
           <List.Item.Meta
             avatar={
               <Avatar
@@ -38,26 +28,23 @@ export default function NotiAll() {
               />
             }
             title={
-              item.status === 0 ? (
-                <a href="/">{item.title}</a>
-              ) : (
-                <a style={{ color: "#a0a3a7" }} href="/">
+              <div className="flex items-center">
+                <Typography.Link
+                  className={classNames(
+                    "flex-grow",
+                    !item.isRead && "text-[#a0a3a7]"
+                  )}
+                >
                   {item.title}
-                </a>
-              )
+                </Typography.Link>
+                {!item.isRead && (
+                  <div>
+                    <CircleIcon style={{ fontSize: "12px" }} />
+                  </div>
+                )}
+              </div>
             }
-            description={item.time}
-          />
-          <List.Item.Meta
-            title={
-              item.status === 0 ? (
-                <div className="float-right">
-                  <CircleIcon style={{ fontSize: "12px" }} />
-                </div>
-              ) : (
-                <div></div>
-              )
-            }
+            description={dayjs(item.createAt).fromNow()}
           />
         </List.Item>
       )}

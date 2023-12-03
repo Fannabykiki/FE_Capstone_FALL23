@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { SocketEventHandler } from "@/interfaces/shared/common";
 import { API_PATH } from "@/utils/constants";
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
@@ -9,7 +9,7 @@ interface Props {
 
 const SIGNALR_URL = `https://devtasker-be.azurewebsites.net/notification`;
 
-export default function SignalRHandler({ eventHandlers }: Props) {
+function SignalRHandler({ eventHandlers }: Props) {
   useEffect(() => {
     const jwtToken = localStorage.getItem("token");
     if (!jwtToken || eventHandlers.length === 0) {
@@ -44,3 +44,5 @@ export default function SignalRHandler({ eventHandlers }: Props) {
 
   return <></>;
 }
+
+export default memo(SignalRHandler);

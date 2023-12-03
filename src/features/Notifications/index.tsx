@@ -1,12 +1,17 @@
 import BellIcon from "@/assets/icons/iconBell";
 import Header from "@/components/Layout/Header";
 import NotiAll from "@/components/Notifications/NotiAll";
-import NotiUnread from "@/components/Notifications/NotiUnread";
+import { notificationApi } from "@/utils/api/notification";
+import { useQuery } from "@tanstack/react-query";
 import { Card, Layout, Space, Tabs, Typography } from "antd";
 import { Content } from "antd/es/layout/layout";
-import TabPane from "antd/es/tabs/TabPane";
 
 export default function Notifications() {
+  const { data: notifications } = useQuery({
+    queryKey: [notificationApi.getLatestKey],
+    queryFn: ({ signal }) => notificationApi.getLatest(signal),
+    initialData: [],
+  });
   return (
     <>
       <Layout className="min-h-screen flex flex-1 flex-col">
@@ -18,14 +23,28 @@ export default function Notifications() {
                 <BellIcon /> Notication
               </Typography>
             </Space>
-            <Tabs className="mt-5" type="card">
-              <TabPane tab="All" key="1">
-                <NotiAll />
-              </TabPane>
-              <TabPane tab="Unread" key="2">
-                <NotiUnread />
-              </TabPane>
-            </Tabs>
+            <Tabs
+              className="mt-5"
+              type="card"
+              items={[
+                {
+                  key: "All",
+                  label: "All",
+                  children: <NotiAll notifications={notifications} />,
+                },
+                {
+                  key: "Unread",
+                  label: "Unread",
+                  children: (
+                    <NotiAll
+                      notifications={notifications.filter(
+                        (notification) => !notification.isRead
+                      )}
+                    />
+                  ),
+                },
+              ]}
+            />
           </Card>
         </Content>
       </Layout>

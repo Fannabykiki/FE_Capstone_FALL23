@@ -17,6 +17,7 @@ import SignalRHandler from "../SignalRHandler";
 import { schemaApi } from "@/utils/api/schema";
 import { useQuery } from "@tanstack/react-query";
 import { ISchema } from "@/interfaces/schema";
+import { notificationApi } from "@/utils/api/notification";
 
 interface RouteObj {
   [key: string]: string;
@@ -90,14 +91,22 @@ export default function Header() {
     return breadcrumbs;
   }, [location.pathname, routes, navigate, projectId]);
 
+  const { data: notifications, refetch: reloadNotification } = useQuery({
+    queryKey: [notificationApi.getLatestKey],
+    queryFn: ({ signal }) => notificationApi.getLatest(signal),
+    initialData: [],
+  });
+
   const notificationEventHandlers = useMemo(() => {
     return [
       {
         message: "EmitNotification",
-        handler: () => {},
+        handler: () => {
+          reloadNotification();
+        },
       },
     ];
-  }, []);
+  }, [reloadNotification]);
 
   return (
     <Layout.Header className="flex items-center justify-between bg-white shadow-custom">
@@ -106,9 +115,13 @@ export default function Header() {
         items={breadcrumbItems}
       />
       <div className="flex gap-x-6 items-center">
-        <Popover content={<Notification />} placement="bottom" trigger="click">
+        <Popover
+          content={<Notification notifications={notifications} />}
+          placement="bottom"
+          trigger="click"
+        >
           <Badge
-            count={11}
+            count={notifications.length}
             overflowCount={10}
             className="cursor-pointer select-none"
           >
