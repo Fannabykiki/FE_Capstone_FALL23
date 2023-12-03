@@ -116,21 +116,19 @@ const UserManagement = () => {
       dataIndex: "userName",
       width: "40%",
       render: (name, record) => (
-        <Row>
-          <Col span={4} className="flex justify-center items-center">
-            <AvatarWithColor stringContent={name}>
-              {name?.charAt(0).toUpperCase()}
-            </AvatarWithColor>
-          </Col>
-          <Col span={20}>
+        <Space direction="horizontal">
+          <AvatarWithColor stringContent={name}>
+            {name?.charAt(0).toUpperCase()}
+          </AvatarWithColor>
+          <Space direction="vertical" className="gap-0">
             <Typography.Title level={5} className="!m-0 min-h-[24px]">
               {name}
             </Typography.Title>
             <Typography.Text className="min-h-[19px]">
               {record.email}
             </Typography.Text>
-          </Col>
-        </Row>
+          </Space>
+        </Space>
       ),
     },
     {
@@ -138,7 +136,7 @@ const UserManagement = () => {
       dataIndex: "isAdmin",
       width: "15%",
       render: (isAdmin, record) => (
-        <Row align="middle">
+        <Space direction="horizontal">
           <img
             src={record.statusName === "Active" ? activeUser : deactiveUser}
             className={`w-10 h-10 bg-[${
@@ -146,10 +144,8 @@ const UserManagement = () => {
             }] rounded-full`}
             alt={isAdmin ? "Admin" : "Member"}
           />
-          <Typography.Text className="ml-5">
-            {isAdmin ? "Admin" : "Member"}
-          </Typography.Text>
-        </Row>
+          <Typography.Text>{isAdmin ? "Admin" : "Member"}</Typography.Text>
+        </Space>
       ),
     },
     {

@@ -1,14 +1,14 @@
-import { Row, Space, Typography, Table, Button, Card } from "antd";
+import { Row, Space, Typography, Table, Card } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
-import { PlusOutlined } from "@ant-design/icons";
+// import { PlusOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 
-import useDetailView from "@/hooks/useDetailView";
+// import useDetailView from "@/hooks/useDetailView";
 import { ITaskStatus } from "@/interfaces/task";
-import { CreateStatus } from "@/components";
+// import { CreateStatus } from "@/components";
 import { taskApi } from "@/utils/api/task";
-import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
+// import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 interface IProp {
   isAdminOrPO: boolean;
@@ -25,25 +25,23 @@ export default function StatusManagement({ isAdminOrPO }: IProp) {
       projectId,
     ]) || [];
 
-  const {
-    onOpenView: handleOpenModalCreate,
-    onCloseView: handleCloseModalCreate,
-    openView: isModalCreateOpen,
-  } = useDetailView();
-
-  const isUserAdmin = useCheckProjectAdmin();
+  // const {
+  //   onOpenView: handleOpenModalCreate,
+  //   onCloseView: handleCloseModalCreate,
+  //   openView: isModalCreateOpen,
+  // } = useDetailView();
 
   return (
     <Card className="min-h-screen">
-      {isModalCreateOpen && (
+      {/* {isModalCreateOpen && (
         <CreateStatus
           open={isModalCreateOpen}
           onClose={handleCloseModalCreate}
         />
-      )}
+      )} */}
       <div className="flex justify-between items-center">
         <Typography.Title level={3}>Status Management</Typography.Title>
-        <Space>
+        {/* <Space>
           <Button
             type="primary"
             title="New Status"
@@ -53,7 +51,7 @@ export default function StatusManagement({ isAdminOrPO }: IProp) {
           >
             New Status
           </Button>
-        </Space>
+        </Space> */}
       </div>
 
       <Space direction="vertical" className="w-full shadow-custom pb-5">

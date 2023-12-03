@@ -243,6 +243,13 @@ const setDoneProject = (data: { projectId: string }) =>
     data,
   }).then((resp) => resp.data);
 
+const setReOpenProject = (data: { projectId: string }) =>
+  axiosClient({
+    url: "/api/project-management/projects/reopen-project",
+    method: HTTP_METHODS.PUT,
+    data,
+  }).then((resp) => resp.data);
+
 export const projectApi = {
   create,
   createKey: "projectCreate",
@@ -297,4 +304,6 @@ export const projectApi = {
   outProjectKey: "outProjectKey",
   setDoneProject,
   setDoneProjectKey: "setDoneProjectKey",
+  setReOpenProject,
+  setReOpenProjectKey: "setReOpenProjectKey",
 };

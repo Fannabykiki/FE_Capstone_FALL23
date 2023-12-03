@@ -75,7 +75,7 @@ const KanbanDisplay = ({ iterationId }: Props) => {
   };
 
   const { data: statusList } = useQuery({
-    queryKey: [taskApi.getTaskStatusKey, projectId],
+    queryKey: [taskApi.getTaskStatusKey, projectId, "kanban"],
     queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId),
     initialData: [],
   });

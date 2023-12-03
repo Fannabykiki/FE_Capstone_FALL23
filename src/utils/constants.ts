@@ -54,9 +54,10 @@ export const WARNING_DAY_TIL_DUE_DATE = -2;
 export const STATUS_COLOR = {
   "To do": "#8DC63F",
   Doing: "#FFA500",
-  "In Progress": "#FF6347",
+  "In Progress": "#f5dd05",
   Done: "#00BFFF",
-  Close: "#808080",
+  Fail: "#EE0000",
+  Deleted: "#808080",
 };
 
 export const RANDOM_COLOR = [
