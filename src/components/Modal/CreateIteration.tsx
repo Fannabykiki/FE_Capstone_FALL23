@@ -69,7 +69,9 @@ export default function CreateIteration({ open, onClose }: Props) {
         }
       }
       toast.error(
-        err.response?.data || "Create Sprint failed! Please try again later"
+        err.response?.data?.title ||
+          err.response?.data ||
+          "Create Sprint failed! Please try again later"
       );
     },
   });
@@ -84,7 +86,8 @@ export default function CreateIteration({ open, onClose }: Props) {
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       open={open}
       onOk={onCreate}
       okText="Create"

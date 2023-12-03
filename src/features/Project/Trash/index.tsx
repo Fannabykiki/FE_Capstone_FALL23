@@ -35,6 +35,11 @@ import {
   ITaskStatus,
   ITrashBinRecord,
 } from "@/interfaces/task";
+import { useAuthContext } from "@/context/Auth";
+import { IProject } from "@/interfaces/project";
+import { projectApi } from "@/utils/api/project";
+import useTaskActions from "@/hooks/useTaskActions";
+import { toast } from "react-toastify";
 
 const TrashBin = () => {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -70,6 +75,7 @@ const TrashBin = () => {
   const { data, isLoading } = useQuery({
     queryKey: [
       taskApi.getAllTaskInTrashBinKey,
+      projectId,
       searchParams.get("type"),
       searchParams.get("status"),
       searchParams.get("interation"),
@@ -123,12 +129,46 @@ const TrashBin = () => {
     });
   }, 1000);
 
+  const project: IProject | undefined = queryClient.getQueryData([
+    projectApi.getInfoKey,
+    projectId,
+  ]);
+
+  const { userInfo } = useAuthContext();
+
+  const member = useMemo(() => {
+    return project?.projectMembers.find((mem) => mem.userId === userInfo!.id);
+  }, [userInfo, project]);
+
+  const { restoreTaskMutation } = useTaskActions();
+
   const onClick: MenuProps["onClick"] = ({ key }) => {
     modal.confirm({
       title: "Warning",
       content: "Are you sure to restore this record?",
       onOk: () => {
-        console.log("ok");
+        restoreTaskMutation.mutate(
+          { taskId: key, memberId: member?.memberId || "" },
+          {
+            onSuccess: async () => {
+              toast.success("Restore task succeed!");
+              await queryClient.refetchQueries({
+                queryKey: [
+                  taskApi.getAllTaskInTrashBinKey,
+                  projectId,
+                  searchParams.get("type"),
+                  searchParams.get("status"),
+                  searchParams.get("interation"),
+                  searchParams.get("search"),
+                ],
+              });
+            },
+            onError: (err) => {
+              console.error(err);
+              toast.error("Restore task failed! Please try again later");
+            },
+          }
+        );
       },
     });
   };
@@ -237,12 +277,12 @@ const TrashBin = () => {
     {
       dataIndex: "action",
       width: "5%",
-      render: () => (
+      render: (_, record) => (
         <Dropdown
           menu={{
             items: [
               {
-                key: 1,
+                key: record.taskId,
                 label: "Restore",
               },
             ],

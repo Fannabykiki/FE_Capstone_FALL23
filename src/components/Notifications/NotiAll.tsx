@@ -1,7 +1,7 @@
 import CircleIcon from "@/assets/icons/iconCircle";
 import { INotification } from "@/interfaces/notification";
 import { classNames } from "@/utils/common";
-import { Avatar, List, Typography } from "antd";
+import { List, Typography } from "antd";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
@@ -22,11 +22,6 @@ export default function NotiAll({ notifications }: Props) {
           onClick={() => navigate(item.targetUrl)}
         >
           <List.Item.Meta
-            avatar={
-              <Avatar
-                src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`}
-              />
-            }
             title={
               <div className="flex items-center">
                 <Typography.Link
@@ -44,7 +39,7 @@ export default function NotiAll({ notifications }: Props) {
                 )}
               </div>
             }
-            description={dayjs(item.createAt).fromNow()}
+            description={dayjs(item.createAt).add(7, "hours").fromNow()}
           />
         </List.Item>
       )}

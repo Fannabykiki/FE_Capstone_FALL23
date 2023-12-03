@@ -1,6 +1,15 @@
 import { useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Col, DatePicker, Form, Input, Modal, Row, Select } from "antd";
+import {
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Typography,
+} from "antd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
@@ -14,9 +23,8 @@ import {
   ITaskStatus,
 } from "@/interfaces/task";
 import QuillWrapper from "../QuillWrapper";
-import { isQuillEmpty } from "@/utils/common";
-
-const { TextArea } = Input;
+import { isQuillEmpty, lowerCaseFirstLetter } from "@/utils/common";
+import useErrorMessage from "@/hooks/useErrorMessage";
 
 interface Props {
   isOpen: boolean;
@@ -43,6 +51,8 @@ export default function CreateTask({
     queryFn: async ({ signal }) => taskApi.getTaskPriority(signal),
     enabled: Boolean(isOpen) && Boolean(projectId),
   });
+
+  const { errorInfo, setErrorInfo } = useErrorMessage();
 
   const typeList = useMemo(
     () =>
@@ -100,7 +110,36 @@ export default function CreateTask({
           },
           onError: (err: any) => {
             console.error(err);
-            toast.error(err.response?.data || "Create subtask failed");
+            if (err.response?.data) {
+              if (err.response.data.errors) {
+                console.log(
+                  Object.entries(err.response.data.errors).map(
+                    ([key, value]) => ({
+                      name: lowerCaseFirstLetter(key),
+                      errors: [value] as string[],
+                    })
+                  )
+                );
+                form.setFields(
+                  Object.entries(err.response.data.errors).map(
+                    ([key, value]) => ({
+                      name: lowerCaseFirstLetter(key),
+                      errors: [value] as string[],
+                    })
+                  )
+                );
+              } else if (typeof err.response.data === "string") {
+                setErrorInfo({
+                  isError: true,
+                  message: err.response.data,
+                });
+              }
+            }
+            toast.error(
+              err.response?.data?.title ||
+                err.response?.data ||
+                "Create sub task failed! Please try again later"
+            );
           },
         }
       );
@@ -122,7 +161,36 @@ export default function CreateTask({
           },
           onError: (err: any) => {
             console.error(err);
-            toast.error(err.response?.data || "Create task failed");
+            if (err.response?.data) {
+              if (err.response.data.errors) {
+                console.log(
+                  Object.entries(err.response.data.errors).map(
+                    ([key, value]) => ({
+                      name: lowerCaseFirstLetter(key),
+                      errors: [value] as string[],
+                    })
+                  )
+                );
+                form.setFields(
+                  Object.entries(err.response.data.errors).map(
+                    ([key, value]) => ({
+                      name: lowerCaseFirstLetter(key),
+                      errors: [value] as string[],
+                    })
+                  )
+                );
+              } else if (typeof err.response.data === "string") {
+                setErrorInfo({
+                  isError: true,
+                  message: err.response.data,
+                });
+              }
+            }
+            toast.error(
+              err.response?.data?.title ||
+                err.response?.data ||
+                "Create task failed! Please try again later"
+            );
           },
         }
       );
@@ -142,7 +210,8 @@ export default function CreateTask({
   }, [isOpen, statusList]);
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title="New Task"
       onCancel={onCancel}
       open={isOpen}
@@ -161,6 +230,11 @@ export default function CreateTask({
         onFinish={onSubmit}
         initialValues={initTaskData}
       >
+        {errorInfo.isError && (
+          <Typography.Paragraph className="text-center text-red-400 font-semibold">
+            {errorInfo.message}
+          </Typography.Paragraph>
+        )}
         <Form.Item
           label="Title"
           name="title"

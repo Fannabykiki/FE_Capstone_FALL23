@@ -66,7 +66,9 @@ export default function CreateStatus({ open, onClose }: Props) {
         }
       }
       toast.error(
-        err.response?.data || "Create status failed! Please try again later"
+        err.response?.data?.title ||
+          err.response?.data ||
+          "Create status failed! Please try again later"
       );
     },
   });
@@ -81,7 +83,8 @@ export default function CreateStatus({ open, onClose }: Props) {
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       open={open}
       onOk={onCreateStatus}
       okText="Create"

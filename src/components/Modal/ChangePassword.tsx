@@ -32,7 +32,11 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
       },
       onError: (err: AxiosError<any>) => {
         console.error(err);
-        toast.error(err.response?.data || "Change password failed");
+        toast.error(
+          err.response?.data?.title ||
+            err.response?.data ||
+            "Change password failed"
+        );
       },
     }
   );
@@ -55,7 +59,8 @@ export default function ChangePassword({ onCancel = () => {} }: Props) {
 
   return (
     <>
-      <Modal maskClosable={false}
+      <Modal
+        maskClosable={false}
         open={true}
         title="Change Password"
         onCancel={onCancel}

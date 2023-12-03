@@ -15,7 +15,7 @@ import { classNames, getPathSegments } from "@/utils/common";
 import Notification from "@/components/Notifications/Notification";
 import SignalRHandler from "../SignalRHandler";
 import { schemaApi } from "@/utils/api/schema";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ISchema } from "@/interfaces/schema";
 import { notificationApi } from "@/utils/api/notification";
 
@@ -91,22 +91,26 @@ export default function Header() {
     return breadcrumbs;
   }, [location.pathname, routes, navigate, projectId]);
 
-  const { data: notifications, refetch: reloadNotification } = useQuery({
+  const { data: notifications } = useQuery({
     queryKey: [notificationApi.getLatestKey],
     queryFn: ({ signal }) => notificationApi.getLatest(signal),
     initialData: [],
   });
 
+  const queryClient = useQueryClient();
+
   const notificationEventHandlers = useMemo(() => {
     return [
       {
         message: "EmitNotification",
-        handler: () => {
-          reloadNotification();
+        handler: async () => {
+          console.log("Received SignalR event");
+          await queryClient.invalidateQueries([notificationApi.getLatestKey]);
+          await queryClient.refetchQueries([notificationApi.getLatestKey]);
         },
       },
     ];
-  }, [reloadNotification]);
+  }, [queryClient]);
 
   return (
     <Layout.Header className="flex items-center justify-between bg-white shadow-custom">

@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Avatar, Button, Layout, Menu } from "antd";
+import { Button, Layout, Menu } from "antd";
 import {
   ApartmentOutlined,
   CalendarOutlined,

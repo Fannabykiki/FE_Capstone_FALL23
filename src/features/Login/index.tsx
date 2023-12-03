@@ -45,7 +45,11 @@ export default function Login() {
           message: err.response.data,
         });
       }
-      toast.error(err.response?.data || "Login failed! Please try again later");
+      toast.error(
+        err.response?.data?.title ||
+          err.response?.data ||
+          "Login failed! Please try again later"
+      );
     },
   });
 
@@ -70,7 +74,9 @@ export default function Login() {
         });
       }
       toast.error(
-        err.response?.data || "Login with Google failed! Please try again later"
+        err.response?.data?.title ||
+          err.response?.data ||
+          "Login with Google failed! Please try again later"
       );
     },
   });

@@ -6,7 +6,7 @@ import useDetailView from "@/hooks/useDetailView";
 import useProjectDetail from "@/hooks/useProjectDetail";
 import { IIteration } from "@/interfaces/iteration";
 import KanbanDisplay from "@/components/Kanban";
-import { CreateIteration } from "@/components";
+import { CreateIteration, IterationDisplayDate } from "@/components";
 
 export enum TaskType {
   Main = "Work Item",
@@ -35,15 +35,16 @@ const Kanban = () => {
             iterations[0]
         );
       } else {
-        const newSearchParams = new URLSearchParams();
-        newSearchParams.set(
-          "sprint",
-          (
-            iterations.find((iteration) => iteration.status === "Current") ||
-            iterations[0]
-          ).interationId
-        );
-        setSearchParams(newSearchParams);
+        setSearchParams((prev) => {
+          prev.set(
+            "sprint",
+            (
+              iterations.find((iteration) => iteration.status === "Current") ||
+              iterations[0]
+            ).interationId
+          );
+          return prev;
+        });
       }
     }
   }, [searchParams, iterations, setSearchParams]);
@@ -91,9 +92,26 @@ const Kanban = () => {
           onChange={onChangeIteration}
         />
       </div>
-      <Typography.Title>Kanban</Typography.Title>
       {selectedIteration ? (
-        <KanbanDisplay iterationId={selectedIteration.interationId} />
+        <React.Fragment key={selectedIteration.interationId}>
+          <div className="flex justify-between items-center mb-4">
+            <Typography.Title className="flex gap-x-2 !mb-0">
+              Kanban
+            </Typography.Title>
+            <div>
+              <IterationDisplayDate
+                iteration={selectedIteration}
+                property="startDate"
+              />
+              {" - "}
+              <IterationDisplayDate
+                iteration={selectedIteration}
+                property="endDate"
+              />
+            </div>
+          </div>
+          <KanbanDisplay iterationId={selectedIteration.interationId} />
+        </React.Fragment>
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
       )}

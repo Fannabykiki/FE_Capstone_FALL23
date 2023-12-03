@@ -35,7 +35,8 @@ export default function DisplayDate({ iteration, property }: Props) {
     onError: (err: any) => {
       console.error(err);
       toast.error(
-        err.response?.data ||
+        err.response?.data?.title ||
+          err.response?.data ||
           "Update sprint date failed! Please try again later"
       );
       setNewDate(dayjs(iteration[property] as string));
