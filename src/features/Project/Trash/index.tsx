@@ -11,6 +11,7 @@ import {
   CheckSquareFilled,
   FilterFilled,
   MoreOutlined,
+  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import {
@@ -40,6 +41,8 @@ import { IProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
+import { orderBy } from "lodash";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 const TrashBin = () => {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -141,6 +144,8 @@ const TrashBin = () => {
   }, [userInfo, project]);
 
   const { restoreTaskMutation } = useTaskActions();
+
+  const { iterations, actions } = useProjectDetail(projectId);
 
   const onClick: MenuProps["onClick"] = ({ key }) => {
     modal.confirm({
@@ -263,7 +268,7 @@ const TrashBin = () => {
       width: "10%",
     },
     {
-      title: "Interation",
+      title: "Sprint",
       dataIndex: "interationName",
       width: "10%",
     },
@@ -334,7 +339,7 @@ const TrashBin = () => {
                   label: type.title,
                   value: type.title,
                 }))}
-                className="w-20 text-center"
+                className="w-20"
                 placeholder="Type"
                 defaultValue={searchParams.get("type")}
                 onChange={handleChange("type")}
@@ -345,19 +350,30 @@ const TrashBin = () => {
                   label: status.title,
                   value: status.title,
                 }))}
-                className="w-32 text-center"
+                className="w-32"
                 placeholder="State"
                 defaultValue={searchParams.get("status")}
                 onChange={handleChange("status")}
                 allowClear
               />
               <Select
-                options={INTERATION_OPTION}
-                className="w-36 text-center"
-                placeholder="Interation"
+                className="min-w-[400px]"
+                placeholder="Sprint"
                 defaultValue={searchParams.get("interation")}
                 onChange={handleChange("interation")}
                 allowClear
+                options={(iterations || []).map((iteration) => ({
+                  label: (
+                    <div className="flex items-center justify-between">
+                      <span>{iteration.interationName}</span>
+                      <span className="text-xs bg-neutral-100 px-2 rounded-full">
+                        {iteration.status}
+                      </span>
+                    </div>
+                  ),
+                  value: iteration.interationId,
+                }))}
+                loading={actions.isGettingIterations}
               />
             </Col>
           </Row>
@@ -369,10 +385,14 @@ const TrashBin = () => {
           rowKey="projectId"
           columns={columns}
           loading={isLoading}
-          dataSource={pagination(
-            data,
-            parseInt(searchParams.get("page") || "1"),
-            parseInt(searchParams.get("limit") || "10")
+          dataSource={orderBy(
+            pagination(
+              data,
+              parseInt(searchParams.get("page") || "1"),
+              parseInt(searchParams.get("limit") || "10")
+            ),
+            "deleteAt",
+            "desc"
           )}
           pagination={{
             showSizeChanger: true,
@@ -389,24 +409,5 @@ const TrashBin = () => {
     </>
   );
 };
-
-const INTERATION_OPTION = [
-  {
-    label: "Interation 1",
-    value: "Interation 1",
-  },
-  {
-    label: "Interation 2",
-    value: "Interation 2",
-  },
-  {
-    label: "Interation 3",
-    value: "Interation 3",
-  },
-  {
-    label: "Interation 4",
-    value: "Interation 4",
-  },
-];
 
 export default TrashBin;
