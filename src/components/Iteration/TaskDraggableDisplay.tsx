@@ -3,7 +3,7 @@ import { Tag, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
 import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { DATE_FORMAT, RANDOM_COLOR, STATUS_COLOR } from "@/utils/constants";
+import { DATE_FORMAT, STATUS_COLOR } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
 import { TaskType } from ".";
 import PriorityStatus from "../Task/PriorityStatus";

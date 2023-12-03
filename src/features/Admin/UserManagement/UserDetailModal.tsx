@@ -55,19 +55,17 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       dataIndex: "projectName",
       width: "35%",
       render: (projectName, record) => (
-        <Row>
-          <Col span={4} className="flex justify-center items-center">
-            <AvatarWithColor stringContent={projectName}>
-              {projectName?.charAt(0).toUpperCase()}
-            </AvatarWithColor>
-          </Col>
-          <Col span={20}>
+        <Space direction="horizontal">
+          <AvatarWithColor stringContent={projectName}>
+            {projectName?.charAt(0).toUpperCase()}
+          </AvatarWithColor>
+          <Space direction="vertical" className="gap-0">
             <Typography.Title level={5} className="!m-0 min-h-[24px]">
               {projectName}
             </Typography.Title>
             <Typography.Text>{record.description}</Typography.Text>
-          </Col>
-        </Row>
+          </Space>
+        </Space>
       ),
     },
     {
@@ -118,18 +116,14 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
       dataIndex: "manager",
       width: "25%",
       render: (_, record) => (
-        <Row align="middle">
-          <Col span={6} className="flex items-center">
-            <AvatarWithColor stringContent={record.manager?.userName}>
-              {record.manager?.userName?.charAt(0).toUpperCase()}
-            </AvatarWithColor>
-          </Col>
-          <Col span={18}>
-            <Typography.Title level={5} className="!m-0">
-              {record.manager?.userName}
-            </Typography.Title>
-          </Col>
-        </Row>
+        <Space direction="horizontal">
+          <AvatarWithColor stringContent={record.manager?.userName}>
+            {record.manager?.userName?.charAt(0).toUpperCase()}
+          </AvatarWithColor>
+          <Typography.Title level={5} className="!m-0">
+            {record.manager?.userName}
+          </Typography.Title>
+        </Space>
       ),
     },
     {
@@ -142,7 +136,8 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
   ];
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title="User detail"
       open={!!userDetail}
       onCancel={onCancel}
