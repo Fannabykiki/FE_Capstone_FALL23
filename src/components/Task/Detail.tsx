@@ -234,7 +234,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                     <span>{task.priorityName}</span>
                   </div>
                 </Descriptions.Item>
-                <Descriptions.Item label="Iteration">
+                <Descriptions.Item label="Sprint">
                   {task.interationName}
                 </Descriptions.Item>
                 <Descriptions.Item label="Task type">
