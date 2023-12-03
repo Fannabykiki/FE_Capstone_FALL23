@@ -50,7 +50,9 @@ export default function Register() {
         }
       }
       toast.error(
-        err.response?.data || "Register failed! Please try again later"
+        err.response?.data?.title ||
+          err.response?.data ||
+          "Register failed! Please try again later"
       );
     },
   });

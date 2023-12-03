@@ -43,25 +43,25 @@ export default function PageContainer({
       }
     } else {
       if (userInfo?.isAdmin) {
-        const redirectPath = matchRoutes(
-          Object.values(adminPaths).map((path) => ({ path })),
-          location
-        )
-          ? location.pathname
-          : paths.admin.index;
-
-        navigate({ pathname: redirectPath, search: location.search });
+        if (
+          !matchRoutes(
+            Object.values(adminPaths).map((path) => ({ path })),
+            location
+          )
+        ) {
+          navigate({ pathname: paths.admin.index });
+        }
       } else {
-        const redirectPath = matchRoutes(
-          Object.values(userPaths).map((path) => ({ path })) as {
-            path: string;
-          }[],
-          location
-        )
-          ? location.pathname
-          : paths.user;
-
-        navigate({ pathname: redirectPath, search: location.search });
+        if (
+          !matchRoutes(
+            Object.values(userPaths).map((path) => ({ path })) as {
+              path: string;
+            }[],
+            location
+          )
+        ) {
+          navigate({ pathname: paths.user });
+        }
       }
     }
     setMounted(true);

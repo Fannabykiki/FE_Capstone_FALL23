@@ -67,7 +67,9 @@ export default function CreateProject({ open, onClose }: Props) {
         }
       }
       toast.error(
-        err.response?.data || "Register failed! Please try again later"
+        err.response?.data?.title ||
+          err.response?.data ||
+          "Register failed! Please try again later"
       );
     },
   });
@@ -82,7 +84,8 @@ export default function CreateProject({ open, onClose }: Props) {
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       open={open}
       onOk={onCreateProject}
       okText="Create"

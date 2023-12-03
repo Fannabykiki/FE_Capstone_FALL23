@@ -95,6 +95,17 @@ const deleteTask = (data: {
   }).then((resp) => resp.data);
 };
 
+const restoreTask = (data: {
+  taskId: string;
+  memberId: string;
+}): Promise<void> => {
+  return axiosClient({
+    url: `/api/task-management/tasks/restoration`,
+    method: HTTP_METHODS.PUT,
+    data,
+  }).then((resp) => resp.data);
+};
+
 const getTaskPriority = (
   signal: AbortSignal | undefined
 ): Promise<IGetPriorityListResponse[]> => {
@@ -150,7 +161,7 @@ const getAllTaskInTrashBin = (
     method: HTTP_METHODS.GET,
     signal,
     params: {
-      projectId,
+      projetcId: projectId,
     },
   }).then((resp) => resp.data);
 };
@@ -181,6 +192,8 @@ export const taskApi = {
   updateTaskKey: "taskUpdateTask",
   deleteTask,
   deleteTaskKey: "taskDeleteTask",
+  restoreTask,
+  restoreTaskKey: "taskRestoreTask",
   getTaskPriority,
   getTaskPriorityKey: "taskGetTaskPriority",
   getTaskStatus,

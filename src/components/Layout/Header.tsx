@@ -15,8 +15,9 @@ import { classNames, getPathSegments } from "@/utils/common";
 import Notification from "@/components/Notifications/Notification";
 import SignalRHandler from "../SignalRHandler";
 import { schemaApi } from "@/utils/api/schema";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ISchema } from "@/interfaces/schema";
+import { notificationApi } from "@/utils/api/notification";
 
 interface RouteObj {
   [key: string]: string;
@@ -90,14 +91,26 @@ export default function Header() {
     return breadcrumbs;
   }, [location.pathname, routes, navigate, projectId]);
 
+  const { data: notifications } = useQuery({
+    queryKey: [notificationApi.getLatestKey],
+    queryFn: ({ signal }) => notificationApi.getLatest(signal),
+    initialData: [],
+  });
+
+  const queryClient = useQueryClient();
+
   const notificationEventHandlers = useMemo(() => {
     return [
       {
         message: "EmitNotification",
-        handler: () => {},
+        handler: async () => {
+          console.log("Received SignalR event");
+          await queryClient.invalidateQueries([notificationApi.getLatestKey]);
+          await queryClient.refetchQueries([notificationApi.getLatestKey]);
+        },
       },
     ];
-  }, []);
+  }, [queryClient]);
 
   return (
     <Layout.Header className="flex items-center justify-between bg-white shadow-custom">
@@ -106,9 +119,13 @@ export default function Header() {
         items={breadcrumbItems}
       />
       <div className="flex gap-x-6 items-center">
-        <Popover content={<Notification />} placement="bottom" trigger="click">
+        <Popover
+          content={<Notification notifications={notifications} />}
+          placement="bottom"
+          trigger="click"
+        >
           <Badge
-            count={11}
+            count={notifications.length}
             overflowCount={10}
             className="cursor-pointer select-none"
           >

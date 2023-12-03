@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { Select, Typography } from "antd";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateIteration } from "@/components/Modal";
@@ -28,15 +28,30 @@ const TaskBoard = () => {
   } = useDetailView();
   const { projectId } = useParams();
   const { iterations, actions } = useProjectDetail(projectId);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
+    const sprintId = searchParams.get("sprint");
     if (iterations && iterations.length > 0) {
-      setSelectedIteration(
-        iterations.find((iteration) => iteration.status === "Current") ||
-          iterations[0]
-      );
+      if (sprintId) {
+        setSelectedIteration(
+          iterations.find((iteration) => iteration.interationId === sprintId) ||
+            iterations[0]
+        );
+      } else {
+        setSearchParams((prev) => {
+          prev.set(
+            "sprint",
+            (
+              iterations.find((iteration) => iteration.status === "Current") ||
+              iterations[0]
+            ).interationId
+          );
+          return prev;
+        });
+      }
     }
-  }, [iterations]);
+  }, [searchParams, iterations, setSearchParams]);
 
   const onChangeIteration = (value: string) => {
     if (value === "new") {

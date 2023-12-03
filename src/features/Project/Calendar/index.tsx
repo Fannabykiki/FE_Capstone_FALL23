@@ -36,6 +36,8 @@ import { IWorkItemList } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
+import useDetailView from "@/hooks/useDetailView";
+import { TaskDetail } from "@/components";
 
 const localizer = dayjsLocalizer(dayjs);
 const { RangePicker } = DatePicker;
@@ -164,6 +166,13 @@ const ProjectCalendar = () => {
     enabled: Boolean(projectId),
   });
 
+  const {
+    openView: isModalDetailTaskOpen,
+    onOpenView: onOpenViewDetailTask,
+    onCloseView: onCloseViewDetailTask,
+    detail: taskId,
+  } = useDetailView<string>();
+
   return (
     <Space direction="vertical" className="w-full gap-5">
       <Row className="flex justify-between items-center">
@@ -243,7 +252,7 @@ const ProjectCalendar = () => {
           style={{ height: "75vh" }}
           views={["month"]}
           components={{ toolbar: CustomToolbar }}
-          onSelectEvent={(event) => console.log("event", event)}
+          onSelectEvent={(task) => onOpenViewDetailTask(task.taskId)}
           popup
           eventPropGetter={(myEventsList) => {
             const color = statusList.find(
@@ -261,6 +270,13 @@ const ProjectCalendar = () => {
           </div>
         ) : null}
       </div>
+      {isModalDetailTaskOpen && (
+        <TaskDetail
+          taskId={taskId || ""}
+          isOpen={isModalDetailTaskOpen}
+          onClose={onCloseViewDetailTask}
+        />
+      )}
     </Space>
   );
 };

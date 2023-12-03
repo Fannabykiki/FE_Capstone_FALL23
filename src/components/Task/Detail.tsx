@@ -73,24 +73,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     [projectId, queryClient]
   );
 
-  const { changeTaskStatusMutation, deleteTaskMutation } = useTaskActions();
-
-  const onChangeTaskStatus = (statusId: string) => {
-    changeTaskStatusMutation.mutate(
-      {
-        id: task!.taskId,
-        statusId,
-        memberId: member?.memberId || "",
-      },
-      {
-        onSuccess: () => refetchTaskDetail(),
-        onError: (err: any) => {
-          console.error(err);
-          toast.error("Update task status failed! Please try again later");
-        },
-      }
-    );
-  };
+  const { deleteTaskMutation } = useTaskActions();
 
   const iterations: IIteration[] =
     queryClient.getQueryData([iterationApi.getListKey, projectId]) || [];
@@ -157,7 +140,8 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
   if (task) {
     return (
       <>
-        <Modal maskClosable={false}
+        <Modal
+          maskClosable={false}
           okButtonProps={{ className: "hidden" }}
           cancelButtonProps={{ className: "hidden" }}
           open={isOpen}
