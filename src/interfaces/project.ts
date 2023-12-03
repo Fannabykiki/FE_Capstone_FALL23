@@ -41,7 +41,11 @@ export interface IProject {
   projectName: string;
   description: string;
   projectStatus: string;
-  memberRole: string;
+  memberRole: {
+    description: string;
+    roleId: string;
+    roleName: string;
+  };
   startDate: string;
   endDate: string;
   createBy: string;

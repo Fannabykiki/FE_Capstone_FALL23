@@ -69,110 +69,119 @@ export default function UserDashboard() {
         />
       </div>
       <div className="flex flex-col gap-4 flex-wrap">
-        <div className="flex gap-x-4">
-          {mostRecentProjects?.slice(0, 4).map((project) => (
-            <div
-              key={`recent-${project.projectId}`}
-              onClick={() =>
-                !project.deleteAt && navigateToProject(project.projectId)
-              }
-              className={classNames(
-                "basis-1/4 bg-white rounded p-4 pb-12 shadow",
-                project.deleteAt
-                  ? "cursor-not-allowed opacity-40"
-                  : "cursor-pointer hover:shadow-lg",
-                project.projectStatus === "Done" &&
-                  "border-2 border-solid border-green-500"
-              )}
-            >
-              <div className="flex gap-4 items-center">
-                <AvatarWithColor
-                  shape="square"
-                  stringContent={project.projectName || "Unknown"}
-                >
-                  {project.projectName?.[0].toUpperCase()}
-                </AvatarWithColor>
-                <div>
+        <div>
+          <Typography.Title level={4}>Recent projects</Typography.Title>
+          <div className="flex gap-x-4">
+            {mostRecentProjects?.slice(0, 4).map((project) => (
+              <div
+                key={`recent-${project.projectId}`}
+                onClick={() =>
+                  !project.deleteAt && navigateToProject(project.projectId)
+                }
+                className={classNames(
+                  "basis-1/4 bg-white rounded p-4 pb-12 shadow",
+                  project.deleteAt
+                    ? "cursor-not-allowed opacity-40"
+                    : "cursor-pointer hover:shadow-lg",
+                  project.projectStatus === "Done" &&
+                    "border-2 border-solid border-green-500"
+                )}
+              >
+                <div className="flex gap-4 items-center">
+                  <AvatarWithColor
+                    shape="square"
+                    stringContent={project.projectName || "Unknown"}
+                  >
+                    {project.projectName?.[0].toUpperCase()}
+                  </AvatarWithColor>
                   <div>
-                    <span className="font-semibold">{project.projectName}</span>
-                  </div>
-                  <div>
-                    <span className="font-light text-xs">
-                      {project.description}
-                    </span>
+                    <div>
+                      <span className="font-semibold">
+                        {project.projectName}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="font-light text-xs">
+                        {project.description}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        {projects
-          ?.filter(
-            (project) =>
-              !debounceProjectName ||
-              project.projectName
-                .toLowerCase()
-                .includes(debounceProjectName.toLowerCase())
-          )
-          .map((project) => (
-            <Row
-              key={project.projectId}
-              onClick={() =>
-                !project.deleteAt && navigateToProject(project.projectId)
-              }
-              className={classNames(
-                "bg-white rounded p-4 flex items-center shadow",
-                project.deleteAt
-                  ? "cursor-not-allowed opacity-40"
-                  : "cursor-pointer hover:shadow-lg",
-                project.projectStatus === "Done" &&
-                  "border-2 border-solid border-green-500"
-              )}
-            >
-              <Col span={22} className="flex gap-4">
-                <AvatarWithColor
-                  shape="square"
-                  stringContent={project.projectName || "Unknown"}
-                >
-                  {project.projectName?.[0].toUpperCase()}
-                </AvatarWithColor>
-                <Space direction="vertical" className="gap-0">
-                  <span className="font-semibold">{project.projectName}</span>
-                  <span className="font-light text-xs">
-                    {project.description}
-                  </span>
-                </Space>
-              </Col>
-              {project.deleteAt && ADMIN_ROLES.includes(project.memberRole) ? (
-                <Col span={2} className="flex justify-end">
-                  <Dropdown
-                    menu={{
-                      items: [
-                        {
-                          key: project.projectId,
-                          label: "Restore",
-                        },
-                      ],
-                      onClick: ({ key }) =>
-                        modal.confirm({
-                          title: "Warning",
-                          content: "Are you sure to restore this project?",
-                          onOk: () =>
-                            restoreProject({
-                              projectId: key,
-                            }),
-                        }),
-                    }}
-                    placement="bottom"
-                    arrow
-                    trigger={["click"]}
+        <div>
+          <Typography.Title level={4}>All projects</Typography.Title>
+          {projects
+            ?.filter(
+              (project) =>
+                !debounceProjectName ||
+                project.projectName
+                  .toLowerCase()
+                  .includes(debounceProjectName.toLowerCase())
+            )
+            .map((project) => (
+              <Row
+                key={project.projectId}
+                onClick={() =>
+                  !project.deleteAt && navigateToProject(project.projectId)
+                }
+                className={classNames(
+                  "bg-white rounded p-4 flex items-center shadow",
+                  project.deleteAt
+                    ? "cursor-not-allowed opacity-40"
+                    : "cursor-pointer hover:shadow-lg",
+                  project.projectStatus === "Done" &&
+                    "border-2 border-solid border-green-500"
+                )}
+              >
+                <Col span={22} className="flex gap-4">
+                  <AvatarWithColor
+                    shape="square"
+                    stringContent={project.projectName || "Unknown"}
                   >
-                    <MoreOutlined className="cursor-pointer p-2 hover:bg-gray-200" />
-                  </Dropdown>
+                    {project.projectName?.[0].toUpperCase()}
+                  </AvatarWithColor>
+                  <Space direction="vertical" className="gap-0">
+                    <span className="font-semibold">{project.projectName}</span>
+                    <span className="font-light text-xs">
+                      {project.description}
+                    </span>
+                  </Space>
                 </Col>
-              ) : null}
-            </Row>
-          ))}
+                {project.deleteAt &&
+                ADMIN_ROLES.includes(project.memberRole?.roleName || "") ? (
+                  <Col span={2} className="flex justify-end">
+                    <Dropdown
+                      menu={{
+                        items: [
+                          {
+                            key: project.projectId,
+                            label: "Restore",
+                          },
+                        ],
+                        onClick: ({ key }) =>
+                          modal.confirm({
+                            title: "Warning",
+                            content: "Are you sure to restore this project?",
+                            onOk: () =>
+                              restoreProject({
+                                projectId: key,
+                              }),
+                          }),
+                      }}
+                      placement="bottom"
+                      arrow
+                      trigger={["click"]}
+                    >
+                      <MoreOutlined className="cursor-pointer p-2 hover:bg-gray-200" />
+                    </Dropdown>
+                  </Col>
+                ) : null}
+              </Row>
+            ))}
+        </div>
       </div>
       {contextHolder}
     </div>
