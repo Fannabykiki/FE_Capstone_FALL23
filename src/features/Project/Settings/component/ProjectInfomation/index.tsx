@@ -161,7 +161,7 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                 </Row>
                 <Space className="flex mt-5 justify-between">
                   <Button
-                    loading={isLoading || isLoadingSetDoneProject}
+                    loading={isLoading}
                     onClick={onSubmit}
                     type="primary"
                     disabled={!isAdminOrPO || detail.projectStatus !== "Doing"}
@@ -170,7 +170,7 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                   </Button>
                   {detail.projectStatus === "Done" ? (
                     <Button
-                      loading={isLoading || isLoadingReOpenProject}
+                      loading={isLoadingReOpenProject}
                       onClick={() =>
                         modal.confirm({
                           title: "Warning",
@@ -185,7 +185,7 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                     </Button>
                   ) : detail.projectStatus === "Doing" ? (
                     <Button
-                      loading={isLoading || isLoadingSetDoneProject}
+                      loading={isLoadingSetDoneProject}
                       onClick={() =>
                         modal.confirm({
                           title: "Warning",

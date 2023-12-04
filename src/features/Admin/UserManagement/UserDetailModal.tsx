@@ -48,7 +48,8 @@ const UserDetailModal = ({ userDetail, handleClose }: Props) => {
     {
       dataIndex: "index",
       width: "5%",
-      render: (_name, _record, index) => index + 1,
+      render: (_name, _record, index) =>
+        (conditions.page - 1) * 10 + (index + 1),
     },
     {
       title: "PROJECT",

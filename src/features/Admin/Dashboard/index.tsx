@@ -105,7 +105,8 @@ const AdminDashboard = () => {
       dataIndex: "index",
       width: "5%",
       align: "center",
-      render: (_row, _record, index) => index + 1,
+      render: (_row, _record, index) =>
+        (parseInt(searchParams.get("page") || "1") - 1) * 10 + (index + 1),
     },
     {
       title: "PROJECT",

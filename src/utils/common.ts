@@ -115,7 +115,7 @@ const handleValidatePhoneNumber = async (phoneNumber: string) => {
 const stringToColor = (str: string) => {
   // Hash function to convert string to number
   let hash = 0;
-  for (let i = 0; i < str.length; i++) {
+  for (let i = 0; i < str?.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
     hash = hash & hash; // Convert to 32bit integer
   }
