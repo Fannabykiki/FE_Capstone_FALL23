@@ -81,9 +81,8 @@ export default function ProjectDetail() {
   const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
 
   const isAdminOrPO = useMemo(() => {
-    const owner = detail?.projectMembers.find((member) => member.isOwner);
-    return userInfo?.isAdmin || userInfo?.id === owner?.userId;
-  }, [detail?.projectMembers, userInfo]);
+    return userInfo?.isAdmin || userInfo?.id === projectOwner?.userId;
+  }, [projectOwner?.userId, userInfo]);
 
   return (
     <>

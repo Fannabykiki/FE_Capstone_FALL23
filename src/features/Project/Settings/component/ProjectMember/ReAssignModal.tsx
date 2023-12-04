@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,7 +13,7 @@ import {
   Typography,
 } from "antd";
 
-import { IProjectMember } from "@/interfaces/project";
+import useProjectDetail from "@/hooks/useProjectDetail";
 import { projectApi } from "@/utils/api/project";
 import { IAdminRoles } from "@/interfaces/role";
 import { roleApi } from "@/utils/api/role";
@@ -30,15 +30,17 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
 
   const { projectId } = useParams();
 
-  const memberList = queryClient.getQueryData<IProjectMember[]>([
-    projectApi.getListUserInProjectByProjectIdKey,
-    projectId,
-  ]);
+  const { detail } = useProjectDetail(projectId);
 
   const { data: roles, isLoading: isLoadingRoles } = useQuery<IAdminRoles[]>({
     queryKey: [roleApi.getAdminRolesKey],
     queryFn: ({ signal }) => roleApi.getAdminRoles(signal, ""),
   });
+
+  const projectOwner = useMemo(
+    () => detail?.projectMembers?.find((member) => member.roleName === "PO"),
+    [detail?.projectMembers]
+  );
 
   const { mutate: updateMemberRole, isLoading } = useMutation({
     mutationKey: [projectApi.updateMemberRoleKey],
@@ -61,9 +63,8 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
     const roleMemberId = roles?.find(
       (role) => role.roleName === "Normal Member"
     )?.roleId;
-    const oldPOMemberId = memberList?.find((member) => member.roleName === "PO")
-      ?.memberId;
-    if (!memberId || !rolePOId || !roleMemberId || !oldPOMemberId) return;
+    if (!memberId || !rolePOId || !roleMemberId || !projectOwner?.memberId)
+      return;
     updateMemberRole({
       roleId: rolePOId,
       memberId,
@@ -74,10 +75,9 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
     setMemberId(e.target.value);
   };
 
-  const projectOwner = memberList?.find((member) => member.roleName === "PO");
-
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title="ReAssign PO Role"
       open={isOpen}
       onCancel={handleClose}
@@ -110,7 +110,7 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
           <Col span={16}>
             <Radio.Group
               className="flex flex-col"
-              options={memberList
+              options={detail?.projectMembers
                 ?.filter((member) => member.roleName !== "PO")
                 ?.map((member) => ({
                   label: member.userName || member.email,
