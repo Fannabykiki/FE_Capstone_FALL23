@@ -62,9 +62,7 @@ const UploadAttachment = ({ taskId }: Props) => {
   return (
     <>
       <Upload beforeUpload={onBeforeUpload} multiple showUploadList={false}>
-        <Button icon={<UploadOutlined />} loading={isLoading}>
-          Upload Attachment
-        </Button>
+        <Button icon={<UploadOutlined />}>Upload Attachment</Button>
       </Upload>
       {selectedFile && (
         <div>
@@ -83,7 +81,7 @@ const UploadAttachment = ({ taskId }: Props) => {
             />
           </div>
           <div className="text-right mt-4">
-            <Button type="primary" onClick={handleUpload}>
+            <Button type="primary" onClick={handleUpload} loading={isLoading}>
               Submit
             </Button>
           </div>

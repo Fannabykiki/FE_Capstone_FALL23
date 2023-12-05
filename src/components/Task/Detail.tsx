@@ -16,7 +16,12 @@ import {
   Typography,
 } from "antd";
 import dayjs from "dayjs";
-import { matchRoutes, useLocation, useParams } from "react-router-dom";
+import {
+  matchRoutes,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import PriorityStatus from "./PriorityStatus";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
@@ -95,6 +100,8 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
 
   const location = useLocation();
 
+  const [searchParams] = useSearchParams();
+
   const onDeleteTask = () => {
     if (task) {
       Modal.confirm({
@@ -116,11 +123,14 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                     currentIteration?.interationId || "",
                   ],
                 });
-                if (matchRoutes([paths.project.calendar], location)) {
+                if (matchRoutes([{ path: paths.project.calendar }], location)) {
                   await queryClient.refetchQueries({
                     queryKey: [
-                      iterationApi.getTasksKey,
-                      currentIteration?.interationId || "",
+                      projectApi.getWorkItemListByProjectIdKey,
+                      searchParams.get("status"),
+                      searchParams.get("startDate"),
+                      searchParams.get("endDate"),
+                      searchParams.get("search"),
                     ],
                   });
                 }
