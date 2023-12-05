@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   DragDropContext,
   OnDragEndResponder,
@@ -12,14 +12,12 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "@/utils/api/task";
-import { iterationApi } from "@/utils/api/iteration";
 import useTaskActions from "@/hooks/useTaskActions";
 import { Button, Input, Select } from "antd";
 import { toast } from "react-toastify";
-import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
-import { CreateStatus, CreateTask } from "../Modal";
-import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
+import { CreateTask } from "../Modal";
+import { ICreateTaskRequest } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
 import { IProject } from "@/interfaces/project";
@@ -183,12 +181,6 @@ const KanbanDisplay = () => {
     }
   };
 
-  const {
-    onOpenView: handleOpenModalCreateStatus,
-    onCloseView: handleCloseModalCreateStatus,
-    openView: isModalCreateStatusOpen,
-  } = useDetailView();
-
   const filterTaskName = useDebounceValue(filterData.name, 1000);
 
   if (tasks && tasks.length > 0)
@@ -323,12 +315,6 @@ const KanbanDisplay = () => {
             taskId={taskId || ""}
             isOpen={isModalDetailTaskOpen}
             onClose={onCloseViewDetailTask}
-          />
-        )}
-        {isModalCreateStatusOpen && (
-          <CreateStatus
-            open={isModalCreateStatusOpen}
-            onClose={handleCloseModalCreateStatus}
           />
         )}
       </>

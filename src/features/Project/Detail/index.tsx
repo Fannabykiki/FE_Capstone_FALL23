@@ -87,7 +87,9 @@ export default function ProjectDetail() {
   return (
     <>
       <div className="flex justify-between items-center">
-        <Typography.Title>{detail?.projectName}</Typography.Title>
+        <Typography.Title className="line-clamp-1" title={detail?.projectName}>
+          {detail?.projectName}
+        </Typography.Title>
         {isAdminOrPO && detail?.projectStatus === "Doing" ? (
           <div className="flex gap-x-4">
             <Button

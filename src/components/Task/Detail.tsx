@@ -16,7 +16,12 @@ import {
   Typography,
 } from "antd";
 import dayjs from "dayjs";
-import { useParams } from "react-router-dom";
+import {
+  matchRoutes,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import PriorityStatus from "./PriorityStatus";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
@@ -34,6 +39,7 @@ import { useAuthContext } from "@/context/Auth";
 import { useMemo, useState } from "react";
 import CommentTab from "./CommentTab";
 import HistoryTab from "./HistoryTab";
+import { paths } from "@/routers/paths";
 
 interface Props {
   taskId: string;
@@ -92,6 +98,10 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     await queryClient.refetchQueries([taskApi.getDetailKey, taskId]);
   };
 
+  const location = useLocation();
+
+  const [searchParams] = useSearchParams();
+
   const onDeleteTask = () => {
     if (task) {
       Modal.confirm({
@@ -113,6 +123,17 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                     currentIteration?.interationId || "",
                   ],
                 });
+                if (matchRoutes([{ path: paths.project.calendar }], location)) {
+                  await queryClient.refetchQueries({
+                    queryKey: [
+                      projectApi.getWorkItemListByProjectIdKey,
+                      searchParams.get("status"),
+                      searchParams.get("startDate"),
+                      searchParams.get("endDate"),
+                      searchParams.get("search"),
+                    ],
+                  });
+                }
                 onClose();
               },
               onError: (err) => {
@@ -171,6 +192,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                   danger
                   icon={<DeleteOutlined />}
                   onClick={onDeleteTask}
+                  loading={deleteTaskMutation.isLoading}
                 />
               </Tooltip>
             </div>
