@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateStatus, CreateTask } from "../Modal";
-import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
+import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
 import { IProject } from "@/interfaces/project";
@@ -38,12 +38,17 @@ const DragDropContextComponent =
   DragDropContext as React.ComponentClass<DragDropContextProps>;
 const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
 const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
-interface Props {
-  iterationId: string;
-}
 
-const KanbanDisplay = ({ iterationId }: Props) => {
-  const [selectedIteration, setSelectedIteration] = useState<IIteration>();
+const KanbanDisplay = () => {
+  const { projectId } = useParams();
+
+  const { data: tasks, refetch: refetchTasks } = useQuery({
+    queryKey: [taskApi.getKanbanTasksKey],
+    queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
+    enabled: Boolean(projectId),
+    placeholderData: [],
+  });
+
   const [filterData, setFilterData] = useState({
     name: "",
     statusId: null,
@@ -51,7 +56,6 @@ const KanbanDisplay = ({ iterationId }: Props) => {
 
   const queryClient = useQueryClient();
 
-  const { projectId } = useParams();
   const {
     openView: isModalCreateTaskOpen,
     onCloseView: onCloseCreateTaskModal,
@@ -65,31 +69,11 @@ const KanbanDisplay = ({ iterationId }: Props) => {
     detail: taskId,
   } = useDetailView<string>();
 
-  const handleOpenCreateTaskModal = (
-    initData: Partial<ICreateTaskRequest> = {}
-  ) => {
-    onOpenCreateTaskModal({
-      ...initData,
-      interationId: iterationId,
-    });
-  };
-
   const { data: statusList } = useQuery({
     queryKey: [taskApi.getTaskStatusKey, projectId, "kanban"],
     queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId),
     initialData: [],
   });
-
-  const { data: iteration, refetch: refetchIteration } = useQuery({
-    queryKey: [iterationApi.getTasksKey, iterationId],
-    queryFn: ({ signal }) => iterationApi.getTasks(signal, iterationId),
-  });
-
-  useEffect(() => {
-    if (iteration) {
-      setSelectedIteration(iteration);
-    }
-  }, [iteration]);
 
   const { changeTaskStatusMutation, updateStatusOrderMutation } =
     useTaskActions();
@@ -106,110 +90,95 @@ const KanbanDisplay = ({ iterationId }: Props) => {
   }, [userInfo, project]);
 
   const onDragEnd: OnDragEndResponder = (result) => {
-    if (selectedIteration) {
-      const { source, destination, draggableId } = result;
-      // Dropped outside the list
-      if (!destination) {
-        return;
-      }
+    const { source, destination, draggableId } = result;
+    // Dropped outside the list
+    if (!destination) {
+      return;
+    }
 
-      if (
-        source.droppableId === "status-drop-zone" &&
-        destination.droppableId === "status-drop-zone"
-      ) {
-        if (source.index !== destination.index) {
-          const originalStatusList = [...statusList];
-          const newStatusList = sortBy(
-            statusList.map((status, index) => {
-              if (status.boardStatusId === draggableId) {
-                return { ...status, order: destination.index + 1 };
-              }
-              if (index >= destination.index && index < source.index) {
-                return { ...status, order: status.order + 1 };
-              } else if (index > source.index && index <= destination.index) {
-                return { ...status, order: status.order - 1 };
-              }
-              return status;
-            }),
-            "order"
-          );
-          queryClient.setQueryData(
-            [taskApi.getTaskStatusKey, projectId],
-            newStatusList
-          );
-          updateStatusOrderMutation.mutate(
-            {
-              statusId: draggableId,
-              order: destination.index + 1,
-            },
-            {
-              onSuccess: async () => {
-                toast.success("Change status order succeed!");
-                await queryClient.invalidateQueries({
-                  queryKey: [taskApi.getTaskStatusKey, projectId],
-                });
-                await queryClient.refetchQueries({
-                  queryKey: [taskApi.getTaskStatusKey, projectId],
-                });
-              },
-              onError: (err: any) => {
-                console.error(err);
-                toast.error(
-                  "Change status order failed! Please try again later"
-                );
-                queryClient.setQueryData(
-                  [taskApi.getTaskStatusKey, projectId],
-                  originalStatusList
-                );
-              },
+    if (
+      source.droppableId === "status-drop-zone" &&
+      destination.droppableId === "status-drop-zone"
+    ) {
+      if (source.index !== destination.index) {
+        const originalStatusList = [...statusList];
+        const newStatusList = sortBy(
+          statusList.map((status, index) => {
+            if (status.boardStatusId === draggableId) {
+              return { ...status, order: destination.index + 1 };
             }
-          );
-        }
-      } else {
-        // Moving within the same list
-        if (source.droppableId !== destination.droppableId) {
-          // Moving to a different status
-          const newStatusId = destination.droppableId;
-          const originalIteration = { ...selectedIteration };
-          setSelectedIteration((c) => {
-            return {
-              ...c!,
-              tasks: c!.tasks.map((task) => {
-                if (task.taskId === draggableId) {
-                  return {
-                    ...task,
-                    statusId: newStatusId,
-                  };
-                }
-                return task;
-              }),
-            };
-          });
-          changeTaskStatusMutation.mutate(
-            {
-              id: draggableId,
-              statusId: newStatusId,
-              memberId: member?.memberId || "",
-            },
-            {
-              onSuccess: () => {
-                toast.success("Change task status succeed!");
-              },
-              onError: () => {
-                toast.error("Change task status failed!");
-                setSelectedIteration(originalIteration);
-              },
-              onSettled: async () => {
-                await queryClient.invalidateQueries({
-                  queryKey: [iterationApi.getTasksKey, iterationId],
-                });
-                await queryClient.refetchQueries({
-                  queryKey: [iterationApi.getTasksKey, iterationId],
-                });
-              },
+            if (index >= destination.index && index < source.index) {
+              return { ...status, order: status.order + 1 };
+            } else if (index > source.index && index <= destination.index) {
+              return { ...status, order: status.order - 1 };
             }
-          );
-        }
+            return status;
+          }),
+          "order"
+        );
+        queryClient.setQueryData(
+          [taskApi.getTaskStatusKey, projectId],
+          newStatusList
+        );
+        updateStatusOrderMutation.mutate(
+          {
+            statusId: draggableId,
+            order: destination.index + 1,
+          },
+          {
+            onSuccess: async () => {
+              toast.success("Change status order succeed!");
+              await queryClient.invalidateQueries({
+                queryKey: [taskApi.getTaskStatusKey, projectId],
+              });
+              await queryClient.refetchQueries({
+                queryKey: [taskApi.getTaskStatusKey, projectId],
+              });
+            },
+            onError: (err: any) => {
+              console.error(err);
+              toast.error("Change status order failed! Please try again later");
+              queryClient.setQueryData(
+                [taskApi.getTaskStatusKey, projectId],
+                originalStatusList
+              );
+            },
+          }
+        );
+      }
+    } else {
+      // Moving within the same list
+      if (source.droppableId !== destination.droppableId) {
+        // Moving to a different status
+        const newStatusId = destination.droppableId;
+        const originalTasks = [...tasks!];
+        const newTasks = tasks!.map((task) => {
+          if (task.taskId === draggableId) {
+            return { ...task, statusId: newStatusId };
+          }
+          return task;
+        });
+        queryClient.setQueryData([taskApi.getKanbanTasksKey], newTasks);
+        changeTaskStatusMutation.mutate(
+          {
+            id: draggableId,
+            statusId: newStatusId,
+            memberId: member?.memberId || "",
+          },
+          {
+            onSuccess: () => {
+              toast.success("Change task status succeed!");
+              refetchTasks();
+            },
+            onError: () => {
+              toast.error("Change task status failed!");
+              queryClient.setQueryData(
+                [taskApi.getKanbanTasksKey],
+                originalTasks
+              );
+            },
+          }
+        );
       }
     }
   };
@@ -222,7 +191,7 @@ const KanbanDisplay = ({ iterationId }: Props) => {
 
   const filterTaskName = useDebounceValue(filterData.name, 1000);
 
-  if (selectedIteration)
+  if (tasks && tasks.length > 0)
     return (
       <>
         <DragDropContextComponent onDragEnd={onDragEnd}>
@@ -252,7 +221,7 @@ const KanbanDisplay = ({ iterationId }: Props) => {
               <div className="flex flex-grow justify-end">
                 <Button
                   icon={<PlusOutlined />}
-                  onClick={() => handleOpenCreateTaskModal()}
+                  onClick={() => onOpenCreateTaskModal()}
                 >
                   New task
                 </Button>
@@ -260,56 +229,18 @@ const KanbanDisplay = ({ iterationId }: Props) => {
             )}
           </div>
           <div className="overflow-x-auto">
-            <div className="flex gap-x-4 items-center">
-              <DroppableComponent
-                droppableId="status-drop-zone"
-                direction="horizontal"
+            <div className="flex gap-x-4 items-center mb-4">
+              <div
+                className={classNames("flex gap-x-4 items-center flex-grow")}
               >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    className={classNames(
-                      "flex gap-x-4 items-center flex-grow rounded",
-                      snapshot.isDraggingOver && "bg-neutral-200"
-                    )}
-                    {...provided.droppableProps}
-                  >
-                    {statusList.map((status, index) => (
-                      <DraggableComponent
-                        draggableId={status.boardStatusId}
-                        index={index}
-                        key={status.boardStatusId}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              ...provided.draggableProps.style,
-                            }}
-                            className="w-[250px] shrink-0"
-                          >
-                            <div>
-                              <h4 className="mb-0">{status.title}</h4>
-                            </div>
-                          </div>
-                        )}
-                      </DraggableComponent>
-                    ))}
-                    {provided.placeholder}
-                    <div className="w-[250px] rounded p-2">
-                      <Button
-                        icon={<PlusOutlined />}
-                        type="text"
-                        onClick={() => handleOpenModalCreateStatus()}
-                      >
-                        New status
-                      </Button>
+                {statusList.map((status, index) => (
+                  <div className="w-[250px] shrink-0">
+                    <div>
+                      <h4 className="mb-0">{status.title}</h4>
                     </div>
                   </div>
-                )}
-              </DroppableComponent>
+                ))}
+              </div>
             </div>
             <div>
               <div className="flex w-full gap-x-4">
@@ -323,7 +254,7 @@ const KanbanDisplay = ({ iterationId }: Props) => {
                         <div
                           ref={provided.innerRef}
                           className={classNames(
-                            "w-[250px] rounded p-2 flex-grow",
+                            "w-[250px] rounded flex-grow",
                             snapshot.isDraggingOver && "bg-neutral-200"
                           )}
                           {...provided.droppableProps}
@@ -331,7 +262,7 @@ const KanbanDisplay = ({ iterationId }: Props) => {
                           <>
                             <div className="flex flex-col gap-y-4">
                               {(
-                                selectedIteration.tasks?.filter(
+                                tasks.filter(
                                   (task) =>
                                     task.statusId === status.boardStatusId &&
                                     (!filterTaskName ||
@@ -384,7 +315,7 @@ const KanbanDisplay = ({ iterationId }: Props) => {
             isOpen={isModalCreateTaskOpen}
             handleClose={onCloseCreateTaskModal}
             initTaskData={initTaskData || undefined}
-            onSuccess={() => refetchIteration()}
+            onSuccess={() => refetchTasks()}
           />
         )}
         {isModalDetailTaskOpen && (

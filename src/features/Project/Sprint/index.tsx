@@ -57,9 +57,10 @@ const TaskBoard = () => {
     if (value === "new") {
       onOpenCreateIterationModal();
     } else {
-      setSelectedIteration(
-        iterations?.find((iteration) => iteration.interationId === value)
-      );
+      setSearchParams((prev) => {
+        prev.set("sprint", value);
+        return prev;
+      });
     }
   };
 

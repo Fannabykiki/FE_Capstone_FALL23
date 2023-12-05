@@ -1,6 +1,7 @@
 import { paths } from "@/routers/paths";
 import { iterationApi } from "@/utils/api/iteration";
 import { projectApi } from "@/utils/api/project";
+import { taskApi } from "@/utils/api/task";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -38,6 +39,13 @@ export default function useProjectDetail(projectId: string | undefined) {
     placeholderData: [],
   });
 
+  const { data: kanbanTasks } = useQuery({
+    queryKey: [taskApi.getKanbanTasksKey],
+    queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
+    enabled: Boolean(projectId),
+    placeholderData: [],
+  });
+
   const { data: memberList } = useQuery({
     queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
     queryFn: async ({ signal }) =>
@@ -55,6 +63,7 @@ export default function useProjectDetail(projectId: string | undefined) {
     detail,
     iterations,
     memberList,
+    kanbanTasks,
     actions: {
       isGettingDetail,
       updatePrivacyStatus,

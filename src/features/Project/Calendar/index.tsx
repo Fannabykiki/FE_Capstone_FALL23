@@ -38,6 +38,7 @@ import { ITaskStatus } from "@/interfaces/task";
 import { taskApi } from "@/utils/api/task";
 import useDetailView from "@/hooks/useDetailView";
 import { TaskDetail } from "@/components";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 const localizer = dayjsLocalizer(dayjs);
 const { RangePicker } = DatePicker;
@@ -173,6 +174,8 @@ const ProjectCalendar = () => {
     detail: taskId,
   } = useDetailView<string>();
 
+  const { iterations, actions } = useProjectDetail(projectId);
+
   return (
     <Space direction="vertical" className="w-full gap-5">
       <Row className="flex justify-between items-center">
@@ -222,7 +225,7 @@ const ProjectCalendar = () => {
                 allowClear
               />
             </Col>
-            <Col span={10}>
+            <Col span={4}>
               <Select
                 options={statusList.map((status) => ({
                   label: status.title,
@@ -234,6 +237,27 @@ const ProjectCalendar = () => {
                 onChange={handleChange("status")}
                 bordered={false}
                 allowClear
+              />
+            </Col>
+            <Col span={6}>
+              <Select
+                className="w-full"
+                placeholder="Sprint"
+                defaultValue={searchParams.get("interation")}
+                onChange={handleChange("interation")}
+                allowClear
+                options={(iterations || []).map((iteration) => ({
+                  label: (
+                    <div className="flex items-center justify-between">
+                      <span>{iteration.interationName}</span>
+                      <span className="text-xs bg-neutral-100 px-2 rounded-full">
+                        {iteration.status}
+                      </span>
+                    </div>
+                  ),
+                  value: iteration.interationId,
+                }))}
+                loading={actions.isGettingIterations}
               />
             </Col>
           </Row>

@@ -126,10 +126,8 @@ export default function MainTaskDisplay({
           )}
         </div>
         <div className="flex w-full gap-x-4">
-          <div className="p-2">
-            <div className={classNames("w-56 h-fit")}>
-              <TaskDraggableDisplay task={task} onViewTask={onViewTask} />
-            </div>
+          <div className={classNames("w-56 h-fit")}>
+            <TaskDraggableDisplay task={task} onViewTask={onViewTask} />
           </div>
           {statusList.map((status, index) => (
             <div className="flex flex-col" key={status.boardStatusId}>
@@ -141,7 +139,7 @@ export default function MainTaskDisplay({
                   <div
                     ref={provided.innerRef}
                     className={classNames(
-                      "w-[250px] rounded p-2 flex-grow",
+                      "w-[250px] rounded flex-grow",
                       snapshot.isDraggingOver && "bg-neutral-200"
                     )}
                     {...provided.droppableProps}

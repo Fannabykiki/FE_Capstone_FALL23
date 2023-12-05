@@ -174,11 +174,15 @@ export default function ProjectSider() {
               <AvatarWithColor
                 shape="square"
                 stringContent={detail?.projectName || "Unknown"}
+                className="flex-shrink-0"
               >
                 {detail?.projectName.charAt(0).toUpperCase()}
               </AvatarWithColor>
               {!menuCollapse && (
-                <span className="font-semibold text-lg">
+                <span
+                  className="font-semibold text-lg line-clamp-2"
+                  title={detail?.projectName}
+                >
                   {detail?.projectName}
                 </span>
               )}
