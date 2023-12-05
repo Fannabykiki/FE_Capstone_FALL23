@@ -3,10 +3,6 @@ import {
   DragDropContext,
   OnDragEndResponder,
   DragDropContextProps,
-  Draggable,
-  Droppable,
-  DroppableProps,
-  DraggableProps,
 } from "react-beautiful-dnd";
 import MainTaskDisplay from "./MainTaskDisplay";
 import {
@@ -30,7 +26,6 @@ import { classNames } from "@/utils/common";
 import { IProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useAuthContext } from "@/context/Auth";
-import { sortBy } from "lodash";
 
 export enum TaskType {
   Main = "Work Item",
@@ -39,8 +34,6 @@ export enum TaskType {
 }
 const DragDropContextComponent =
   DragDropContext as React.ComponentClass<DragDropContextProps>;
-const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
-const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 interface Props {
   iterationId: string;
 }
@@ -112,8 +105,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
     }
   };
 
-  const { changeTaskStatusMutation, updateStatusOrderMutation } =
-    useTaskActions();
+  const { changeTaskStatusMutation } = useTaskActions();
 
   const project: IProject | undefined = queryClient.getQueryData([
     projectApi.getInfoKey,
@@ -134,121 +126,65 @@ const IterationDisplay = ({ iterationId }: Props) => {
         return;
       }
 
-      if (
-        source.droppableId === "status-drop-zone" &&
-        destination.droppableId === "status-drop-zone"
-      ) {
-        if (source.index !== destination.index) {
-          const originalStatusList = [...statusList];
-          const newStatusList = sortBy(
-            statusList.map((status, index) => {
-              if (status.boardStatusId === draggableId) {
-                console.log("Dragging: ", status.title);
-                return { ...status, order: destination.index + 1 };
-              }
-              if (index >= destination.index && index < source.index) {
-                console.log("Moved: ", status.title);
-                return { ...status, order: status.order + 1 };
-              } else if (index > source.index && index <= destination.index) {
-                return { ...status, order: status.order - 1 };
-              }
-              return status;
-            }),
-            "order"
-          );
-          queryClient.setQueryData(
-            [taskApi.getTaskStatusKey, projectId],
-            newStatusList
-          );
-          updateStatusOrderMutation.mutate(
-            {
-              statusId: draggableId,
-              order: destination.index + 1,
-            },
-            {
-              onSuccess: async () => {
-                toast.success("Change status order succeed!");
-                await queryClient.invalidateQueries({
-                  queryKey: [taskApi.getTaskStatusKey, projectId],
-                });
-                await queryClient.refetchQueries({
-                  queryKey: [taskApi.getTaskStatusKey, projectId],
-                });
-              },
-              onError: (err: any) => {
-                console.error(err);
-                toast.error(
-                  "Change status order failed! Please try again later"
-                );
-                queryClient.setQueryData(
-                  [taskApi.getTaskStatusKey, projectId],
-                  originalStatusList
-                );
-              },
-            }
-          );
-        }
-      } else {
-        const sourceTask = selectedIteration.tasks.find(
-          (task) =>
-            task.subTask?.some((subtask) => subtask.taskId === draggableId)
-        );
+      const sourceTask = selectedIteration.tasks.find(
+        (task) =>
+          task.subTask?.some((subtask) => subtask.taskId === draggableId)
+      );
 
-        // Moving within the same list
-        if (source.droppableId !== destination.droppableId) {
-          // Moving to a different status
-          const newStatusId = destination.droppableId.split("/")[1];
-          const selectedSubtask = sourceTask!.subTask!.find(
-            (subtask) => subtask.taskId === draggableId
-          );
-          const originalIteration = { ...selectedIteration };
-          setSelectedIteration((c) => {
-            return {
-              ...c!,
-              tasks: c!.tasks.map((task) => {
-                if (task.taskId === sourceTask!.taskId) {
-                  return {
-                    ...task,
-                    subTask: task.subTask!.map((subTask) => {
-                      if (subTask.taskId === selectedSubtask!.taskId) {
-                        return { ...selectedSubtask!, statusId: newStatusId }!;
-                      }
-                      return subTask;
-                    }),
-                  };
-                }
-                return task;
-              }),
-            };
-          });
-          changeTaskStatusMutation.mutate(
-            {
-              id: selectedSubtask!.taskId,
-              statusId: newStatusId,
-              memberId: member?.memberId || "",
+      // Moving within the same list
+      if (source.droppableId !== destination.droppableId) {
+        // Moving to a different status
+        const newStatusId = destination.droppableId.split("/")[1];
+        const selectedSubtask = sourceTask!.subTask!.find(
+          (subtask) => subtask.taskId === draggableId
+        );
+        const originalIteration = { ...selectedIteration };
+        setSelectedIteration((c) => {
+          return {
+            ...c!,
+            tasks: c!.tasks.map((task) => {
+              if (task.taskId === sourceTask!.taskId) {
+                return {
+                  ...task,
+                  subTask: task.subTask!.map((subTask) => {
+                    if (subTask.taskId === selectedSubtask!.taskId) {
+                      return { ...selectedSubtask!, statusId: newStatusId }!;
+                    }
+                    return subTask;
+                  }),
+                };
+              }
+              return task;
+            }),
+          };
+        });
+        changeTaskStatusMutation.mutate(
+          {
+            id: selectedSubtask!.taskId,
+            statusId: newStatusId,
+            memberId: member?.memberId || "",
+          },
+          {
+            onSuccess: () => {
+              toast.success("Change task status succeed!");
             },
-            {
-              onSuccess: () => {
-                toast.success("Change task status succeed!");
-              },
-              onError: () => {
-                toast.error("Change task status failed!");
-                setSelectedIteration(originalIteration);
-              },
-              onSettled: () => {
-                queryClient
-                  .invalidateQueries({
+            onError: () => {
+              toast.error("Change task status failed!");
+              setSelectedIteration(originalIteration);
+            },
+            onSettled: () => {
+              queryClient
+                .invalidateQueries({
+                  queryKey: [iterationApi.getTasksKey, iterationId],
+                })
+                .then(() =>
+                  queryClient.refetchQueries({
                     queryKey: [iterationApi.getTasksKey, iterationId],
                   })
-                  .then(() =>
-                    queryClient.refetchQueries({
-                      queryKey: [iterationApi.getTasksKey, iterationId],
-                    })
-                  );
-              },
-            }
-          );
-        }
+                );
+            },
+          }
+        );
       }
     }
   };
@@ -305,48 +241,22 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   Collapse all
                 </h4>
               </div>
-              <DroppableComponent
-                droppableId="status-drop-zone"
-                direction="horizontal"
-              >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    className={classNames(
-                      "flex gap-x-4 items-center flex-grow rounded",
-                      snapshot.isDraggingOver && "bg-neutral-200"
-                    )}
-                    {...provided.droppableProps}
-                  >
-                    <>
-                      {statusList.map((status, index) => (
-                        <DraggableComponent
-                          draggableId={status.boardStatusId}
-                          index={index}
-                          key={status.boardStatusId}
-                        >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={{
-                                ...provided.draggableProps.style,
-                              }}
-                              className="w-[250px] shrink-0"
-                            >
-                              <div>
-                                <h4 className="mb-0">{status.title}</h4>
-                              </div>
-                            </div>
-                          )}
-                        </DraggableComponent>
-                      ))}
-                      {provided.placeholder}
-                    </>
-                  </div>
+              <div
+                className={classNames(
+                  "flex gap-x-4 items-center flex-grow rounded"
                 )}
-              </DroppableComponent>
+              >
+                {statusList.map((status, index) => (
+                  <div
+                    key={status.boardStatusId}
+                    className="w-[250px] shrink-0"
+                  >
+                    <div>
+                      <h4 className="mb-0">{status.title}</h4>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             {selectedIteration.tasks.map((task) => (
               <div

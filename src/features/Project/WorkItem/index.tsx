@@ -31,6 +31,7 @@ import useDetailView from "@/hooks/useDetailView";
 import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 export default function WorkItem() {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -99,6 +100,7 @@ export default function WorkItem() {
     onCloseView: handleCloseModalCreate,
     openView: isModalCreateOpen,
   } = useDetailView();
+  const { iterations, actions } = useProjectDetail(projectId);
   const handleChange = (fieldName: string) => (value: string) => {
     setSearchParams((prev) => {
       if (!value) {
@@ -312,12 +314,23 @@ export default function WorkItem() {
                 allowClear
               />
               <Select
-                options={INTERATION_OPTION}
-                className="w-36 text-center"
-                placeholder="Interation"
+                className="min-w-[250px]"
+                placeholder="Sprint"
                 defaultValue={searchParams.get("interation")}
                 onChange={handleChange("interation")}
                 allowClear
+                options={(iterations || []).map((iteration) => ({
+                  label: (
+                    <div className="flex items-center justify-between">
+                      <span>{iteration.interationName}</span>
+                      <span className="text-xs bg-neutral-100 px-2 rounded-full">
+                        {iteration.status}
+                      </span>
+                    </div>
+                  ),
+                  value: iteration.interationId,
+                }))}
+                loading={actions.isGettingIterations}
               />
             </Col>
           </Row>

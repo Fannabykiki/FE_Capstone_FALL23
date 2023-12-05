@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import useDebounceValue from "@/hooks/useDebounceValue";
 import { AvatarWithColor } from "@/components";
 import { ADMIN_ROLES } from "@/utils/constants";
+import { orderBy } from "lodash";
 
 export default function UserDashboard() {
   const { projects, refetchProjects } = useListProjectOfUser();
@@ -79,7 +80,7 @@ export default function UserDashboard() {
                   !project.deleteAt && navigateToProject(project.projectId)
                 }
                 className={classNames(
-                  "basis-1/4 bg-white rounded p-4 pb-12 shadow",
+                  "basis-1/4 bg-white rounded p-4 pb-12 shadow flex-grow-0 flex-shrink-0",
                   project.deleteAt
                     ? "cursor-not-allowed opacity-40"
                     : "cursor-pointer hover:shadow-lg",
@@ -90,20 +91,23 @@ export default function UserDashboard() {
                 <div className="flex gap-4 items-center">
                   <AvatarWithColor
                     shape="square"
+                    className="flex-shrink-0"
                     stringContent={project.projectName || "Unknown"}
                   >
                     {project.projectName?.[0].toUpperCase()}
                   </AvatarWithColor>
                   <div>
-                    <div>
-                      <span className="font-semibold">
-                        {project.projectName}
-                      </span>
+                    <div
+                      className="font-semibold line-clamp-1"
+                      title={project.projectName}
+                    >
+                      {project.projectName}
                     </div>
-                    <div>
-                      <span className="font-light text-xs">
-                        {project.description}
-                      </span>
+                    <div
+                      className="font-light text-xs line-clamp-3"
+                      title={project.description}
+                    >
+                      {project.description}
                     </div>
                   </div>
                 </div>
@@ -111,76 +115,87 @@ export default function UserDashboard() {
             ))}
           </div>
         </div>
-        <div>
+        <div className="flex flex-col gap-y-4">
           <Typography.Title level={4}>All projects</Typography.Title>
-          {projects
-            ?.filter(
+          {orderBy(
+            projects?.filter(
               (project) =>
                 !debounceProjectName ||
                 project.projectName
                   .toLowerCase()
                   .includes(debounceProjectName.toLowerCase())
-            )
-            .map((project) => (
-              <Row
-                key={project.projectId}
-                onClick={() =>
-                  !project.deleteAt && navigateToProject(project.projectId)
-                }
-                className={classNames(
-                  "bg-white rounded p-4 flex items-center shadow",
-                  project.deleteAt
-                    ? "cursor-not-allowed opacity-40"
-                    : "cursor-pointer hover:shadow-lg",
-                  project.projectStatus === "Done" &&
-                    "border-2 border-solid border-green-500"
-                )}
-              >
-                <Col span={22} className="flex gap-4">
-                  <AvatarWithColor
-                    shape="square"
-                    stringContent={project.projectName || "Unknown"}
+            ),
+            "createAt",
+            "desc"
+          ).map((project) => (
+            <Row
+              key={project.projectId}
+              onClick={() =>
+                !project.deleteAt && navigateToProject(project.projectId)
+              }
+              className={classNames(
+                "bg-white rounded p-4 flex items-center shadow",
+                project.deleteAt
+                  ? "cursor-not-allowed opacity-40"
+                  : "cursor-pointer hover:shadow-lg",
+                project.projectStatus === "Done" &&
+                  "border-2 border-solid border-green-500"
+              )}
+            >
+              <Col span={22} className="flex gap-4">
+                <AvatarWithColor
+                  shape="square"
+                  stringContent={project.projectName || "Unknown"}
+                  className="flex-shrink-0"
+                >
+                  {project.projectName?.[0].toUpperCase()}
+                </AvatarWithColor>
+                <Space direction="vertical" className="gap-0">
+                  <span
+                    className="font-semibold line-clamp-1 truncate"
+                    title={project.projectName}
                   >
-                    {project.projectName?.[0].toUpperCase()}
-                  </AvatarWithColor>
-                  <Space direction="vertical" className="gap-0">
-                    <span className="font-semibold">{project.projectName}</span>
-                    <span className="font-light text-xs">
-                      {project.description}
-                    </span>
-                  </Space>
+                    {project.projectName}
+                  </span>
+                  <span
+                    className="font-light text-xs line-clamp-3"
+                    title={project.description}
+                  >
+                    {project.description}
+                  </span>
+                </Space>
+              </Col>
+              {project.deleteAt &&
+              ADMIN_ROLES.includes(project.memberRole?.roleName || "") ? (
+                <Col span={2} className="flex justify-end">
+                  <Dropdown
+                    menu={{
+                      items: [
+                        {
+                          key: project.projectId,
+                          label: "Restore",
+                        },
+                      ],
+                      onClick: ({ key }) =>
+                        modal.confirm({
+                          title: "Warning",
+                          content: "Are you sure to restore this project?",
+                          onOk: () =>
+                            restoreProject({
+                              projectId: key,
+                            }),
+                        }),
+                    }}
+                    placement="bottom"
+                    arrow
+                    trigger={["click"]}
+                  >
+                    <MoreOutlined className="cursor-pointer p-2 hover:bg-gray-200" />
+                  </Dropdown>
                 </Col>
-                {project.deleteAt &&
-                ADMIN_ROLES.includes(project.memberRole?.roleName || "") ? (
-                  <Col span={2} className="flex justify-end">
-                    <Dropdown
-                      menu={{
-                        items: [
-                          {
-                            key: project.projectId,
-                            label: "Restore",
-                          },
-                        ],
-                        onClick: ({ key }) =>
-                          modal.confirm({
-                            title: "Warning",
-                            content: "Are you sure to restore this project?",
-                            onOk: () =>
-                              restoreProject({
-                                projectId: key,
-                              }),
-                          }),
-                      }}
-                      placement="bottom"
-                      arrow
-                      trigger={["click"]}
-                    >
-                      <MoreOutlined className="cursor-pointer p-2 hover:bg-gray-200" />
-                    </Dropdown>
-                  </Col>
-                ) : null}
-              </Row>
-            ))}
+              ) : null}
+            </Row>
+          ))}
         </div>
       </div>
       {contextHolder}

@@ -12,7 +12,7 @@ import {
   ICreateStatusPayload,
   IUpdateStatusOrderPayload,
 } from "@/interfaces/task";
-import { sortBy } from "lodash";
+import { orderBy } from "lodash";
 
 const getKanbanTasks = (
   signal: AbortSignal | undefined,
@@ -127,7 +127,13 @@ const getTaskStatus = (
     params: {
       projectId,
     },
-  }).then((resp) => sortBy(resp.data || [], "order"));
+  }).then((resp) =>
+    orderBy(
+      resp.data?.filter((status: ITaskStatus) => status.boardStatusId) || [],
+      "order",
+      "asc"
+    )
+  );
 };
 
 const getTaskType = (
