@@ -157,6 +157,11 @@ export default function AddComment({
           type="primary"
           onClick={onSubmit}
           disabled={isQuillEmpty(comment)}
+          loading={
+            replyCommentMutation.isLoading ||
+            updateCommentMutation.isLoading ||
+            createCommentMutation.isLoading
+          }
         >
           Submit
         </Button>

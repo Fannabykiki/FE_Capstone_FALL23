@@ -170,7 +170,12 @@ export default function ProjectSider() {
             <div className="flex justify-center items-center">
               <Brand menuCollapse={menuCollapse} />
             </div>
-            <div className="px-2 flex gap-x-4 items-center">
+            <div
+              className={classNames(
+                "px-2 flex items-center",
+                menuCollapse ? "justify-center" : "gap-x-4"
+              )}
+            >
               <AvatarWithColor
                 shape="square"
                 stringContent={detail?.projectName || "Unknown"}
