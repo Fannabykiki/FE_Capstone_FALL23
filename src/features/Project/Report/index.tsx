@@ -77,21 +77,19 @@ const Report = () => {
       render: (_: string, record: IReportProject["memberTaks"][number]) => {
         const name = record.userName || record.email;
         return (
-          <Row gutter={4}>
-            <Col span={5} className="flex justify-center items-center">
-              <AvatarWithColor stringContent={name}>
-                {name?.charAt(0).toUpperCase()}
-              </AvatarWithColor>
-            </Col>
-            <Col span={19}>
+          <Space direction="horizontal">
+            <AvatarWithColor stringContent={name}>
+              {name?.charAt(0).toUpperCase()}
+            </AvatarWithColor>
+            <Space direction="vertical" className="gap-0">
               <Typography.Title level={5} className="!m-0 min-h-[24px]">
                 {name}
               </Typography.Title>
               <Typography.Text className="min-h-[19px]">
                 {record.roleName}
               </Typography.Text>
-            </Col>
-          </Row>
+            </Space>
+          </Space>
         );
       },
     },

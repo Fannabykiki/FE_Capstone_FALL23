@@ -72,7 +72,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
   };
 
   const { data: statusList } = useQuery({
-    queryKey: [taskApi.getTaskStatusKey, projectId],
+    queryKey: [taskApi.getTaskStatusKey, projectId, "Iteration"],
     queryFn: ({ signal }) => taskApi.getTaskStatus(signal, projectId),
     initialData: [],
   });

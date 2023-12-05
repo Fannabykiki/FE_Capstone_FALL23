@@ -81,9 +81,8 @@ export default function ProjectDetail() {
   const projectOwner = detail?.projectMembers?.find((member) => member.isOwner);
 
   const isAdminOrPO = useMemo(() => {
-    const owner = detail?.projectMembers.find((member) => member.isOwner);
-    return userInfo?.isAdmin || userInfo?.id === owner?.userId;
-  }, [detail?.projectMembers, userInfo]);
+    return userInfo?.isAdmin || userInfo?.id === projectOwner?.userId;
+  }, [projectOwner?.userId, userInfo]);
 
   return (
     <>
@@ -91,7 +90,7 @@ export default function ProjectDetail() {
         <Typography.Title className="line-clamp-1" title={detail?.projectName}>
           {detail?.projectName}
         </Typography.Title>
-        {isAdminOrPO ? (
+        {isAdminOrPO && detail?.projectStatus === "Doing" ? (
           <div className="flex gap-x-4">
             <Button
               icon={

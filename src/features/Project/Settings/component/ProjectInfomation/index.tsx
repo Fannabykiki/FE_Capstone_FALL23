@@ -21,7 +21,6 @@ import { projectApi } from "@/utils/api/project";
 import { toast } from "react-toastify";
 import { AvatarWithColor } from "@/components";
 import { DATE_FORMAT } from "@/utils/constants";
-import useCheckProjectAdmin from "@/hooks/useCheckProjectAdmin";
 
 interface IProp {
   isAdminOrPO: boolean;
@@ -30,7 +29,10 @@ interface IProp {
 export default function ProjectInformation({ isAdminOrPO }: IProp) {
   const [form] = Form.useForm();
   const { projectId } = useParams();
-  const { detail } = useProjectDetail(projectId);
+  const {
+    detail,
+    actions: { refetchDetail },
+  } = useProjectDetail(projectId);
 
   const [modal, contextHolder] = Modal.useModal();
 
@@ -52,9 +54,23 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
       mutationFn: projectApi.setDoneProject,
       onSuccess: async () => {
         toast.success("This project is done");
+        refetchDetail();
       },
       onError: (err: any) => {
         toast.error(err?.response?.data || "Set project is done failed");
+      },
+    });
+
+  const { mutate: reOpenProject, isLoading: isLoadingReOpenProject } =
+    useMutation({
+      mutationKey: [projectApi.setReOpenProjectKey],
+      mutationFn: projectApi.setReOpenProject,
+      onSuccess: async () => {
+        toast.success("Reopen project successfully");
+        refetchDetail();
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data || "Reopen project failed");
       },
     });
 
@@ -88,8 +104,6 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
     setIsModalDeleteOpen(false);
   };
 
-  const isUserAdmin = useCheckProjectAdmin();
-
   const projectAdmin = detail?.projectMembers.find((member) => member.isOwner);
   if (detail)
     return (
@@ -115,10 +129,14 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                     },
                   ]}
                 >
-                  <Input disabled={!isAdminOrPO} />
+                  <Input
+                    disabled={!isAdminOrPO || detail.projectStatus !== "Doing"}
+                  />
                 </Form.Item>
                 <Form.Item label={<b>Description</b>} name="description">
-                  <Input disabled={!isAdminOrPO} />
+                  <Input
+                    disabled={!isAdminOrPO || detail.projectStatus !== "Doing"}
+                  />
                 </Form.Item>
                 <Row gutter={16}>
                   <Col span={12}>
@@ -134,35 +152,54 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                           const startDate = form.getFieldValue("startDate");
                           return current.isBefore(startDate);
                         }}
-                        disabled={!isAdminOrPO}
+                        disabled={
+                          !isAdminOrPO || detail.projectStatus !== "Doing"
+                        }
                       />
                     </Form.Item>
                   </Col>
                 </Row>
                 <Space className="flex mt-5 justify-between">
                   <Button
-                    loading={isLoading || isLoadingSetDoneProject}
+                    loading={isLoading}
                     onClick={onSubmit}
                     type="primary"
-                    disabled={!isAdminOrPO}
+                    disabled={!isAdminOrPO || detail.projectStatus !== "Doing"}
                   >
                     Save
                   </Button>
-                  <Button
-                    loading={isLoading || isLoadingSetDoneProject}
-                    onClick={() =>
-                      modal.confirm({
-                        title: "Warning",
-                        content:
-                          "Are you sure to set status this project is done?",
-                        onOk: () => setDoneProject({ projectId: projectId! }),
-                      })
-                    }
-                    disabled={!isAdminOrPO}
-                    type="primary"
-                  >
-                    Done Project
-                  </Button>
+                  {detail.projectStatus === "Done" ? (
+                    <Button
+                      loading={isLoadingReOpenProject}
+                      onClick={() =>
+                        modal.confirm({
+                          title: "Warning",
+                          content: "Are you sure to reopen this project?",
+                          onOk: () => reOpenProject({ projectId: projectId! }),
+                        })
+                      }
+                      disabled={!isAdminOrPO}
+                      type="primary"
+                    >
+                      ReOpen Project
+                    </Button>
+                  ) : detail.projectStatus === "Doing" ? (
+                    <Button
+                      loading={isLoadingSetDoneProject}
+                      onClick={() =>
+                        modal.confirm({
+                          title: "Warning",
+                          content:
+                            "Are you sure to set status this project is done?",
+                          onOk: () => setDoneProject({ projectId: projectId! }),
+                        })
+                      }
+                      disabled={!isAdminOrPO}
+                      type="primary"
+                    >
+                      Done Project
+                    </Button>
+                  ) : null}
                 </Space>
               </Form>
             </Col>

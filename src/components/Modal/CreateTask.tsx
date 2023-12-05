@@ -25,6 +25,7 @@ import {
 import QuillWrapper from "../QuillWrapper";
 import { isQuillEmpty, lowerCaseFirstLetter } from "@/utils/common";
 import useErrorMessage from "@/hooks/useErrorMessage";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 interface Props {
   isOpen: boolean;
@@ -54,6 +55,8 @@ export default function CreateTask({
 
   const { errorInfo, setErrorInfo } = useErrorMessage();
 
+  const { detail } = useProjectDetail(projectId);
+
   const typeList = useMemo(
     () =>
       queryClient.getQueryData<IGetTypeListResponse[]>([
@@ -70,13 +73,6 @@ export default function CreateTask({
       ]) || [],
     [projectId, queryClient]
   );
-
-  const { data: memberList } = useQuery({
-    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
-    queryFn: async ({ signal }) =>
-      projectApi.getListUserInProjectByProjectId(signal, projectId),
-    enabled: Boolean(isOpen) && Boolean(projectId),
-  });
 
   const { data: interationList, isLoading: isLoadingIterations } = useQuery({
     queryKey: [projectApi.getLisInterationInProjectByProjectIdKey, projectId],
@@ -305,7 +301,7 @@ export default function CreateTask({
           <Select
             size="large"
             allowClear
-            options={memberList?.map((member) => ({
+            options={detail?.projectMembers?.map((member) => ({
               label: member.userName,
               value: member.memberId,
             }))}

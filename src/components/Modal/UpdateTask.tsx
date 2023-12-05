@@ -27,6 +27,7 @@ import { useAuthContext } from "@/context/Auth";
 import QuillWrapper from "../QuillWrapper";
 import { isQuillEmpty, lowerCaseFirstLetter } from "@/utils/common";
 import useErrorMessage from "@/hooks/useErrorMessage";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 interface Props {
   isOpen: boolean;
@@ -60,6 +61,8 @@ export default function UpdateTask({
     taskApi.getTaskTypeKey,
   ]);
 
+  const { detail } = useProjectDetail(projectId);
+
   const statusList = useMemo(
     () =>
       queryClient.getQueryData<ITaskStatus[]>([
@@ -68,13 +71,6 @@ export default function UpdateTask({
       ]) || [],
     [projectId, queryClient]
   );
-
-  const { data: memberList } = useQuery({
-    queryKey: [projectApi.getListUserInProjectByProjectIdKey, projectId],
-    queryFn: async ({ signal }) =>
-      projectApi.getListUserInProjectByProjectId(signal, projectId),
-    enabled: Boolean(isOpen) && Boolean(projectId),
-  });
 
   const { data: interationList, isLoading: isLoadingIterations } = useQuery({
     queryKey: [projectApi.getLisInterationInProjectByProjectIdKey, projectId],
@@ -193,13 +189,13 @@ export default function UpdateTask({
   }, [interationList, form, initTaskData]);
 
   useEffect(() => {
-    if (memberList) {
-      const selectingMember = memberList.find(
+    if (detail?.projectMembers) {
+      const selectingMember = detail?.projectMembers?.find(
         (member) => member.userName === initTaskData.assignTo
       )?.memberId;
       form.setFieldValue("assignTo", selectingMember);
     }
-  }, [memberList, form, initTaskData]);
+  }, [form, initTaskData, detail?.projectMembers]);
 
   useEffect(() => {
     if (statusList) {
@@ -301,7 +297,7 @@ export default function UpdateTask({
           <Select
             size="large"
             allowClear
-            options={memberList?.map((member) => ({
+            options={detail?.projectMembers?.map((member) => ({
               label: member.userName,
               value: member.memberId,
             }))}
