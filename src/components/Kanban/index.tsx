@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateStatus, CreateTask } from "../Modal";
-import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
+import { ICreateTaskRequest, ITask, ITaskStatus } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
 import { IProject } from "@/interfaces/project";
@@ -40,9 +40,10 @@ const DraggableComponent = Draggable as React.ComponentClass<DraggableProps>;
 const DroppableComponent = Droppable as React.ComponentClass<DroppableProps>;
 interface Props {
   iterationId: string;
+  tasks: ITask[] | undefined;
 }
 
-const KanbanDisplay = ({ iterationId }: Props) => {
+const KanbanDisplay = ({ iterationId, tasks }: Props) => {
   const [selectedIteration, setSelectedIteration] = useState<IIteration>();
   const [filterData, setFilterData] = useState({
     name: "",

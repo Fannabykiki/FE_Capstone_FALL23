@@ -21,7 +21,7 @@ const getKanbanTasks = (
   return axiosClient({
     url: "/api/task-management/tasks/kanban",
     method: HTTP_METHODS.GET,
-    params: { projectId },
+    params: { projetcId: projectId },
     signal,
   }).then((resp) => resp.data);
 };

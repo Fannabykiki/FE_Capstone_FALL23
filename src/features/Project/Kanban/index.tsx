@@ -23,9 +23,8 @@ const Kanban = () => {
     onCloseView: onCloseCreateIterationModal,
   } = useDetailView();
   const { projectId } = useParams();
-  const { iterations, actions } = useProjectDetail(projectId);
+  const { iterations, actions, kanbanTasks } = useProjectDetail(projectId);
   const [searchParams, setSearchParams] = useSearchParams();
-
   useEffect(() => {
     const sprintId = searchParams.get("sprint");
     if (iterations && iterations.length > 0) {
@@ -110,7 +109,10 @@ const Kanban = () => {
               />
             </div>
           </div>
-          <KanbanDisplay iterationId={selectedIteration.interationId} />
+          <KanbanDisplay
+            tasks={kanbanTasks}
+            iterationId={selectedIteration.interationId}
+          />
         </React.Fragment>
       ) : (
         <Typography.Paragraph>No iteration selected</Typography.Paragraph>
