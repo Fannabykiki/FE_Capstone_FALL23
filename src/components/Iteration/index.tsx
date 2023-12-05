@@ -23,8 +23,8 @@ import { Button, Input, Select } from "antd";
 import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
-import { CreateStatus, CreateTask } from "../Modal";
-import { ICreateTaskRequest, ITaskStatus } from "@/interfaces/task";
+import { CreateTask } from "../Modal";
+import { ICreateTaskRequest } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
 import { IProject } from "@/interfaces/project";
@@ -253,12 +253,6 @@ const IterationDisplay = ({ iterationId }: Props) => {
     }
   };
 
-  const {
-    onOpenView: handleOpenModalCreateStatus,
-    onCloseView: handleCloseModalCreateStatus,
-    openView: isModalCreateStatusOpen,
-  } = useDetailView();
-
   if (selectedIteration)
     return (
       <>
@@ -324,39 +318,32 @@ const IterationDisplay = ({ iterationId }: Props) => {
                     )}
                     {...provided.droppableProps}
                   >
-                    {statusList.map((status, index) => (
-                      <DraggableComponent
-                        draggableId={status.boardStatusId}
-                        index={index}
-                        key={status.boardStatusId}
-                      >
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              ...provided.draggableProps.style,
-                            }}
-                            className="w-[250px] shrink-0"
-                          >
-                            <div>
-                              <h4 className="mb-0">{status.title}</h4>
+                    <>
+                      {statusList.map((status, index) => (
+                        <DraggableComponent
+                          draggableId={status.boardStatusId}
+                          index={index}
+                          key={status.boardStatusId}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                ...provided.draggableProps.style,
+                              }}
+                              className="w-[250px] shrink-0"
+                            >
+                              <div>
+                                <h4 className="mb-0">{status.title}</h4>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </DraggableComponent>
-                    ))}
-                    {provided.placeholder}
-                    <div className="w-[250px] rounded p-2">
-                      <Button
-                        icon={<PlusOutlined />}
-                        type="text"
-                        onClick={() => handleOpenModalCreateStatus()}
-                      >
-                        New status
-                      </Button>
-                    </div>
+                          )}
+                        </DraggableComponent>
+                      ))}
+                      {provided.placeholder}
+                    </>
                   </div>
                 )}
               </DroppableComponent>
@@ -395,12 +382,6 @@ const IterationDisplay = ({ iterationId }: Props) => {
             taskId={taskId || ""}
             isOpen={isModalDetailTaskOpen}
             onClose={onCloseViewDetailTask}
-          />
-        )}
-        {isModalCreateStatusOpen && (
-          <CreateStatus
-            open={isModalCreateStatusOpen}
-            onClose={handleCloseModalCreateStatus}
           />
         )}
       </>
