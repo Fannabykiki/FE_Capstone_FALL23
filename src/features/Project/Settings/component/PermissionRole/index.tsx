@@ -112,11 +112,12 @@ const PermissionRole = ({ isAdminOrPO }: IProp) => {
           onClick={onSubmit}
           type="primary"
         >
-          Save
+          Clone
         </Button>
       </Row>
       <PermissionDetailModal
         isPermissionId={isPermissionId}
+        isAdminOrPO={isAdminOrPO}
         handleClose={() => setPermissionId(undefined)}
       />
     </Card>
