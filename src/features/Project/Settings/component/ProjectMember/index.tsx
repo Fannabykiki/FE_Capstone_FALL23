@@ -147,7 +147,7 @@ export default function ProjectMember({ isAdminOrPO }: IProp) {
       align: "center",
       render: (_, record) => {
         const items = [];
-        if (record.userId === userInfo?.id) {
+        if (record.userId === userInfo?.id && !isAdminOrPO) {
           items.push({
             key: "out",
             label: "Out project",
@@ -170,10 +170,11 @@ export default function ProjectMember({ isAdminOrPO }: IProp) {
             );
           }
         }
-        return record.userId === userInfo?.id ||
-          (record.roleName &&
-            !ADMIN_ROLES.includes(record.roleName) &&
-            isAdminOrPO) ? (
+        return items.length &&
+          (record.userId === userInfo?.id ||
+            (record.roleName &&
+              !ADMIN_ROLES.includes(record.roleName) &&
+              isAdminOrPO)) ? (
           <Dropdown
             menu={{
               items,
