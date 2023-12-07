@@ -49,12 +49,6 @@ export default function CreateIteration({ open, onClose }: Props) {
       console.error(err);
       if (err.response?.data) {
         if (err.response.data.errors) {
-          console.log(
-            Object.entries(err.response.data.errors).map(([key, value]) => ({
-              name: lowerCaseFirstLetter(key),
-              errors: [value] as string[],
-            }))
-          );
           form.setFields(
             Object.entries(err.response.data.errors).map(([key, value]) => ({
               name: lowerCaseFirstLetter(key),
@@ -68,11 +62,6 @@ export default function CreateIteration({ open, onClose }: Props) {
           });
         }
       }
-      toast.error(
-        err.response?.data?.title ||
-          err.response?.data ||
-          "Create Sprint failed! Please try again later"
-      );
     },
   });
 

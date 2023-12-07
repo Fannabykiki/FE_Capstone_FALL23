@@ -108,14 +108,6 @@ export default function CreateTask({
             console.error(err);
             if (err.response?.data) {
               if (err.response.data.errors) {
-                console.log(
-                  Object.entries(err.response.data.errors).map(
-                    ([key, value]) => ({
-                      name: lowerCaseFirstLetter(key),
-                      errors: [value] as string[],
-                    })
-                  )
-                );
                 form.setFields(
                   Object.entries(err.response.data.errors).map(
                     ([key, value]) => ({
@@ -131,11 +123,6 @@ export default function CreateTask({
                 });
               }
             }
-            toast.error(
-              err.response?.data?.title ||
-                err.response?.data ||
-                "Create sub task failed! Please try again later"
-            );
           },
         }
       );
@@ -159,14 +146,6 @@ export default function CreateTask({
             console.error(err);
             if (err.response?.data) {
               if (err.response.data.errors) {
-                console.log(
-                  Object.entries(err.response.data.errors).map(
-                    ([key, value]) => ({
-                      name: lowerCaseFirstLetter(key),
-                      errors: [value] as string[],
-                    })
-                  )
-                );
                 form.setFields(
                   Object.entries(err.response.data.errors).map(
                     ([key, value]) => ({
@@ -182,11 +161,6 @@ export default function CreateTask({
                 });
               }
             }
-            toast.error(
-              err.response?.data?.title ||
-                err.response?.data ||
-                "Create task failed! Please try again later"
-            );
           },
         }
       );
