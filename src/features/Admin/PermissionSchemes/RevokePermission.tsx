@@ -12,12 +12,14 @@ interface Props {
   isOpen: boolean;
   schemaId: string | undefined;
   permission: ISchema["rolePermissions"][number] | undefined;
+  projectId?: string;
   handleClose: () => void;
 }
 
 const RevokePermission = ({
   isOpen,
   schemaId,
+  projectId,
   permission,
   handleClose,
 }: Props) => {
@@ -55,6 +57,7 @@ const RevokePermission = ({
 
     revokePermission({
       schemaId,
+      projectId,
       roleIds: checkedList,
       permissionId: permission.permissionId,
     });
@@ -65,7 +68,8 @@ const RevokePermission = ({
   };
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title="Remove permission"
       open={isOpen}
       onCancel={handleClose}

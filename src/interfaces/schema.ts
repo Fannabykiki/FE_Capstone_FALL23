@@ -27,12 +27,14 @@ export interface ISchema {
 export interface IGrantPermissionRequest {
   schemaId: string;
   roleId: string;
+  projectId?: string;
   permissionIds: string[];
 }
 
 export interface IRevokePermissionRequest {
   schemaId: string;
   permissionId: string;
+  projectId?: string;
   roleIds: string[];
 }
 
