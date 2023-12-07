@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Modal, Space, Table, Typography } from "antd";
+import { useParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
 
@@ -27,6 +28,8 @@ const PermissionDetailModal = ({
     useState<ISchema["rolePermissions"][number]>();
   const [isOpenGrantPermModal, setOpenGrantPermModal] =
     useState<boolean>(false);
+
+  const { projectId } = useParams();
 
   const { data: schema, isLoading } = useQuery<ISchema>({
     queryKey: [schemaApi.getAdminSchemaDetailKey, isPermissionId],
@@ -203,12 +206,14 @@ const PermissionDetailModal = ({
         isOpen={isOpenRvkPermModal}
         schemaId={schema?.schemaId}
         permission={permissionSelected}
+        projectId={projectId}
         handleClose={onCancel}
       />
       <GrantPermission
         isOpen={isOpenGrantPermModal}
         schema={schema}
         permission={permissionSelected}
+        projectId={projectId}
         handleClose={onCancel}
       />
     </Modal>

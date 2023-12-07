@@ -11,12 +11,14 @@ interface Props {
   isOpen: boolean;
   schema: ISchema | undefined;
   permission: ISchema["rolePermissions"][number] | undefined;
+  projectId?: string;
   handleClose: () => void;
 }
 
 const GrantPermission = ({
   isOpen,
   schema,
+  projectId,
   permission,
   handleClose,
 }: Props) => {
@@ -68,6 +70,7 @@ const GrantPermission = ({
       schemaId: schema.schemaId,
       permissionIds: permissions,
       roleId: role,
+      projectId,
     });
   };
 
@@ -81,7 +84,8 @@ const GrantPermission = ({
   }, [permission]);
 
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title="Grant permission"
       open={isOpen}
       onCancel={handleClose}

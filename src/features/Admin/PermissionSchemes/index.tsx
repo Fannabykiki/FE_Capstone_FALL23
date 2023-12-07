@@ -130,20 +130,18 @@ const PermissionSchemes = () => {
       render: (projectsUsed: IPermissionSchemes["projectsUsed"]) => (
         <ul>
           {projectsUsed.map((project, index) => (
-            <li key={index}>
-              <Button
-                type="link"
-                className="text-sm p-0"
-                onClick={() =>
-                  navigate(
-                    generatePath(paths.project.detail, {
-                      projectId: project.projectId,
-                    })
-                  )
-                }
-              >
-                {project.projectName}
-              </Button>
+            <li
+              key={index}
+              className="text-blue-600 text-sm cursor-pointer hover:underline"
+              onClick={() =>
+                navigate(
+                  generatePath(paths.project.detail, {
+                    projectId: project.projectId,
+                  })
+                )
+              }
+            >
+              {project.projectName}
             </li>
           ))}
         </ul>
