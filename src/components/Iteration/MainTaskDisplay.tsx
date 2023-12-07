@@ -139,7 +139,7 @@ export default function MainTaskDisplay({
                   <div
                     ref={provided.innerRef}
                     className={classNames(
-                      "w-[250px] rounded flex-grow",
+                      "w-[240px] rounded flex-grow",
                       snapshot.isDraggingOver && "bg-neutral-200"
                     )}
                     {...provided.droppableProps}

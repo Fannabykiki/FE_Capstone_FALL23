@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
@@ -41,6 +41,7 @@ export default function WorkItem() {
   const [searchParams, setSearchParams] = useSearchParams({
     page: "1",
     limit: "10",
+    id: "",
   });
 
   const {
@@ -49,6 +50,15 @@ export default function WorkItem() {
     onCloseView: onCloseViewDetailTask,
     detail: taskId,
   } = useDetailView<string>();
+
+  useEffect(() => {
+    const taskId = searchParams.get("id");
+    if (taskId) {
+      onOpenViewDetailTask(taskId);
+    } else {
+      onCloseViewDetailTask();
+    }
+  }, [searchParams]);
 
   const queryClient = useQueryClient();
 
@@ -148,7 +158,14 @@ export default function WorkItem() {
       dataIndex: "title",
       width: "30%",
       render: (title, task) => (
-        <Typography.Link onClick={() => onOpenViewDetailTask(task.taskId)}>
+        <Typography.Link
+          onClick={() =>
+            setSearchParams((prev) => {
+              prev.set("id", task.taskId);
+              return prev;
+            })
+          }
+        >
           {title}
         </Typography.Link>
       ),
@@ -315,7 +332,7 @@ export default function WorkItem() {
                 allowClear
               />
               <Select
-                className="min-w-[250px]"
+                className="min-w-[240px]"
                 placeholder="Sprint"
                 defaultValue={searchParams.get("interation")}
                 onChange={handleChange("interation")}
@@ -363,28 +380,14 @@ export default function WorkItem() {
         <TaskDetail
           taskId={taskId || ""}
           isOpen={isModalDetailTaskOpen}
-          onClose={onCloseViewDetailTask}
+          onClose={() =>
+            setSearchParams((prev) => {
+              prev.delete("id");
+              return prev;
+            })
+          }
         />
       )}
     </>
   );
 }
-
-const INTERATION_OPTION = [
-  {
-    label: "Interation 1",
-    value: "Interation 1",
-  },
-  {
-    label: "Interation 2",
-    value: "Interation 2",
-  },
-  {
-    label: "Interation 3",
-    value: "Interation 3",
-  },
-  {
-    label: "Interation 4",
-    value: "Interation 4",
-  },
-];

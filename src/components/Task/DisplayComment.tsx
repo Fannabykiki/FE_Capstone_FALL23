@@ -11,13 +11,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { taskApi } from "@/utils/api/task";
 import { iterationApi } from "@/utils/api/iteration";
+import { IIteration } from "@/interfaces/iteration";
 
 interface Props {
   comment: IComment;
   task: ITask;
+  currentIteration: IIteration | undefined;
 }
 
-export default function DisplayComment({ comment, task }: Props) {
+export default function DisplayComment({
+  comment,
+  task,
+  currentIteration,
+}: Props) {
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const parentComment = comment.replyTo
@@ -40,10 +46,12 @@ export default function DisplayComment({ comment, task }: Props) {
             await queryClient.refetchQueries({
               queryKey: [taskApi.getDetailKey, comment.taskId],
             });
-            await queryClient.invalidateQueries([
-              iterationApi.getTasksKey,
-              task.interationId,
-            ]);
+            await queryClient.refetchQueries({
+              queryKey: [
+                iterationApi.getTasksKey,
+                currentIteration?.interationId || "",
+              ],
+            });
           },
           onError: (err: any) => {
             console.error(err);
@@ -65,7 +73,7 @@ export default function DisplayComment({ comment, task }: Props) {
         {isEditing ? (
           <>
             <AddComment
-              taskId={task.taskId}
+              task={task}
               parentComment={comment}
               isEditing
               onCancel={() => setIsEditing(false)}
@@ -103,7 +111,7 @@ export default function DisplayComment({ comment, task }: Props) {
         <div className="mt-4">
           {isReplying && (
             <AddComment
-              taskId={comment.taskId}
+              task={task}
               parentComment={parentComment}
               onCancel={() => setIsReplying(false)}
             />
@@ -113,6 +121,7 @@ export default function DisplayComment({ comment, task }: Props) {
               task={task}
               comment={subComment}
               key={subComment.commentId}
+              currentIteration={currentIteration}
             />
           ))}
         </div>

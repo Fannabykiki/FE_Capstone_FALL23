@@ -83,7 +83,9 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
 
   const iterations: IIteration[] =
     queryClient.getQueryData([iterationApi.getListKey, projectId]) || [];
-
+  const currentIteration = iterations?.find(
+    (iteration) => iteration.interationName === task?.interationName
+  );
   const {
     onOpenView: handleOpenModalUpdate,
     onCloseView: handleCloseModalUpdate,
@@ -92,10 +94,13 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
   } = useDetailView<ITask>();
 
   const onUpdateTaskSuccess = async () => {
-    await queryClient.invalidateQueries({
-      queryKey: [taskApi.getDetailKey, taskId],
+    refetchTaskDetail();
+    await queryClient.refetchQueries({
+      queryKey: [
+        iterationApi.getTasksKey,
+        currentIteration?.interationId || "",
+      ],
     });
-    await queryClient.refetchQueries([taskApi.getDetailKey, taskId]);
   };
 
   const location = useLocation();
@@ -113,10 +118,6 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
             {
               onSuccess: async () => {
                 toast.success("Delete task succeed!");
-                const currentIteration = iterations?.find(
-                  (iteration) =>
-                    iteration.interationName === task.interationName
-                );
                 await queryClient.refetchQueries({
                   queryKey: [
                     iterationApi.getTasksKey,
@@ -214,7 +215,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 <div className="flex flex-col gap-2 mb-4">
                   {task.attachmentResponse?.map((attachment) => (
                     <AttachmentDisplay
-                      iterationId={task.interationId}
+                      iterationId={currentIteration?.interationId || ""}
                       attachment={attachment}
                       key={attachment.attachmentId}
                     />

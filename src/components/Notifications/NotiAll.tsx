@@ -14,7 +14,11 @@ export default function NotiAll({ notifications }: Props) {
     <>
       <div className="max-h-[300px] overflow-y-auto flex flex-col gap-y-2">
         {notifications.map((noti) => (
-          <Link key={noti.notificationId} to={noti.targetUrl}>
+          <Link
+            key={noti.notificationId}
+            to={noti.targetUrl}
+            className="text-black hover:text-black"
+          >
             <div
               className={classNames(
                 "flex justify-between items-center p-2 border-0 border-b border-solid border-neutral-300",
@@ -29,7 +33,7 @@ export default function NotiAll({ notifications }: Props) {
                     {dayjs(noti.createAt).fromNow()}
                   </Typography.Text>
                 </div>
-                <Typography.Text>{noti.description}</Typography.Text>
+                <div dangerouslySetInnerHTML={{ __html: noti.description }} />
               </div>
               {!noti.isRead && (
                 <div>

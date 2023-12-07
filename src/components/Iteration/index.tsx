@@ -249,7 +249,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
                 {statusList.map((status, index) => (
                   <div
                     key={status.boardStatusId}
-                    className="w-[250px] shrink-0"
+                    className="w-[240px] shrink-0"
                   >
                     <div>
                       <h4 className="mb-0">{status.title}</h4>
