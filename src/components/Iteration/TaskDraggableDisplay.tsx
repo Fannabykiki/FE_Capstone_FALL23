@@ -1,7 +1,12 @@
 import { calcTaskDueDateColor, classNames } from "@/utils/common";
-import { Tag, Tooltip } from "antd";
+import { Badge, Tag, Tooltip } from "antd";
 import { DraggableStateSnapshot } from "react-beautiful-dnd";
-import { CommentOutlined, PaperClipOutlined } from "@ant-design/icons";
+import {
+  CommentOutlined,
+  PaperClipOutlined,
+  WarningFilled,
+  WarningOutlined,
+} from "@ant-design/icons";
 import dayjs from "dayjs";
 import { DATE_FORMAT, STATUS_COLOR } from "@/utils/constants";
 import { ITask } from "@/interfaces/task";
@@ -75,10 +80,28 @@ export default function TaskDraggableDisplay({
               <PriorityStatus priorityName={task.priorityName} />
             </Tooltip>
           </div>
-          <Tooltip title={task.assignTo}>
-            <AvatarWithColor stringContent={task.assignTo}>
-              {task.assignTo.slice(0, 1).toUpperCase()}
-            </AvatarWithColor>
+          <Tooltip
+            title={`${task.assignTo}${
+              task.memberStatus !== "In Team" ? " - Member unavailable" : ""
+            }`}
+          >
+            <Badge
+              count={
+                task.memberStatus !== "In Team" ? (
+                  <WarningFilled className="text-red-500" />
+                ) : null
+              }
+            >
+              <AvatarWithColor
+                className={classNames(
+                  task.memberStatus !== "In Team" &&
+                    "border-red-500 border-solid border-2"
+                )}
+                stringContent={task.assignTo}
+              >
+                {task.assignTo.slice(0, 1).toUpperCase()}
+              </AvatarWithColor>
+            </Badge>
           </Tooltip>
         </div>
       </div>

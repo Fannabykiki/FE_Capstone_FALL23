@@ -4,6 +4,7 @@ import { classNames } from "@/utils/common";
 import { DATETIME_FORMAT, DATE_FORMAT } from "@/utils/constants";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Badge,
   Button,
   Col,
   Descriptions,
@@ -25,7 +26,7 @@ import {
 import PriorityStatus from "./PriorityStatus";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, WarningFilled } from "@ant-design/icons";
 import useDetailView from "@/hooks/useDetailView";
 import UpdateTask from "../Modal/UpdateTask";
 import { iterationApi } from "@/utils/api/iteration";
@@ -236,12 +237,30 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <Descriptions column={1} bordered>
                 <Descriptions.Item label="Assignee">
                   <div className="flex gap-x-2 items-center">
-                    <AvatarWithColor
-                      stringContent={task.assignTo}
-                      className="flex-shrink-0"
+                    <Tooltip
+                      title={
+                        task.memberStatus !== "In Team" && "Member unavailable"
+                      }
                     >
-                      {task.assignTo[0].toUpperCase()}
-                    </AvatarWithColor>
+                      <Badge
+                        count={
+                          task.memberStatus !== "In Team" ? (
+                            <WarningFilled className="text-red-500" />
+                          ) : null
+                        }
+                      >
+                        <AvatarWithColor
+                          className={classNames(
+                            task.memberStatus !== "In Team" &&
+                              "border-red-500 border-solid border-2",
+                            "flex-shrink-0"
+                          )}
+                          stringContent={task.assignTo}
+                        >
+                          {task.assignTo[0].toUpperCase()}
+                        </AvatarWithColor>
+                      </Badge>
+                    </Tooltip>
                     {task.assignTo}
                   </div>
                 </Descriptions.Item>

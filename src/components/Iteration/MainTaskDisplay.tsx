@@ -6,8 +6,9 @@ import {
   DoubleRightOutlined,
   PaperClipOutlined,
   PlusOutlined,
+  WarningFilled,
 } from "@ant-design/icons";
-import { Button } from "antd";
+import { Badge, Button, Tooltip } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 import {
@@ -87,9 +88,29 @@ export default function MainTaskDisplay({
             <div>
               <CommentOutlined /> {task.totalComment}
             </div>
-            <AvatarWithColor stringContent={task.assignTo}>
-              {task.assignTo.slice(0, 1).toUpperCase()}
-            </AvatarWithColor>
+            <Tooltip
+              title={`${task.assignTo}${
+                task.memberStatus !== "In Team" ? " - Member unavailable" : ""
+              }`}
+            >
+              <Badge
+                count={
+                  task.memberStatus !== "In Team" ? (
+                    <WarningFilled className="text-red-500" />
+                  ) : null
+                }
+              >
+                <AvatarWithColor
+                  className={classNames(
+                    task.memberStatus !== "In Team" &&
+                      "border-red-500 border-solid border-2"
+                  )}
+                  stringContent={task.assignTo}
+                >
+                  {task.assignTo.slice(0, 1).toUpperCase()}
+                </AvatarWithColor>
+              </Badge>
+            </Tooltip>
           </div>
         </div>
       </div>

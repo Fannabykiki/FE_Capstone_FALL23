@@ -147,6 +147,7 @@ export interface IWorkItemList {
   dueDate: Date;
   createTime: Date;
   deleteAt: Date;
+  memberStatus: string;
   assignTo: {
     userId: string;
     userName: string;

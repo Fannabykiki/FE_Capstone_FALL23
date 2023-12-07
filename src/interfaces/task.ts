@@ -14,6 +14,8 @@ export interface ITask {
   deleteAt: string | null;
   isDelete: boolean | null;
   assignTo: string;
+  userStatus: string;
+  memberStatus: string;
   createBy: string;
   typeName: string;
   statusName: string;

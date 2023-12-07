@@ -11,6 +11,7 @@ import {
   FilterFilled,
   PlusOutlined,
   SearchOutlined,
+  WarningFilled,
 } from "@ant-design/icons";
 import {
   Row,
@@ -22,6 +23,8 @@ import {
   Card,
   Input,
   Select,
+  Badge,
+  Tooltip,
 } from "antd";
 
 import { AvatarWithColor, CreateTask, TaskDetail } from "@/components";
@@ -32,6 +35,7 @@ import { projectApi } from "@/utils/api/project";
 import { pagination } from "@/utils/pagination";
 import { taskApi } from "@/utils/api/task";
 import useProjectDetail from "@/hooks/useProjectDetail";
+import { classNames } from "@/utils/common";
 
 export default function WorkItem() {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -206,9 +210,32 @@ export default function WorkItem() {
         record.assignTo?.userName ? (
           <Row align="middle">
             <Col span={5} className="flex items-center">
-              <AvatarWithColor stringContent={record.assignTo?.userName}>
-                {record.assignTo?.userName?.charAt(0).toUpperCase()}
-              </AvatarWithColor>
+              <Tooltip
+                title={
+                  record.memberStatus &&
+                  record.memberStatus !== "In Team" &&
+                  "Member unavailable"
+                }
+              >
+                <Badge
+                  count={
+                    record.memberStatus && record.memberStatus !== "In Team" ? (
+                      <WarningFilled className="text-red-500" />
+                    ) : null
+                  }
+                >
+                  <AvatarWithColor
+                    className={classNames(
+                      record.memberStatus &&
+                        record.memberStatus !== "In Team" &&
+                        "border-red-500 border-solid border-2"
+                    )}
+                    stringContent={record.assignTo?.userName}
+                  >
+                    {record.assignTo?.userName?.charAt(0).toUpperCase()}
+                  </AvatarWithColor>
+                </Badge>
+              </Tooltip>
             </Col>
             <Col span={19}>
               <Typography.Title level={5} className="!m-0">
