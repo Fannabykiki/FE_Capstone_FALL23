@@ -41,7 +41,7 @@ export default function MainTaskDisplay({
                   <div
                     ref={provided.innerRef}
                     className={classNames(
-                      "w-[250px] rounded p-2 flex-grow",
+                      "w-[240px] rounded p-2 flex-grow",
                       snapshot.isDraggingOver && "bg-neutral-200"
                     )}
                     {...provided.droppableProps}

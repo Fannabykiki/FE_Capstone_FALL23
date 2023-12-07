@@ -27,7 +27,10 @@ export default function AttachmentDisplay({ attachment, iterationId }: Props) {
         taskApi.getDetailKey,
         attachment.taskId,
       ]);
-      await queryClient.invalidateQueries([iterationApi.getTasksKey, iterationId]);
+      await queryClient.invalidateQueries([
+        iterationApi.getTasksKey,
+        iterationId,
+      ]);
       toast.success("Delete attachment succeed!");
     },
     onError: (err) => {

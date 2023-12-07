@@ -9,20 +9,31 @@ import { useAuthContext } from "@/context/Auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "@/utils/api/task";
 import { isQuillEmpty } from "@/utils/common";
+import { IIteration } from "@/interfaces/iteration";
+import { iterationApi } from "@/utils/api/iteration";
+import { useParams } from "react-router-dom";
+import { ITask } from "@/interfaces/task";
 
 interface Props {
-  taskId: string;
+  task: ITask;
   parentComment?: IComment;
   onCancel?: VoidFunction;
   isEditing?: boolean;
 }
 
 export default function AddComment({
-  taskId,
+  task,
   parentComment,
   onCancel,
   isEditing = false,
 }: Props) {
+  const queryClient = useQueryClient();
+  const { projectId } = useParams();
+  const iterations: IIteration[] =
+    queryClient.getQueryData([iterationApi.getListKey, projectId]) || [];
+  const currentIteration = iterations?.find(
+    (iteration) => iteration.interationName === task?.interationName
+  );
   const [isCommenting, setIsCommenting] = useState(false);
 
   const [comment, setComment] = useState(
@@ -31,7 +42,6 @@ export default function AddComment({
 
   const { createCommentMutation, replyCommentMutation, updateCommentMutation } =
     useCommentActions();
-  const queryClient = useQueryClient();
 
   const onSubmit = () => {
     if (!comment?.trim()) {
@@ -43,13 +53,19 @@ export default function AddComment({
         // Add comment
         createCommentMutation.mutate(
           {
-            taskId,
+            taskId: task.taskId,
             content: comment,
           },
           {
             onSuccess: async () => {
               await queryClient.refetchQueries({
-                queryKey: [taskApi.getDetailKey, taskId],
+                queryKey: [taskApi.getDetailKey, task.taskId],
+              });
+              await queryClient.refetchQueries({
+                queryKey: [
+                  iterationApi.getTasksKey,
+                  currentIteration?.interationId || "",
+                ],
               });
               onCancelComment();
             },
@@ -73,7 +89,13 @@ export default function AddComment({
             onSuccess: async () => {
               toast.success("Reply to comment succeed");
               await queryClient.refetchQueries({
-                queryKey: [taskApi.getDetailKey, taskId],
+                queryKey: [taskApi.getDetailKey, task.taskId],
+              });
+              await queryClient.refetchQueries({
+                queryKey: [
+                  iterationApi.getTasksKey,
+                  currentIteration?.interationId || "",
+                ],
               });
               onCancelComment();
             },
@@ -95,7 +117,7 @@ export default function AddComment({
             onSuccess: async () => {
               toast.success("Update comment succeed");
               await queryClient.refetchQueries({
-                queryKey: [taskApi.getDetailKey, taskId],
+                queryKey: [taskApi.getDetailKey, task.taskId],
               });
               onCancelComment();
             },
@@ -163,7 +185,7 @@ export default function AddComment({
             createCommentMutation.isLoading
           }
         >
-          Submit
+          Comment
         </Button>
         <Button onClick={onCancelComment}>Cancel</Button>
       </div>

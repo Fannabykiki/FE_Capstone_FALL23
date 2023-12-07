@@ -216,7 +216,7 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
           </Row>
           <Divider />
           <Typography className="text-xl font-medium">
-            Project Administrator
+            Project Owner
           </Typography>
           <div className="mt-3">
             <Row>

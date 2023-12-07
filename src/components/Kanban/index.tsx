@@ -8,12 +8,12 @@ import {
   DroppableProps,
   DraggableProps,
 } from "react-beautiful-dnd";
-import { PlusOutlined } from "@ant-design/icons";
+import { InboxOutlined, PlusOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "@/utils/api/task";
 import useTaskActions from "@/hooks/useTaskActions";
-import { Button, Input, Select } from "antd";
+import { Button, Input, Select, Typography } from "antd";
 import { toast } from "react-toastify";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateTask } from "../Modal";
@@ -183,143 +183,153 @@ const KanbanDisplay = () => {
 
   const filterTaskName = useDebounceValue(filterData.name, 1000);
 
-  if (tasks && tasks.length > 0)
-    return (
-      <>
-        <DragDropContextComponent onDragEnd={onDragEnd}>
-          <div className="flex gap-x-2 mb-2">
-            <Input
-              placeholder="Filter by task name"
-              className="w-[200px]"
-              value={filterData.name}
-              onChange={(e) =>
-                setFilterData((c) => ({ ...c, name: e.target.value }))
-              }
-            />
-            <Select
-              options={statusList.map((status) => ({
-                label: status.title,
-                value: status.boardStatusId,
-              }))}
-              placeholder="Filter by status"
-              className="min-w-[200px]"
-              onChange={(statusId) =>
-                setFilterData((c) => ({ ...c, statusId }))
-              }
-              allowClear
-              value={filterData.statusId}
-            />
-            {project?.projectStatus !== "Done" && (
-              <div className="flex flex-grow justify-end">
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={() => onOpenCreateTaskModal()}
-                >
-                  New task
-                </Button>
-              </div>
-            )}
-          </div>
-          <div className="overflow-x-auto">
-            <div className="flex gap-x-4 items-center mb-4">
-              <div
-                className={classNames("flex gap-x-4 items-center flex-grow")}
+  return (
+    <>
+      <DragDropContextComponent onDragEnd={onDragEnd}>
+        <div className="flex gap-x-2 mb-2">
+          <Input
+            placeholder="Filter by task name"
+            className="w-[200px]"
+            value={filterData.name}
+            onChange={(e) =>
+              setFilterData((c) => ({ ...c, name: e.target.value }))
+            }
+          />
+          <Select
+            options={statusList.map((status) => ({
+              label: status.title,
+              value: status.boardStatusId,
+            }))}
+            placeholder="Filter by status"
+            className="min-w-[200px]"
+            onChange={(statusId) => setFilterData((c) => ({ ...c, statusId }))}
+            allowClear
+            value={filterData.statusId}
+          />
+          {project?.projectStatus !== "Done" && (
+            <div className="flex flex-grow justify-end">
+              <Button
+                icon={<PlusOutlined />}
+                onClick={() => onOpenCreateTaskModal()}
               >
-                {statusList.map((status, index) => (
-                  <div className="w-[250px] shrink-0">
-                    <div>
-                      <h4 className="mb-0">{status.title}</h4>
+                New task
+              </Button>
+            </div>
+          )}
+        </div>
+        {tasks && tasks.length > 0 ? (
+          <>
+            <div className="overflow-x-auto">
+              <div className="flex gap-x-4 items-center mb-4">
+                <div
+                  className={classNames("flex gap-x-4 items-center flex-grow")}
+                >
+                  {statusList.map((status, index) => (
+                    <div className="w-[240px] shrink-0">
+                      <div>
+                        <h4 className="mb-0">{status.title}</h4>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="flex w-full gap-x-4">
+                  {statusList.map((status, index) => (
+                    <div className="flex flex-col" key={status.boardStatusId}>
+                      <DroppableComponent
+                        key={status.boardStatusId}
+                        droppableId={status.boardStatusId}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            className={classNames(
+                              "w-[240px] rounded flex-grow",
+                              snapshot.isDraggingOver && "bg-neutral-200"
+                            )}
+                            {...provided.droppableProps}
+                          >
+                            <>
+                              <div className="flex flex-col gap-y-4">
+                                {(
+                                  tasks.filter(
+                                    (task) =>
+                                      task.statusId === status.boardStatusId &&
+                                      (!filterTaskName ||
+                                        task.title
+                                          .toLowerCase()
+                                          .includes(
+                                            filterTaskName.toLowerCase()
+                                          )) &&
+                                      (!filterData.statusId ||
+                                        filterData.statusId === task.statusId)
+                                  ) || []
+                                ).map((task, index) => (
+                                  <DraggableComponent
+                                    key={task.taskId}
+                                    draggableId={task.taskId}
+                                    index={index}
+                                  >
+                                    {(provided, snapshot) => (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        style={{
+                                          ...provided.draggableProps.style,
+                                        }}
+                                      >
+                                        <TaskDraggableDisplay
+                                          snapshot={snapshot}
+                                          task={task}
+                                          onViewTask={onOpenViewDetailTask}
+                                        />
+                                      </div>
+                                    )}
+                                  </DraggableComponent>
+                                ))}
+                              </div>
+                              {provided.placeholder}
+                            </>
+                          </div>
+                        )}
+                      </DroppableComponent>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <div>
-              <div className="flex w-full gap-x-4">
-                {statusList.map((status, index) => (
-                  <div className="flex flex-col" key={status.boardStatusId}>
-                    <DroppableComponent
-                      key={status.boardStatusId}
-                      droppableId={status.boardStatusId}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          className={classNames(
-                            "w-[250px] rounded flex-grow",
-                            snapshot.isDraggingOver && "bg-neutral-200"
-                          )}
-                          {...provided.droppableProps}
-                        >
-                          <>
-                            <div className="flex flex-col gap-y-4">
-                              {(
-                                tasks.filter(
-                                  (task) =>
-                                    task.statusId === status.boardStatusId &&
-                                    (!filterTaskName ||
-                                      task.title
-                                        .toLowerCase()
-                                        .includes(
-                                          filterTaskName.toLowerCase()
-                                        )) &&
-                                    (!filterData.statusId ||
-                                      filterData.statusId === task.statusId)
-                                ) || []
-                              ).map((task, index) => (
-                                <DraggableComponent
-                                  key={task.taskId}
-                                  draggableId={task.taskId}
-                                  index={index}
-                                >
-                                  {(provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      style={{
-                                        ...provided.draggableProps.style,
-                                      }}
-                                    >
-                                      <TaskDraggableDisplay
-                                        snapshot={snapshot}
-                                        task={task}
-                                        onViewTask={onOpenViewDetailTask}
-                                      />
-                                    </div>
-                                  )}
-                                </DraggableComponent>
-                              ))}
-                            </div>
-                            {provided.placeholder}
-                          </>
-                        </div>
-                      )}
-                    </DroppableComponent>
-                  </div>
-                ))}
-              </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-x-2 justify-center items-center mt-16">
+              <InboxOutlined className="text-4xl" />
+              <Typography.Text className="text-lg">
+                This project has no data. Create some tasks first before start
+                working
+              </Typography.Text>
             </div>
-          </div>
-        </DragDropContextComponent>
-        {isModalCreateTaskOpen && (
-          <CreateTask
-            isOpen={isModalCreateTaskOpen}
-            handleClose={onCloseCreateTaskModal}
-            initTaskData={initTaskData || undefined}
-            onSuccess={() => refetchTasks()}
-          />
+          </>
         )}
-        {isModalDetailTaskOpen && (
-          <TaskDetail
-            taskId={taskId || ""}
-            isOpen={isModalDetailTaskOpen}
-            onClose={onCloseViewDetailTask}
-          />
-        )}
-      </>
-    );
-  return null;
+      </DragDropContextComponent>
+      {isModalCreateTaskOpen && (
+        <CreateTask
+          isOpen={isModalCreateTaskOpen}
+          handleClose={onCloseCreateTaskModal}
+          initTaskData={initTaskData || undefined}
+          onSuccess={() => refetchTasks()}
+        />
+      )}
+      {isModalDetailTaskOpen && (
+        <TaskDetail
+          taskId={taskId || ""}
+          isOpen={isModalDetailTaskOpen}
+          onClose={onCloseViewDetailTask}
+        />
+      )}
+    </>
+  );
 };
 
 export default KanbanDisplay;
