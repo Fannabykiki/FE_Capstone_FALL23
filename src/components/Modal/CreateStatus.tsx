@@ -65,11 +65,6 @@ export default function CreateStatus({ open, onClose }: Props) {
           });
         }
       }
-      toast.error(
-        err.response?.data?.title ||
-          err.response?.data ||
-          "Create status failed! Please try again later"
-      );
     },
   });
 

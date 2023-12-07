@@ -41,6 +41,7 @@ import { useMemo, useState } from "react";
 import CommentTab from "./CommentTab";
 import HistoryTab from "./HistoryTab";
 import { paths } from "@/routers/paths";
+import { orderBy } from "lodash";
 
 interface Props {
   taskId: string;
@@ -214,7 +215,11 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               <div>
                 <Typography.Title level={5}>Attachments</Typography.Title>
                 <div className="flex flex-col gap-2 mb-4">
-                  {task.attachmentResponse?.map((attachment) => (
+                  {orderBy(
+                    task.attachmentResponse || [],
+                    "createAt",
+                    "desc"
+                  ).map((attachment) => (
                     <AttachmentDisplay
                       iterationId={currentIteration?.interationId || ""}
                       attachment={attachment}

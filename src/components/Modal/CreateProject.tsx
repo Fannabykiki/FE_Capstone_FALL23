@@ -66,11 +66,6 @@ export default function CreateProject({ open, onClose }: Props) {
           });
         }
       }
-      toast.error(
-        err.response?.data?.title ||
-          err.response?.data ||
-          "Register failed! Please try again later"
-      );
     },
   });
 
