@@ -150,66 +150,68 @@ export default function MainTaskDisplay({
           <div className={classNames("w-56 h-fit")}>
             <TaskDraggableDisplay task={task} onViewTask={onViewTask} />
           </div>
-          {statusList.map((status, index) => (
-            <div className="flex flex-col" key={status.boardStatusId}>
-              <DroppableComponent
-                key={status.boardStatusId}
-                droppableId={`${task.taskId}/${status.boardStatusId}`}
-              >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    className={classNames(
-                      "w-[240px] rounded flex-grow",
-                      snapshot.isDraggingOver && "bg-neutral-200"
-                    )}
-                    {...provided.droppableProps}
-                  >
-                    <>
-                      <div className="flex flex-col gap-y-4">
-                        {(
-                          task.subTask?.filter(
-                            (subtask) =>
-                              subtask.statusId === status.boardStatusId &&
-                              (!filterTaskName ||
-                                subtask.title
-                                  .toLowerCase()
-                                  .includes(filterTaskName.toLowerCase())) &&
-                              (!filterData.statusId ||
-                                filterData.statusId === subtask.statusId)
-                          ) || []
-                        ).map((subtask, index) => (
-                          <DraggableComponent
-                            key={subtask.taskId}
-                            draggableId={subtask.taskId}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={{
-                                  ...provided.draggableProps.style,
-                                }}
-                              >
-                                <TaskDraggableDisplay
-                                  snapshot={snapshot}
-                                  task={subtask}
-                                  onViewTask={onViewTask}
-                                />
-                              </div>
-                            )}
-                          </DraggableComponent>
-                        ))}
-                      </div>
-                      {provided.placeholder}
-                    </>
-                  </div>
-                )}
-              </DroppableComponent>
-            </div>
-          ))}
+          {statusList
+            .filter((status) => status.title !== "Deleted")
+            .map((status, index) => (
+              <div className="flex flex-col" key={status.boardStatusId}>
+                <DroppableComponent
+                  key={status.boardStatusId}
+                  droppableId={`${task.taskId}/${status.boardStatusId}`}
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      className={classNames(
+                        "w-[240px] rounded flex-grow",
+                        snapshot.isDraggingOver && "bg-neutral-200"
+                      )}
+                      {...provided.droppableProps}
+                    >
+                      <>
+                        <div className="flex flex-col gap-y-4">
+                          {(
+                            task.subTask?.filter(
+                              (subtask) =>
+                                subtask.statusId === status.boardStatusId &&
+                                (!filterTaskName ||
+                                  subtask.title
+                                    .toLowerCase()
+                                    .includes(filterTaskName.toLowerCase())) &&
+                                (!filterData.statusId ||
+                                  filterData.statusId === subtask.statusId)
+                            ) || []
+                          ).map((subtask, index) => (
+                            <DraggableComponent
+                              key={subtask.taskId}
+                              draggableId={subtask.taskId}
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <div
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  style={{
+                                    ...provided.draggableProps.style,
+                                  }}
+                                >
+                                  <TaskDraggableDisplay
+                                    snapshot={snapshot}
+                                    task={subtask}
+                                    onViewTask={onViewTask}
+                                  />
+                                </div>
+                              )}
+                            </DraggableComponent>
+                          ))}
+                        </div>
+                        {provided.placeholder}
+                      </>
+                    </div>
+                  )}
+                </DroppableComponent>
+              </div>
+            ))}
         </div>
       </div>
     </>

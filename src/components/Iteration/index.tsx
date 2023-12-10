@@ -203,10 +203,12 @@ const IterationDisplay = ({ iterationId }: Props) => {
               }
             />
             <Select
-              options={statusList.map((status) => ({
-                label: status.title,
-                value: status.boardStatusId,
-              }))}
+              options={statusList
+                .filter((status) => status.title !== "Deleted")
+                .map((status) => ({
+                  label: status.title,
+                  value: status.boardStatusId,
+                }))}
               placeholder="Filter by status"
               className="min-w-[200px]"
               onChange={(statusId) =>
@@ -246,16 +248,18 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   "flex gap-x-4 items-center flex-grow rounded"
                 )}
               >
-                {statusList.map((status, index) => (
-                  <div
-                    key={status.boardStatusId}
-                    className="w-[240px] shrink-0"
-                  >
-                    <div>
-                      <h4 className="mb-0">{status.title}</h4>
+                {statusList
+                  .filter((status) => status.title !== "Deleted")
+                  .map((status, index) => (
+                    <div
+                      key={status.boardStatusId}
+                      className="w-[240px] shrink-0"
+                    >
+                      <div>
+                        <h4 className="mb-0">{status.title}</h4>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
             {selectedIteration.tasks.map((task) => (

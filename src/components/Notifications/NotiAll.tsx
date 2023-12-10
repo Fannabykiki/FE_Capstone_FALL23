@@ -30,7 +30,7 @@ export default function NotiAll({ notifications }: Props) {
                   <Typography.Link>{noti.title}</Typography.Link>
                   <span>-</span>
                   <Typography.Text className="text-neutral-400">
-                    {dayjs(noti.createAt).fromNow()}
+                    {dayjs(noti.createAt).add(7, "hours").fromNow()}
                   </Typography.Text>
                 </div>
                 <div dangerouslySetInnerHTML={{ __html: noti.description }} />

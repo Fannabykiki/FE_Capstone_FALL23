@@ -48,8 +48,8 @@ export const REGEX_SPECIAL_CHARACTER = /[~`!@#$%^&*()\-_+={}\[\]|\/:;"'<>,.?]/;
 
 export const REGEX_CHARACTER = /(?=.*[a-z])(?=.*[A-Z])/;
 
-export const SAFE_DAY_TIL_DUE_DATE = -7;
-export const WARNING_DAY_TIL_DUE_DATE = -2;
+export const SAFE_DAY_TIL_DUE_DATE = -3;
+export const WARNING_DAY_TIL_DUE_DATE = -1;
 
 export const STATUS_COLOR = {
   "To do": "#8DC63F",

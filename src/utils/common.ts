@@ -66,7 +66,7 @@ const calcTaskDueDateColor = (dueDate: Date) => {
   const dayDiff = dayjs(today).diff(dueDate, "day");
   if (dayDiff <= SAFE_DAY_TIL_DUE_DATE) {
     return colors[0];
-  } else if (dayDiff < WARNING_DAY_TIL_DUE_DATE) {
+  } else if (dayDiff <= WARNING_DAY_TIL_DUE_DATE) {
     return colors[1];
   }
   return colors[2];

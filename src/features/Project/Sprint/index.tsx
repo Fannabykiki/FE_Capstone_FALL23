@@ -11,6 +11,7 @@ import {
   IterationDisplayDate,
   IterationDisplayName,
 } from "@/components";
+import { classNames } from "@/utils/common";
 
 export enum TaskType {
   Main = "Work Item",
@@ -69,8 +70,29 @@ const TaskBoard = () => {
       <div className="flex gap-x-2 items-center mb-4">
         <label>Select sprint:</label>
         <Select
+          showSearch
           className="min-w-[400px]"
+          optionFilterProp="searchValue"
           options={[
+            ...(iterations || []).map((iteration) => ({
+              searchValue: iteration.interationName,
+              label: (
+                <div className="flex items-center justify-between">
+                  <span>{iteration.interationName}</span>
+                  <span
+                    className={classNames(
+                      "text-xs px-2 py-0.5 rounded-full",
+                      iteration.status === "Current"
+                        ? "bg-blue-400 text-white"
+                        : "bg-neutral-100"
+                    )}
+                  >
+                    {iteration.status}
+                  </span>
+                </div>
+              ),
+              value: iteration.interationId,
+            })),
             {
               label: (
                 <div className="flex gap-x-2">
@@ -80,17 +102,6 @@ const TaskBoard = () => {
               ),
               value: "new",
             },
-            ...(iterations || []).map((iteration) => ({
-              label: (
-                <div className="flex items-center justify-between">
-                  <span>{iteration.interationName}</span>
-                  <span className="text-xs bg-neutral-100 px-2 rounded-full">
-                    {iteration.status}
-                  </span>
-                </div>
-              ),
-              value: iteration.interationId,
-            })),
           ]}
           loading={actions.isGettingIterations}
           value={selectedIteration?.interationId || null}
