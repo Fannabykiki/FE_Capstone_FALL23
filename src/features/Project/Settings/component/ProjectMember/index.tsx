@@ -147,34 +147,38 @@ export default function ProjectMember({ isAdminOrPO }: IProp) {
       align: "center",
       render: (_, record) => {
         const items = [];
-        if (record.userId === userInfo?.id && !isAdminOrPO) {
-          items.push({
-            key: "out",
-            label: "Out project",
-          });
-        } else {
-          if (
-            record.roleName &&
-            !ADMIN_ROLES.includes(record.roleName) &&
-            isAdminOrPO
-          ) {
-            items.push(
-              {
-                key: "role",
-                label: "Change role",
-              },
-              {
-                key: "remove",
-                label: "Remove",
-              }
-            );
-          }
-        }
-        return items.length &&
+        if (
+          record.statusName !== "Unavailable" &&
           (record.userId === userInfo?.id ||
             (record.roleName &&
               !ADMIN_ROLES.includes(record.roleName) &&
-              isAdminOrPO)) ? (
+              isAdminOrPO))
+        ) {
+          if (record.userId === userInfo?.id && !isAdminOrPO) {
+            items.push({
+              key: "out",
+              label: "Out project",
+            });
+          } else {
+            if (
+              record.roleName &&
+              !ADMIN_ROLES.includes(record.roleName) &&
+              isAdminOrPO
+            ) {
+              if (record.statusName !== "Pending") {
+                items.push({
+                  key: "role",
+                  label: "Change role",
+                });
+              }
+              items.push({
+                key: "remove",
+                label: "Remove",
+              });
+            }
+          }
+        }
+        return items.length ? (
           <Dropdown
             menu={{
               items,
