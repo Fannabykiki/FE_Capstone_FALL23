@@ -127,10 +127,15 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
                     {
                       required: true,
                     },
+                    {
+                      max: 50,
+                    },
                   ]}
+                  help="Max 50 characters"
                 >
                   <Input
                     disabled={!isAdminOrPO || detail.projectStatus !== "Doing"}
+                    maxLength={50}
                   />
                 </Form.Item>
                 <Form.Item label={<b>Description</b>} name="description">
@@ -215,9 +220,7 @@ export default function ProjectInformation({ isAdminOrPO }: IProp) {
             </Col>
           </Row>
           <Divider />
-          <Typography className="text-xl font-medium">
-            Project Owner
-          </Typography>
+          <Typography className="text-xl font-medium">Project Owner</Typography>
           <div className="mt-3">
             <Row>
               <Col span={1} className="flex justify-center items-center">

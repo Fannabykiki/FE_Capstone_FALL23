@@ -196,10 +196,12 @@ const KanbanDisplay = () => {
             }
           />
           <Select
-            options={statusList.map((status) => ({
-              label: status.title,
-              value: status.boardStatusId,
-            }))}
+            options={statusList
+              .filter((status) => status.title !== "Deleted")
+              .map((status) => ({
+                label: status.title,
+                value: status.boardStatusId,
+              }))}
             placeholder="Filter by status"
             className="min-w-[200px]"
             onChange={(statusId) => setFilterData((c) => ({ ...c, statusId }))}
@@ -224,79 +226,84 @@ const KanbanDisplay = () => {
                 <div
                   className={classNames("flex gap-x-4 items-center flex-grow")}
                 >
-                  {statusList.map((status, index) => (
-                    <div className="w-[240px] shrink-0">
-                      <div>
-                        <h4 className="mb-0">{status.title}</h4>
+                  {statusList
+                    .filter((status) => status.title !== "Deleted")
+                    .map((status, index) => (
+                      <div className="w-[240px] shrink-0">
+                        <div>
+                          <h4 className="mb-0">{status.title}</h4>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
               <div>
                 <div className="flex w-full gap-x-4">
-                  {statusList.map((status, index) => (
-                    <div className="flex flex-col" key={status.boardStatusId}>
-                      <DroppableComponent
-                        key={status.boardStatusId}
-                        droppableId={status.boardStatusId}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            className={classNames(
-                              "w-[240px] rounded flex-grow",
-                              snapshot.isDraggingOver && "bg-neutral-200"
-                            )}
-                            {...provided.droppableProps}
-                          >
-                            <>
-                              <div className="flex flex-col gap-y-4">
-                                {(
-                                  tasks.filter(
-                                    (task) =>
-                                      task.statusId === status.boardStatusId &&
-                                      (!filterTaskName ||
-                                        task.title
-                                          .toLowerCase()
-                                          .includes(
-                                            filterTaskName.toLowerCase()
-                                          )) &&
-                                      (!filterData.statusId ||
-                                        filterData.statusId === task.statusId)
-                                  ) || []
-                                ).map((task, index) => (
-                                  <DraggableComponent
-                                    key={task.taskId}
-                                    draggableId={task.taskId}
-                                    index={index}
-                                  >
-                                    {(provided, snapshot) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        style={{
-                                          ...provided.draggableProps.style,
-                                        }}
-                                      >
-                                        <TaskDraggableDisplay
-                                          snapshot={snapshot}
-                                          task={task}
-                                          onViewTask={onOpenViewDetailTask}
-                                        />
-                                      </div>
-                                    )}
-                                  </DraggableComponent>
-                                ))}
-                              </div>
-                              {provided.placeholder}
-                            </>
-                          </div>
-                        )}
-                      </DroppableComponent>
-                    </div>
-                  ))}
+                  {statusList
+                    .filter((status) => status.title !== "Deleted")
+                    .map((status, index) => (
+                      <div className="flex flex-col" key={status.boardStatusId}>
+                        <DroppableComponent
+                          key={status.boardStatusId}
+                          droppableId={status.boardStatusId}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              className={classNames(
+                                "w-[240px] rounded flex-grow",
+                                snapshot.isDraggingOver && "bg-neutral-200"
+                              )}
+                              {...provided.droppableProps}
+                            >
+                              <>
+                                <div className="flex flex-col gap-y-4">
+                                  {(
+                                    tasks.filter(
+                                      (task) =>
+                                        task.statusId ===
+                                          status.boardStatusId &&
+                                        (!filterTaskName ||
+                                          task.title
+                                            .toLowerCase()
+                                            .includes(
+                                              filterTaskName.toLowerCase()
+                                            )) &&
+                                        (!filterData.statusId ||
+                                          filterData.statusId === task.statusId)
+                                    ) || []
+                                  ).map((task, index) => (
+                                    <DraggableComponent
+                                      key={task.taskId}
+                                      draggableId={task.taskId}
+                                      index={index}
+                                    >
+                                      {(provided, snapshot) => (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          style={{
+                                            ...provided.draggableProps.style,
+                                          }}
+                                        >
+                                          <TaskDraggableDisplay
+                                            snapshot={snapshot}
+                                            task={task}
+                                            onViewTask={onOpenViewDetailTask}
+                                          />
+                                        </div>
+                                      )}
+                                    </DraggableComponent>
+                                  ))}
+                                </div>
+                                {provided.placeholder}
+                              </>
+                            </div>
+                          )}
+                        </DroppableComponent>
+                      </div>
+                    ))}
                 </div>
               </div>
             </div>

@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { attachmentApi } from "@/utils/api/attachment";
-import { Button, Image, Upload } from "antd";
+import { Button, Upload } from "antd";
 import { RcFile } from "antd/es/upload";
 import {
   DeleteOutlined,
-  FileImageOutlined,
   LinkOutlined,
   PictureOutlined,
   UploadOutlined,
@@ -19,7 +18,7 @@ interface Props {
 
 const UploadAttachment = ({ taskId }: Props) => {
   const queryClient = useQueryClient();
-  const [selectedFile, setSelectedFile] = useState<RcFile>();
+  const [selectedFiles, setSelectedFiles] = useState<RcFile[]>();
 
   const { mutate: uploadFile, isLoading } = useMutation({
     mutationKey: [attachmentApi.createKey],
@@ -29,10 +28,10 @@ const UploadAttachment = ({ taskId }: Props) => {
         toast.error(
           data?.message || "Upload file failed! Please try again later"
         );
-        setSelectedFile(undefined);
+        setSelectedFiles(undefined);
       } else {
         toast.success("File uploaded successfully");
-        setSelectedFile(undefined);
+        setSelectedFiles(undefined);
         queryClient.invalidateQueries({
           queryKey: [taskApi.getDetailKey, taskId],
         });
@@ -46,17 +45,26 @@ const UploadAttachment = ({ taskId }: Props) => {
 
   // Handler for file selection
   const handleUpload = () => {
-    const formData = new FormData();
-    formData.append("file", selectedFile!);
-    uploadFile({
-      taskId,
-      data: formData,
-    });
+    if (selectedFiles && selectedFiles.length > 0) {
+      const formData = new FormData();
+      selectedFiles?.forEach((file) => {
+        formData.append("file", file);
+      });
+      uploadFile({
+        taskId,
+        data: formData,
+      });
+    }
   };
 
-  const onBeforeUpload = (file: RcFile) => {
-    setSelectedFile(file);
+  const onBeforeUpload = (_: RcFile, fileList: RcFile[]) => {
+    console.log(fileList);
+    setSelectedFiles(fileList);
     return false;
+  };
+
+  const onRemoveTempFile = (uid: string) => {
+    setSelectedFiles(selectedFiles?.filter((file) => file.uid !== uid));
   };
 
   return (
@@ -64,22 +72,27 @@ const UploadAttachment = ({ taskId }: Props) => {
       <Upload beforeUpload={onBeforeUpload} multiple showUploadList={false}>
         <Button icon={<UploadOutlined />}>Upload Attachment</Button>
       </Upload>
-      {selectedFile && (
+      {selectedFiles && (
         <div>
-          <div className="mt-4 rounded-lg p-2 gap-x-4 border border-solid border-neutral-200 flex items-center">
-            {selectedFile.type.startsWith("image") ? (
-              <PictureOutlined />
-            ) : (
-              <LinkOutlined />
-            )}
-            <span className="flex-grow">{selectedFile.name}</span>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              type="link"
-              onClick={() => setSelectedFile(undefined)}
-            />
-          </div>
+          {selectedFiles.map((file) => (
+            <div
+              key={file.uid}
+              className="mt-4 rounded-lg p-2 gap-x-4 border border-solid border-neutral-200 flex items-center"
+            >
+              {file.type.startsWith("image") ? (
+                <PictureOutlined />
+              ) : (
+                <LinkOutlined />
+              )}
+              <span className="flex-grow">{file.name}</span>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                type="link"
+                onClick={() => onRemoveTempFile(file.uid)}
+              />
+            </div>
+          ))}
           <div className="text-right mt-4">
             <Button type="primary" onClick={handleUpload} loading={isLoading}>
               Submit
