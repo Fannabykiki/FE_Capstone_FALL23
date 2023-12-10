@@ -119,13 +119,13 @@ const PermissionRole = ({ isAdminOrPO }: IProp) => {
               Clone
             </Button>
           </Row>
-          <PermissionDetailModal
-            isPermissionId={isPermissionId}
-            isAdminOrPO={isAdminOrPO}
-            handleClose={() => setPermissionId(undefined)}
-          />
         </>
       ) : null}
+      <PermissionDetailModal
+        isPermissionId={isPermissionId}
+        isAdminOrPO={isAdminOrPO}
+        handleClose={() => setPermissionId(undefined)}
+      />
     </Card>
   );
 };

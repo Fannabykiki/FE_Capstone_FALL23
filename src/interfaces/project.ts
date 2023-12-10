@@ -113,6 +113,8 @@ export interface IAdminProjectAnalyzation {
   projectDeletePercent: number;
   projectInActive: number;
   projectInActivePercent: number;
+  projectDone: number;
+  projectDonePercent: number;
   totalProject: number;
 }
 
