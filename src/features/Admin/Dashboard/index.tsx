@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ColumnsType } from "antd/es/table";
 import { toast } from "react-toastify";
 import debounce from "lodash/debounce";
+import orderBy from "lodash/orderBy";
 import buildQuery from "odata-query";
 import {
   Avatar,
@@ -278,7 +279,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                {analyzation?.projectInActive}
+                {analyzation?.projectDone}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Done Projects
@@ -337,7 +338,7 @@ const AdminDashboard = () => {
           columns={columns}
           loading={isLoading}
           dataSource={pagination(
-            project,
+            orderBy(project, "createAt", "desc"),
             parseInt(searchParams.get("page") || "1"),
             parseInt(searchParams.get("limit") || "10")
           )}
