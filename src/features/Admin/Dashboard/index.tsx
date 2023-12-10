@@ -278,7 +278,7 @@ const AdminDashboard = () => {
           <Row className="w-full shadow-custom px-5 py-3 rounded">
             <Col span={20}>
               <Typography.Title level={4} className="!m-0">
-                {analyzation?.projectInActive}
+                {analyzation?.projectDone}
               </Typography.Title>
               <Typography.Title level={5} className="text-[#6b6b6b] !m-0">
                 Done Projects
