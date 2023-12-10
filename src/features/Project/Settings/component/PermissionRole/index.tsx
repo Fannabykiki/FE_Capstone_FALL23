@@ -90,36 +90,42 @@ const PermissionRole = ({ isAdminOrPO }: IProp) => {
         dataSource={schemas?.filter((schema) => schema.isCurrentProjectSchema)}
         pagination={false}
       />
-      <Typography className="text-md font-bold mt-5">
-        Other Permission role
-      </Typography>
-      <Table
-        rowKey="schemaId"
-        columns={columns}
-        loading={isLoading}
-        dataSource={schemas?.filter((schema) => !schema.isCurrentProjectSchema)}
-        pagination={false}
-        rowSelection={{
-          selectedRowKeys,
-          onChange: onSelectChange,
-          type: "radio",
-        }}
-      />
-      <Row className="mt-5" justify="end">
-        <Button
-          disabled={!selectedRowKeys[0] || !isAdminOrPO}
-          loading={isChangingProjectSchema}
-          onClick={onSubmit}
-          type="primary"
-        >
-          Clone
-        </Button>
-      </Row>
-      <PermissionDetailModal
-        isPermissionId={isPermissionId}
-        isAdminOrPO={isAdminOrPO}
-        handleClose={() => setPermissionId(undefined)}
-      />
+      {isAdminOrPO ? (
+        <>
+          <Typography className="text-md font-bold mt-5">
+            Other Permission role
+          </Typography>
+          <Table
+            rowKey="schemaId"
+            columns={columns}
+            loading={isLoading}
+            dataSource={schemas?.filter(
+              (schema) => !schema.isCurrentProjectSchema
+            )}
+            pagination={false}
+            rowSelection={{
+              selectedRowKeys,
+              onChange: onSelectChange,
+              type: "radio",
+            }}
+          />
+          <Row className="mt-5" justify="end">
+            <Button
+              disabled={!selectedRowKeys[0] || !isAdminOrPO}
+              loading={isChangingProjectSchema}
+              onClick={onSubmit}
+              type="primary"
+            >
+              Clone
+            </Button>
+          </Row>
+          <PermissionDetailModal
+            isPermissionId={isPermissionId}
+            isAdminOrPO={isAdminOrPO}
+            handleClose={() => setPermissionId(undefined)}
+          />
+        </>
+      ) : null}
     </Card>
   );
 };
