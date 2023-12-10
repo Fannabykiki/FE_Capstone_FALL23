@@ -24,13 +24,13 @@ interface Props {
 }
 
 const ReAssignModal = ({ isOpen, handleClose }: Props) => {
-  const [memberId, setMemberId] = useState<string>();
+  const [memberId, setMemberId] = useState<string>("");
 
   const queryClient = useQueryClient();
 
   const { projectId } = useParams();
 
-  const { detail } = useProjectDetail(projectId);
+  const { detail, actions } = useProjectDetail(projectId);
 
   const { data: roles, isLoading: isLoadingRoles } = useQuery<IAdminRoles[]>({
     queryKey: [roleApi.getAdminRolesKey],
@@ -46,9 +46,12 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
     mutationKey: [projectApi.updateMemberRoleKey],
     mutationFn: projectApi.updateMemberRole,
     onSuccess: async () => {
-      await queryClient.refetchQueries([
-        projectApi.getListUserInProjectByProjectIdKey,
-        projectId,
+      await Promise.all([
+        queryClient.refetchQueries([
+          projectApi.getListUserInProjectByProjectIdKey,
+          projectId,
+        ]),
+        actions.refetchDetail(),
       ]);
       toast.success("Update PO successfully");
       handleClose();
@@ -75,12 +78,17 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
     setMemberId(e.target.value);
   };
 
+  const onCancel = () => {
+    setMemberId("");
+    handleClose();
+  };
+
   return (
     <Modal
       maskClosable={false}
       title="ReAssign PO Role"
       open={isOpen}
-      onCancel={handleClose}
+      onCancel={onCancel}
       onOk={handleSubmit}
       okText="OK"
       okButtonProps={{
@@ -116,6 +124,7 @@ const ReAssignModal = ({ isOpen, handleClose }: Props) => {
                   label: member.userName || member.email,
                   value: member.memberId,
                 }))}
+              value={memberId}
               onChange={onChange}
             />
           </Col>
