@@ -148,7 +148,7 @@ export default function ProjectMember({ isAdminOrPO }: IProp) {
       render: (_, record) => {
         const items = [];
         if (
-          record.statusName !== "Unavailable" &&
+          !["Unavailable", "Declined"].includes(record.statusName) &&
           (record.userId === userInfo?.id ||
             (record.roleName &&
               !ADMIN_ROLES.includes(record.roleName) &&
