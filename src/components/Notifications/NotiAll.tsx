@@ -12,7 +12,7 @@ interface Props {
 export default function NotiAll({ notifications }: Props) {
   return (
     <>
-      <div className="max-h-[300px] overflow-y-auto flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2">
         {notifications.map((noti) => (
           <Link
             key={noti.notificationId}

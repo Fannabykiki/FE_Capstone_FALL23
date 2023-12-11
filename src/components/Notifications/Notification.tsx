@@ -2,6 +2,8 @@ import { Space, Tabs, Typography } from "antd";
 import NotiAll from "./NotiAll";
 import BellIcon from "@/assets/icons/iconBell";
 import { INotification } from "@/interfaces/notification";
+import { Link } from "react-router-dom";
+import { paths } from "@/routers/paths";
 
 interface Props {
   notifications: INotification[];
@@ -15,7 +17,9 @@ export default function Notification({ notifications }: Props) {
           <Typography className="text-xl font-semibold">
             <BellIcon /> Notication
           </Typography>
-          <Typography.Link>View All</Typography.Link>
+          <Link to={paths.notification}>
+            <Typography.Link>View All</Typography.Link>
+          </Link>
         </Space>
         <Tabs
           className="mt-5"
@@ -24,17 +28,23 @@ export default function Notification({ notifications }: Props) {
             {
               key: "All",
               label: "All",
-              children: <NotiAll notifications={notifications} />,
+              children: (
+                <div className="max-h-[300px] overflow-y-auto">
+                  <NotiAll notifications={notifications} />
+                </div>
+              ),
             },
             {
               key: "Unread",
               label: "Unread",
               children: (
-                <NotiAll
-                  notifications={notifications.filter(
-                    (notification) => !notification.isRead
-                  )}
-                />
+                <div className="max-h-[300px] overflow-y-auto">
+                  <NotiAll
+                    notifications={notifications.filter(
+                      (notification) => !notification.isRead
+                    )}
+                  />
+                </div>
               ),
             },
           ]}

@@ -100,7 +100,7 @@ export default function CreateIteration({ open, onClose }: Props) {
           rules={[
             {
               required: true,
-              message: "Please enter the iteration name",
+              message: "Please enter the sprint name",
             },
             {
               pattern: new RegExp(/^[A-Za-z0-9_ ]+$/), // No special character
