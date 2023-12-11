@@ -30,7 +30,7 @@ export default function DisplayName({ iteration }: Props) {
     },
     onError: (err) => {
       console.error(err);
-      toast.error("Update iteration name failed! Please try again later");
+      toast.error("Update sprint name failed! Please try again later");
       setNewName(iteration.interationName);
     },
   });

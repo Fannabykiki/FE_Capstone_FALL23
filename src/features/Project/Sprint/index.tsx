@@ -129,7 +129,7 @@ const TaskBoard = () => {
           <IterationDisplay iterationId={selectedIteration.interationId} />
         </React.Fragment>
       ) : (
-        <Typography.Paragraph>No iteration selected</Typography.Paragraph>
+        <Typography.Paragraph>No sprint selected</Typography.Paragraph>
       )}
       {openCreateIterationModal && (
         <CreateIteration

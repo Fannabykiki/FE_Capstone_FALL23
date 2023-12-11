@@ -275,7 +275,7 @@ export default function WorkItem() {
       width: "10%",
     },
     {
-      title: "Interation",
+      title: "Sprint",
       dataIndex: "interation",
       width: "10%",
     },

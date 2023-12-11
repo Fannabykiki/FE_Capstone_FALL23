@@ -223,9 +223,9 @@ export default function UpdateTask({
           <Input />
         </Form.Item>
         <Form.Item
-          label="Interation"
+          label="Sprint"
           name="interationId"
-          rules={[{ required: true, message: "Interation is required" }]}
+          rules={[{ required: true, message: "Sprint is required" }]}
         >
           <Select
             options={interationList?.map((interation) => ({
