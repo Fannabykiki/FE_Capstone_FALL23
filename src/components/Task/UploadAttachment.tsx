@@ -58,7 +58,6 @@ const UploadAttachment = ({ taskId }: Props) => {
   };
 
   const onBeforeUpload = (_: RcFile, fileList: RcFile[]) => {
-    console.log(fileList);
     setSelectedFiles(fileList);
     return false;
   };

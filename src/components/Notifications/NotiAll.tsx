@@ -1,23 +1,67 @@
 import CircleIcon from "@/assets/icons/iconCircle";
 import { INotification } from "@/interfaces/notification";
+import { notificationApi } from "@/utils/api/notification";
 import { classNames } from "@/utils/common";
-import { Typography } from "antd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button, Typography } from "antd";
 import dayjs from "dayjs";
-import { Link } from "react-router-dom";
 
 interface Props {
   notifications: INotification[];
 }
 
 export default function NotiAll({ notifications }: Props) {
+  const { mutate, isLoading } = useMutation({
+    mutationKey: [notificationApi.readKey],
+    mutationFn: notificationApi.read,
+  });
+  const queryClient = useQueryClient();
+  const onNavigate = async (noti: INotification) => {
+    if (!noti.isRead) {
+      mutate([noti.notificationId], {
+        onSettled: () => {
+          window.open(noti.targetUrl, "_blank")?.focus();
+        },
+      });
+    } else {
+      window.open(noti.targetUrl, "_blank")?.focus();
+    }
+  };
+
+  const onReadAllNoti = () => {
+    mutate(
+      notifications
+        .filter((noti) => !noti.isRead)
+        .map((noti) => noti.notificationId),
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [notificationApi.getAllKey],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [notificationApi.getLatestKey],
+          });
+        },
+      }
+    );
+  };
+
   return (
     <>
       <div className="flex flex-col gap-y-2">
+        <Button
+          disabled={isLoading}
+          className="w-fit self-end"
+          type="link"
+          onClick={onReadAllNoti}
+        >
+          Mark all as read
+        </Button>
         {notifications.map((noti) => (
-          <Link
+          <div
             key={noti.notificationId}
-            to={noti.targetUrl}
             className="text-black hover:text-black"
+            onClick={() => onNavigate(noti)}
           >
             <div
               className={classNames(
@@ -41,7 +85,7 @@ export default function NotiAll({ notifications }: Props) {
                 </div>
               )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </>
