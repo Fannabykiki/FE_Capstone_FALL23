@@ -2,8 +2,8 @@ import { useMemo, useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
+import { debounce, orderBy } from "lodash";
 import buildQuery from "odata-query";
-import { debounce } from "lodash";
 import dayjs from "dayjs";
 import {
   BugFilled,
@@ -160,7 +160,7 @@ export default function WorkItem() {
     {
       title: "Title",
       dataIndex: "title",
-      width: "30%",
+      width: "25%",
       render: (title, task) => (
         <Typography.Link
           onClick={() =>
@@ -208,47 +208,43 @@ export default function WorkItem() {
       width: "15%",
       render: (_, record) =>
         record.assignTo?.userName ? (
-          <Row align="middle">
-            <Col span={5} className="flex items-center">
-              <Tooltip
-                title={
-                  record.memberStatus &&
-                  record.memberStatus !== "In Team" &&
-                  "Member unavailable"
+          <Row align="middle" className="gap-2">
+            <Tooltip
+              title={
+                record.memberStatus &&
+                record.memberStatus !== "In Team" &&
+                "Member unavailable"
+              }
+            >
+              <Badge
+                count={
+                  record.memberStatus && record.memberStatus !== "In Team" ? (
+                    <WarningFilled className="text-red-500" />
+                  ) : null
                 }
               >
-                <Badge
-                  count={
-                    record.memberStatus && record.memberStatus !== "In Team" ? (
-                      <WarningFilled className="text-red-500" />
-                    ) : null
-                  }
+                <AvatarWithColor
+                  className={classNames(
+                    record.memberStatus &&
+                      record.memberStatus !== "In Team" &&
+                      "border-red-500 border-solid border-2"
+                  )}
+                  stringContent={record.assignTo?.userName}
                 >
-                  <AvatarWithColor
-                    className={classNames(
-                      record.memberStatus &&
-                        record.memberStatus !== "In Team" &&
-                        "border-red-500 border-solid border-2"
-                    )}
-                    stringContent={record.assignTo?.userName}
-                  >
-                    {record.assignTo?.userName?.charAt(0).toUpperCase()}
-                  </AvatarWithColor>
-                </Badge>
-              </Tooltip>
-            </Col>
-            <Col span={19}>
-              <Typography.Title level={5} className="!m-0">
-                {record.assignTo?.userName}
-              </Typography.Title>
-            </Col>
+                  {record.assignTo?.userName?.charAt(0).toUpperCase()}
+                </AvatarWithColor>
+              </Badge>
+            </Tooltip>
+            <Typography.Title level={5} className="!m-0">
+              {record.assignTo?.userName}
+            </Typography.Title>
           </Row>
         ) : null,
     },
     {
       title: "State",
       dataIndex: "taskStatus",
-      width: "10%",
+      width: "15%",
       render: (state, record) => {
         const color = statusList.find(
           (status) => status.boardStatusId === record.statusId
@@ -323,18 +319,17 @@ export default function WorkItem() {
       {isCardVisible && (
         <Card className="w-full mt-2 shadow-custom">
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={8}>
               <Input
                 placeholder="Filter By Title"
                 prefix={<SearchOutlined />}
-                width={150}
                 className="w-full"
                 defaultValue={searchParams.get("search") || ""}
                 onChange={handleSearch}
                 allowClear
               />
             </Col>
-            <Col className="flex justify-end gap-4" span={12}>
+            <Col className="flex justify-end gap-4" span={16}>
               <Select
                 bordered
                 options={typeList?.map((type) => ({
@@ -359,7 +354,7 @@ export default function WorkItem() {
                 allowClear
               />
               <Select
-                className="min-w-[240px]"
+                className="min-w-[50%]"
                 placeholder="Sprint"
                 defaultValue={searchParams.get("interation")}
                 onChange={handleChange("interation")}
@@ -373,7 +368,7 @@ export default function WorkItem() {
                       </span>
                     </div>
                   ),
-                  value: iteration.interationId,
+                  value: iteration.interationName,
                 }))}
                 loading={actions.isGettingIterations}
               />
@@ -388,7 +383,7 @@ export default function WorkItem() {
           columns={columns}
           loading={isLoading}
           dataSource={pagination(
-            data,
+            orderBy(data, "createTime", "desc"),
             parseInt(searchParams.get("page") || "1"),
             parseInt(searchParams.get("limit") || "10")
           )}
