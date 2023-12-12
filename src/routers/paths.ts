@@ -27,6 +27,7 @@ export const paths = {
     roleManagement: "/admin/role",
     permissionManagement: "/admin/permission",
     projectPermission: "/admin/permission/:schemaId",
+    notification: "/user/notifications",
   },
 };
 
@@ -49,6 +50,7 @@ export const adminPaths = Object.assign(
     "roleManagement",
     "permissionManagement",
     "projectPermission",
+    "notification",
   ]),
   projectPath
 );

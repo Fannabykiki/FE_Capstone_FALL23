@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ProjectOutlined, UnlockOutlined } from "@ant-design/icons";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Content } from "antd/es/layout/layout";
 import { faker } from "@faker-js/faker";
 import { toast } from "react-toastify";
@@ -34,7 +34,7 @@ export default function InviteMember() {
   const { userInfo } = useAuthContext();
 
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
   const { data, isError } = useQuery({
     queryKey: [projectApi.checkEmailInviteKey, searchParams.get("invitation")],
     queryFn: ({ signal }) =>
@@ -42,7 +42,6 @@ export default function InviteMember() {
         invationId: searchParams.get("invitation")!,
       }),
     enabled: Boolean(searchParams.get("invitation")),
-    staleTime: Infinity,
   });
 
   const { mutate: acceptInvite, isLoading: accepting } = useMutation({
@@ -51,6 +50,12 @@ export default function InviteMember() {
     onSuccess: () => {
       setDisabled(true);
       toast.success("Accept invitation successfully!");
+      queryClient.invalidateQueries({
+        queryKey: [
+          projectApi.checkEmailInviteKey,
+          searchParams.get("invitation"),
+        ],
+      });
       navigate(paths.user);
     },
     onError: (err: any) => {
@@ -64,6 +69,12 @@ export default function InviteMember() {
     onSuccess: () => {
       setDisabled(true);
       toast.success("Decline invitation successfully!");
+      queryClient.invalidateQueries({
+        queryKey: [
+          projectApi.checkEmailInviteKey,
+          searchParams.get("invitation"),
+        ],
+      });
       navigate(paths.user);
     },
     onError: (err: any) => {

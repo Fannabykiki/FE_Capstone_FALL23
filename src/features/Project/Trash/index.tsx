@@ -270,7 +270,7 @@ const TrashBin = () => {
     },
     {
       title: "Deleted At",
-      dataIndex: "createTime",
+      dataIndex: "deleteAt",
       width: "10%",
       render: (createTime) =>
         createTime ? dayjs(createTime).format("DD/MM/YYYY") : null,

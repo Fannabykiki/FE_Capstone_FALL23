@@ -8,8 +8,8 @@ import { Content } from "antd/es/layout/layout";
 
 export default function Notifications() {
   const { data: notifications } = useQuery({
-    queryKey: [notificationApi.getLatestKey],
-    queryFn: ({ signal }) => notificationApi.getLatest(signal),
+    queryKey: [notificationApi.getAllKey],
+    queryFn: ({ signal }) => notificationApi.getAll(signal),
     initialData: [],
   });
   return (
