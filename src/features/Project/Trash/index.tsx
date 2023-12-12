@@ -224,17 +224,13 @@ const TrashBin = () => {
       width: "15%",
       render: (_, record) =>
         record.assignTo ? (
-          <Row align="middle">
-            <Col span={5} className="flex items-center">
-              <AvatarWithColor stringContent={record.assignTo}>
-                {record.assignTo?.charAt(0).toUpperCase()}
-              </AvatarWithColor>
-            </Col>
-            <Col span={19}>
-              <Typography.Title level={5} className="!m-0">
-                {record.assignTo}
-              </Typography.Title>
-            </Col>
+          <Row align="middle" className="gap-2">
+            <AvatarWithColor stringContent={record.assignTo}>
+              {record.assignTo?.charAt(0).toUpperCase()}
+            </AvatarWithColor>
+            <Typography.Title level={5} className="!m-0">
+              {record.assignTo}
+            </Typography.Title>
           </Row>
         ) : null,
     },
@@ -320,19 +316,18 @@ const TrashBin = () => {
 
       {isCardVisible && (
         <Card className="w-full mt-2 shadow-custom">
-          <Row gutter={16}>
-            <Col span={12}>
+          <Row>
+            <Col span={8}>
               <Input
                 placeholder="Filter By Title"
                 prefix={<SearchOutlined />}
-                width={150}
                 className="w-full"
                 defaultValue={searchParams.get("search") || ""}
                 onChange={handleSearch}
                 allowClear
               />
             </Col>
-            <Col className="flex justify-end gap-4" span={12}>
+            <Col className="flex justify-end gap-4" span={16}>
               <Select
                 bordered
                 options={typeList?.map((type) => ({
@@ -357,7 +352,7 @@ const TrashBin = () => {
                 allowClear
               />
               <Select
-                className="min-w-[400px]"
+                className="min-w-[50%]"
                 placeholder="Sprint"
                 defaultValue={searchParams.get("interation")}
                 onChange={handleChange("interation")}
@@ -371,7 +366,7 @@ const TrashBin = () => {
                       </span>
                     </div>
                   ),
-                  value: iteration.interationId,
+                  value: iteration.interationName,
                 }))}
                 loading={actions.isGettingIterations}
               />
@@ -385,14 +380,10 @@ const TrashBin = () => {
           rowKey="projectId"
           columns={columns}
           loading={isLoading}
-          dataSource={orderBy(
-            pagination(
-              data,
-              parseInt(searchParams.get("page") || "1"),
-              parseInt(searchParams.get("limit") || "10")
-            ),
-            "deleteAt",
-            "desc"
+          dataSource={pagination(
+            orderBy(data, "deleteAt", "desc"),
+            parseInt(searchParams.get("page") || "1"),
+            parseInt(searchParams.get("limit") || "10")
           )}
           pagination={{
             showSizeChanger: true,
