@@ -70,10 +70,10 @@ export default function TaskDraggableDisplay({
         <p>{task.title}</p>
         <div className="flex gap-x-2 items-center">
           <div>
-            <PaperClipOutlined /> {task.totalAttachment}
+            <PaperClipOutlined /> {task.totalAttachment || 0}
           </div>
           <div>
-            <CommentOutlined /> {task.totalComment}
+            <CommentOutlined /> {task.totalComment || 0}
           </div>
           <div className="flex-grow text-right">
             <Tooltip title={`Priority: ${task.priorityName}`}>

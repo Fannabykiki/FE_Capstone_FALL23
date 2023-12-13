@@ -95,6 +95,17 @@ const deleteTask = (data: {
   }).then((resp) => resp.data);
 };
 
+const deleteParentTask = (data: {
+  taskId: string;
+  memberId: string;
+}): Promise<void> => {
+  return axiosClient({
+    url: `/api/task-management/tasks/deletion-each-task`,
+    method: HTTP_METHODS.PUT, // This should be DELETE if you are actually deleting the resource
+    data,
+  }).then((resp) => resp.data);
+};
+
 const restoreTask = (data: {
   taskId: string;
   memberId: string;
@@ -198,6 +209,8 @@ export const taskApi = {
   updateTaskKey: "taskUpdateTask",
   deleteTask,
   deleteTaskKey: "taskDeleteTask",
+  deleteParentTask,
+  deleteParentTaskKey: "taskDeleteParentTask",
   restoreTask,
   restoreTaskKey: "taskRestoreTask",
   getTaskPriority,

@@ -22,6 +22,11 @@ export default function useTaskActions() {
     mutationFn: taskApi.deleteTask,
   });
 
+  const deleteParentTaskMutation = useMutation({
+    mutationKey: [taskApi.deleteParentTaskKey],
+    mutationFn: taskApi.deleteParentTask,
+  });
+
   const restoreTaskMutation = useMutation({
     mutationKey: [taskApi.restoreTaskKey],
     mutationFn: taskApi.restoreTask,
@@ -42,6 +47,7 @@ export default function useTaskActions() {
     createSubtaskMutation,
     updateTaskMutation,
     deleteTaskMutation,
+    deleteParentTaskMutation,
     restoreTaskMutation,
     changeTaskStatusMutation,
     updateStatusOrderMutation,

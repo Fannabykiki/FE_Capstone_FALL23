@@ -26,7 +26,12 @@ import {
 import PriorityStatus from "./PriorityStatus";
 import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
-import { DeleteOutlined, EditOutlined, WarningFilled } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  InfoCircleOutlined,
+  WarningFilled,
+} from "@ant-design/icons";
 import useDetailView from "@/hooks/useDetailView";
 import UpdateTask from "../Modal/UpdateTask";
 import { iterationApi } from "@/utils/api/iteration";
@@ -81,7 +86,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     [projectId, queryClient]
   );
 
-  const { deleteTaskMutation } = useTaskActions();
+  const { deleteParentTaskMutation, deleteTaskMutation } = useTaskActions();
 
   const iterations: IIteration[] =
     queryClient.getQueryData([iterationApi.getListKey, projectId]) || [];
@@ -111,11 +116,18 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
 
   const onDeleteTask = () => {
     if (task) {
+      const isInKanban = matchRoutes(
+        [{ path: paths.project.kanban }],
+        location
+      );
+      const deleteAction = isInKanban
+        ? deleteTaskMutation
+        : deleteParentTaskMutation;
       Modal.confirm({
         title: "Delete task",
         content: "Are you sure to delete this task?",
         onOk: () => {
-          deleteTaskMutation.mutate(
+          deleteAction.mutate(
             { taskId: task.taskId, memberId: member?.memberId || "" },
             {
               onSuccess: async () => {
@@ -125,6 +137,9 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                     iterationApi.getTasksKey,
                     currentIteration?.interationId || "",
                   ],
+                });
+                await queryClient.refetchQueries({
+                  queryKey: [taskApi.getKanbanTasksKey, projectId],
                 });
                 if (matchRoutes([{ path: paths.project.calendar }], location)) {
                   await queryClient.refetchQueries({
@@ -195,7 +210,10 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                   danger
                   icon={<DeleteOutlined />}
                   onClick={onDeleteTask}
-                  loading={deleteTaskMutation.isLoading}
+                  loading={
+                    deleteParentTaskMutation.isLoading ||
+                    deleteTaskMutation.isLoading
+                  }
                 />
               </Tooltip>
             </div>
@@ -213,7 +231,41 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
               )}
               <Divider />
               <div>
-                <Typography.Title level={5}>Attachments</Typography.Title>
+                <div className="flex items-center gap-x-2">
+                  <Typography.Title level={5} className="!mb-0">
+                    Attachments
+                  </Typography.Title>{" "}
+                  <Tooltip
+                    title={
+                      <div>
+                        <p>Allow upload a maximum of 20mb attachment.</p>
+                        <p>Attachments support the following file formats:</p>
+                        <ul>
+                          <li>Type File formats Code CS (.cs)</li>
+                          <li>Extensible Markup Language (.xml)</li>
+                          <li>JavaScript Object Notation (.json)</li>
+                          <li>Hypertext Markup Language(.html, .htm)</li>
+                          <li>Roshal Archive (.rar)</li>
+                          <li>
+                            Structured Query Language (.sql) - Note: Code
+                            attachments aren't permitted in PR comments
+                          </li>
+                          <li>Compressed files ZIP (.zip)</li>
+                          <li>Documents Word (.doc and .docx)</li>
+                          <li>Excel (.xls, .xlsx and .csv)</li>
+                          <li>Powerpoint (.ppt and .pptx)</li>
+                          <li>Text files (.txt), and PDFs (.pdf)</li>
+                          <li>
+                            Images PNG (.png), GIF (.gif), JPEG (both .jpeg and
+                            .jpg Video MOV (.mov), MP4 (.mp4)
+                          </li>
+                        </ul>
+                      </div>
+                    }
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                </div>
                 <div className="flex flex-col gap-2 mb-4">
                   {orderBy(
                     task.attachmentResponse || [],

@@ -39,7 +39,9 @@ const UploadAttachment = ({ taskId }: Props) => {
     },
     onError: (error: any) => {
       console.error(error);
-      toast.error("Upload file failed! Please try again later");
+      toast.error(
+        error.response?.data || "Upload file failed! Please try again later"
+      );
     },
   });
 
