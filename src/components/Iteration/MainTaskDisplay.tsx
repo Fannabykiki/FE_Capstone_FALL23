@@ -83,10 +83,10 @@ export default function MainTaskDisplay({
           <p className="mb-0">{task.title}</p>
           <div className="flex-grow flex justify-end items-center gap-x-2">
             <div>
-              <PaperClipOutlined /> {task.totalAttachment}
+              <PaperClipOutlined /> {task.totalAttachment || 0}
             </div>
             <div>
-              <CommentOutlined /> {task.totalComment}
+              <CommentOutlined /> {task.totalComment || 0}
             </div>
             <Tooltip
               title={`${task.assignTo}${

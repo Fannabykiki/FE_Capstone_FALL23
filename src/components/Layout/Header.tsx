@@ -125,7 +125,7 @@ export default function Header() {
           trigger="click"
         >
           <Badge
-            count={notifications.length}
+            count={notifications.filter((noti) => !noti.isRead).length}
             overflowCount={10}
             className="cursor-pointer select-none"
           >

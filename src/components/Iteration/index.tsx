@@ -20,12 +20,13 @@ import { toast } from "react-toastify";
 import { IIteration } from "@/interfaces/iteration";
 import useDetailView from "@/hooks/useDetailView";
 import { CreateTask } from "../Modal";
-import { ICreateTaskRequest } from "@/interfaces/task";
+import { ICreateTaskRequest, ITask } from "@/interfaces/task";
 import TaskDetail from "../Task/Detail";
 import { classNames } from "@/utils/common";
 import { IProject } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
 import { useAuthContext } from "@/context/Auth";
+import SubTaskNoParentDisplay from "./SubTaskNoParentDisplay";
 
 export enum TaskType {
   Main = "Work Item",
@@ -189,7 +190,13 @@ const IterationDisplay = ({ iterationId }: Props) => {
     }
   };
 
-  if (selectedIteration)
+  if (selectedIteration) {
+    const deletedTasks = selectedIteration.tasks.filter(
+      (task) => task.isDelete
+    );
+    const subTaskNoParent: ITask[] = [];
+    deletedTasks.forEach((task) => subTaskNoParent.push(...task.subTask!));
+
     return (
       <>
         <DragDropContextComponent onDragEnd={onDragEnd}>
@@ -262,25 +269,42 @@ const IterationDisplay = ({ iterationId }: Props) => {
                   ))}
               </div>
             </div>
-            {selectedIteration.tasks.map((task) => (
-              <div
-                key={task.taskId}
-                className={classNames(
-                  "py-4 border-0 border-b border-solid border-neutral-300",
-                  !collapsedTasks.includes(task.taskId) && "w-fit"
-                )}
-              >
-                <MainTaskDisplay
-                  task={task}
-                  statusList={statusList}
-                  isCollapsed={collapsedTasks.includes(task.taskId)}
-                  onToggleCollapseTask={() => onToggleCollapseTask(task.taskId)}
-                  onOpenCreateTaskModal={handleOpenCreateTaskModal}
-                  onViewTask={onOpenViewDetailTask}
-                  filterData={filterData}
-                />
-              </div>
-            ))}
+            <div
+              className={classNames(
+                "py-4 border-0 border-b border-solid border-neutral-300 w-fit"
+                // !collapsedTasks.includes(task.taskId) && "w-fit"
+              )}
+            >
+              <SubTaskNoParentDisplay
+                statusList={statusList}
+                onViewTask={onOpenViewDetailTask}
+                filterData={filterData}
+                subTasks={subTaskNoParent}
+              />
+            </div>
+            {selectedIteration.tasks
+              .filter((task) => !task.isDelete)
+              .map((task) => (
+                <div
+                  key={task.taskId}
+                  className={classNames(
+                    "py-4 border-0 border-b border-solid border-neutral-300",
+                    !collapsedTasks.includes(task.taskId) && "w-fit"
+                  )}
+                >
+                  <MainTaskDisplay
+                    task={task}
+                    statusList={statusList}
+                    isCollapsed={collapsedTasks.includes(task.taskId)}
+                    onToggleCollapseTask={() =>
+                      onToggleCollapseTask(task.taskId)
+                    }
+                    onOpenCreateTaskModal={handleOpenCreateTaskModal}
+                    onViewTask={onOpenViewDetailTask}
+                    filterData={filterData}
+                  />
+                </div>
+              ))}
           </div>
         </DragDropContextComponent>
         {isModalCreateTaskOpen && (
@@ -300,6 +324,7 @@ const IterationDisplay = ({ iterationId }: Props) => {
         )}
       </>
     );
+  }
   return null;
 };
 

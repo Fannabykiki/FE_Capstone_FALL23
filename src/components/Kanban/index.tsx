@@ -41,7 +41,7 @@ const KanbanDisplay = () => {
   const { projectId } = useParams();
 
   const { data: tasks, refetch: refetchTasks } = useQuery({
-    queryKey: [taskApi.getKanbanTasksKey],
+    queryKey: [taskApi.getKanbanTasksKey, projectId],
     queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
     enabled: Boolean(projectId),
     placeholderData: [],
@@ -156,7 +156,10 @@ const KanbanDisplay = () => {
           }
           return task;
         });
-        queryClient.setQueryData([taskApi.getKanbanTasksKey], newTasks);
+        queryClient.setQueryData(
+          [taskApi.getKanbanTasksKey, projectId],
+          newTasks
+        );
         changeTaskStatusMutation.mutate(
           {
             id: draggableId,
@@ -171,7 +174,7 @@ const KanbanDisplay = () => {
             onError: () => {
               toast.error("Change task status failed!");
               queryClient.setQueryData(
-                [taskApi.getKanbanTasksKey],
+                [taskApi.getKanbanTasksKey, projectId],
                 originalTasks
               );
             },
@@ -291,6 +294,7 @@ const KanbanDisplay = () => {
                                             snapshot={snapshot}
                                             task={task}
                                             onViewTask={onOpenViewDetailTask}
+                                            refetchTasks={refetchTasks}
                                           />
                                         </div>
                                       )}

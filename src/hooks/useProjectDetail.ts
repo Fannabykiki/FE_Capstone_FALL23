@@ -40,7 +40,7 @@ export default function useProjectDetail(projectId: string | undefined) {
   });
 
   const { data: kanbanTasks } = useQuery({
-    queryKey: [taskApi.getKanbanTasksKey],
+    queryKey: [taskApi.getKanbanTasksKey, projectId],
     queryFn: ({ signal }) => taskApi.getKanbanTasks(signal, projectId!),
     enabled: Boolean(projectId),
     placeholderData: [],
