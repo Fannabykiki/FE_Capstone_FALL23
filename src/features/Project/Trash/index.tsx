@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { ColumnsType } from "antd/es/table";
-import { AvatarWithColor } from "@/components";
+import { AvatarWithColor, TaskDetail } from "@/components";
 import debounce from "lodash/debounce";
 import buildQuery from "odata-query";
 import dayjs from "dayjs";
@@ -11,7 +11,6 @@ import {
   CheckSquareFilled,
   FilterFilled,
   MoreOutlined,
-  PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import {
@@ -43,6 +42,7 @@ import useTaskActions from "@/hooks/useTaskActions";
 import { toast } from "react-toastify";
 import { orderBy } from "lodash";
 import useProjectDetail from "@/hooks/useProjectDetail";
+import useDetailView from "@/hooks/useDetailView";
 
 const TrashBin = () => {
   const [isCardVisible, setIsCardVisible] = useState(false);
@@ -55,7 +55,21 @@ const TrashBin = () => {
   });
 
   const { projectId } = useParams();
+  const {
+    openView: isModalDetailTaskOpen,
+    onOpenView: onOpenViewDetailTask,
+    onCloseView: onCloseViewDetailTask,
+    detail: taskId,
+  } = useDetailView<string>();
 
+  useEffect(() => {
+    const taskId = searchParams.get("id");
+    if (taskId) {
+      onOpenViewDetailTask(taskId);
+    } else {
+      onCloseViewDetailTask();
+    }
+  }, [searchParams]);
   const queryClient = useQueryClient();
 
   const typeList = useMemo(
@@ -189,6 +203,18 @@ const TrashBin = () => {
       title: "Title",
       dataIndex: "title",
       width: "25%",
+      render: (title, task) => (
+        <Typography.Link
+          onClick={() =>
+            setSearchParams((prev) => {
+              prev.set("id", task.taskId);
+              return prev;
+            })
+          }
+        >
+          {title}
+        </Typography.Link>
+      ),
     },
     {
       title: "Type",
@@ -397,6 +423,18 @@ const TrashBin = () => {
         />
       </Space>
       {contextHolder}
+      {isModalDetailTaskOpen && (
+        <TaskDetail
+          taskId={taskId || ""}
+          isOpen={isModalDetailTaskOpen}
+          onClose={() =>
+            setSearchParams((prev) => {
+              prev.delete("id");
+              return prev;
+            })
+          }
+        />
+      )}
     </>
   );
 };
