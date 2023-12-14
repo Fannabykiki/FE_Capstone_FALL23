@@ -84,7 +84,7 @@ export default function UpdateProfile({ onCancel = () => {} }: Props) {
           initialValues={initialValues}
         >
           <Form.Item
-            label="Username"
+            label="Display name"
             name="userName"
             rules={[
               {
