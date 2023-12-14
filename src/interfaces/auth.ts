@@ -13,3 +13,10 @@ export interface IVerifyAccountPayload {
   email: string;
   verifyToken: string;
 }
+
+export interface IResetPasswordPayload {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  token: string;
+}

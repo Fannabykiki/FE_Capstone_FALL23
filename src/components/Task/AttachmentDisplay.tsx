@@ -10,9 +10,14 @@ import { toast } from "react-toastify";
 interface Props {
   attachment: IAttachment;
   iterationId: string;
+  allowDelete: boolean;
 }
 
-export default function AttachmentDisplay({ attachment, iterationId }: Props) {
+export default function AttachmentDisplay({
+  attachment,
+  iterationId,
+  allowDelete = true,
+}: Props) {
   const onDownloadAttachment = async () => {
     await attachmentApi.download(attachment.title, attachment.taskId);
   };
@@ -48,13 +53,15 @@ export default function AttachmentDisplay({ attachment, iterationId }: Props) {
             {attachment.title || attachment.attachmentId}
           </Button>
         </div>
-        <Button
-          type="link"
-          danger
-          icon={<DeleteOutlined />}
-          loading={isLoading}
-          onClick={() => removeAttachment(attachment)}
-        />
+        {allowDelete && (
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            loading={isLoading}
+            onClick={() => removeAttachment(attachment)}
+          />
+        )}
       </div>
     </>
   );
