@@ -11,15 +11,18 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { taskApi } from "@/utils/api/task";
+import { iterationApi } from "@/utils/api/iteration";
+import { useParams } from "react-router-dom";
 
 interface Props {
   taskId: string;
+  interationId: string;
 }
 
-const UploadAttachment = ({ taskId }: Props) => {
+const UploadAttachment = ({ taskId, interationId }: Props) => {
   const queryClient = useQueryClient();
   const [selectedFiles, setSelectedFiles] = useState<RcFile[]>();
-
+  const { projectId } = useParams();
   const { mutate: uploadFile, isLoading } = useMutation({
     mutationKey: [attachmentApi.createKey],
     mutationFn: attachmentApi.create,
@@ -34,6 +37,12 @@ const UploadAttachment = ({ taskId }: Props) => {
         setSelectedFiles(undefined);
         queryClient.invalidateQueries({
           queryKey: [taskApi.getDetailKey, taskId],
+        });
+        queryClient.refetchQueries({
+          queryKey: [iterationApi.getTasksKey, interationId],
+        });
+        queryClient.refetchQueries({
+          queryKey: [taskApi.getKanbanTasksKey, projectId],
         });
       }
     },

@@ -47,6 +47,7 @@ import CommentTab from "./CommentTab";
 import HistoryTab from "./HistoryTab";
 import { paths } from "@/routers/paths";
 import { orderBy } from "lodash";
+import useProjectDetail from "@/hooks/useProjectDetail";
 
 interface Props {
   taskId: string;
@@ -108,6 +109,9 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
         currentIteration?.interationId || "",
       ],
     });
+    await queryClient.refetchQueries({
+      queryKey: [taskApi.getKanbanTasksKey, projectId],
+    });
   };
 
   const location = useLocation();
@@ -165,6 +169,8 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     }
   };
 
+  const { detail } = useProjectDetail(projectId);
+
   const tabItems = [
     {
       key: "comment",
@@ -199,23 +205,29 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                 className="min-w-[200px] mb-4"
                 disabled
               />
-              <Tooltip title="Edit task">
-                <Button
-                  icon={<EditOutlined />}
-                  onClick={() => handleOpenModalUpdate(task)}
-                />
-              </Tooltip>
-              <Tooltip title="Delete task">
-                <Button
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={onDeleteTask}
-                  loading={
-                    deleteParentTaskMutation.isLoading ||
-                    deleteTaskMutation.isLoading
-                  }
-                />
-              </Tooltip>
+              {!task.isDelete && (
+                <>
+                  <Tooltip title="Edit task">
+                    <Button
+                      icon={<EditOutlined />}
+                      onClick={() => handleOpenModalUpdate(task)}
+                    />
+                  </Tooltip>
+                  {project?.projectStatus !== "Done" && (
+                    <Tooltip title="Delete task">
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={onDeleteTask}
+                        loading={
+                          deleteParentTaskMutation.isLoading ||
+                          deleteTaskMutation.isLoading
+                        }
+                      />
+                    </Tooltip>
+                  )}
+                </>
+              )}
             </div>
           </div>
           <Row gutter={32}>
@@ -279,7 +291,12 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                     />
                   ))}
                 </div>
-                <UploadAttachment taskId={task.taskId} />
+                {!task.isDelete && (
+                  <UploadAttachment
+                    taskId={task.taskId}
+                    interationId={currentIteration?.interationId || ""}
+                  />
+                )}
               </div>
               <Divider />
               <Tabs

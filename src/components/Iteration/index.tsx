@@ -134,58 +134,61 @@ const IterationDisplay = ({ iterationId }: Props) => {
 
       // Moving within the same list
       if (source.droppableId !== destination.droppableId) {
-        // Moving to a different status
-        const newStatusId = destination.droppableId.split("/")[1];
-        const selectedSubtask = sourceTask!.subTask!.find(
-          (subtask) => subtask.taskId === draggableId
-        );
-        const originalIteration = { ...selectedIteration };
-        setSelectedIteration((c) => {
-          return {
-            ...c!,
-            tasks: c!.tasks.map((task) => {
-              if (task.taskId === sourceTask!.taskId) {
-                return {
-                  ...task,
-                  subTask: task.subTask!.map((subTask) => {
-                    if (subTask.taskId === selectedSubtask!.taskId) {
-                      return { ...selectedSubtask!, statusId: newStatusId }!;
-                    }
-                    return subTask;
-                  }),
-                };
-              }
-              return task;
-            }),
-          };
-        });
-        changeTaskStatusMutation.mutate(
-          {
-            id: selectedSubtask!.taskId,
-            statusId: newStatusId,
-            memberId: member?.memberId || "",
-          },
-          {
-            onSuccess: () => {
-              toast.success("Change task status succeed!");
+        const [oldTaskId] = source.droppableId.split("/");
+        const [newTaskId, newStatusId] = destination.droppableId.split("/");
+        if (oldTaskId === newTaskId) {
+          // Moving to a different status
+          const selectedSubtask = sourceTask!.subTask!.find(
+            (subtask) => subtask.taskId === draggableId
+          );
+          const originalIteration = { ...selectedIteration };
+          setSelectedIteration((c) => {
+            return {
+              ...c!,
+              tasks: c!.tasks.map((task) => {
+                if (task.taskId === sourceTask!.taskId) {
+                  return {
+                    ...task,
+                    subTask: task.subTask!.map((subTask) => {
+                      if (subTask.taskId === selectedSubtask!.taskId) {
+                        return { ...selectedSubtask!, statusId: newStatusId }!;
+                      }
+                      return subTask;
+                    }),
+                  };
+                }
+                return task;
+              }),
+            };
+          });
+          changeTaskStatusMutation.mutate(
+            {
+              id: selectedSubtask!.taskId,
+              statusId: newStatusId,
+              memberId: member?.memberId || "",
             },
-            onError: () => {
-              toast.error("Change task status failed!");
-              setSelectedIteration(originalIteration);
-            },
-            onSettled: () => {
-              queryClient
-                .invalidateQueries({
-                  queryKey: [iterationApi.getTasksKey, iterationId],
-                })
-                .then(() =>
-                  queryClient.refetchQueries({
+            {
+              onSuccess: () => {
+                toast.success("Change task status succeed!");
+              },
+              onError: () => {
+                toast.error("Change task status failed!");
+                setSelectedIteration(originalIteration);
+              },
+              onSettled: () => {
+                queryClient
+                  .invalidateQueries({
                     queryKey: [iterationApi.getTasksKey, iterationId],
                   })
-                );
-            },
-          }
-        );
+                  .then(() =>
+                    queryClient.refetchQueries({
+                      queryKey: [iterationApi.getTasksKey, iterationId],
+                    })
+                  );
+              },
+            }
+          );
+        }
       }
     }
   };
