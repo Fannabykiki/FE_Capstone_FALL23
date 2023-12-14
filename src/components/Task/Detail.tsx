@@ -169,8 +169,6 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
     }
   };
 
-  const { detail } = useProjectDetail(projectId);
-
   const tabItems = [
     {
       key: "comment",

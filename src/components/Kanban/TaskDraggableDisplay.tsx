@@ -130,12 +130,14 @@ export default function TaskDraggableDisplay({
               {task.statusName}
             </Tag>
           </div>
-          <Button
-            icon={<DeleteOutlined />}
-            type="link"
-            danger
-            onClick={onDeleteTask}
-          />
+          {project?.projectStatus !== "Done" && (
+            <Button
+              icon={<DeleteOutlined />}
+              type="link"
+              danger
+              onClick={onDeleteTask}
+            />
+          )}
         </div>
         <p>{task.title}</p>
         <div className="flex gap-x-2 items-center">

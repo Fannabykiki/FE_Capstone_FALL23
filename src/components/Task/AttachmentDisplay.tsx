@@ -23,7 +23,7 @@ export default function AttachmentDisplay({ attachment, iterationId }: Props) {
     mutationKey: [attachmentApi.removeKey],
     mutationFn: attachmentApi.remove,
     onSuccess: async () => {
-      await queryClient.invalidateQueries([
+      await queryClient.refetchQueries([
         taskApi.getDetailKey,
         attachment.taskId,
       ]);
