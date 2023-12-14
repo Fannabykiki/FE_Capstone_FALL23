@@ -40,6 +40,7 @@ const PermissionRole = ({ isAdminOrPO }: IProp) => {
       mutationKey: [projectApi.changeProjectSchemaKey],
       mutationFn: projectApi.changeProjectSchema,
       onSuccess: async () => {
+        setSelectedRowKeys([]);
         await refetch();
         toast.success("Change schema successfully");
       },

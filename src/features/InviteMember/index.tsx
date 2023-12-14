@@ -88,7 +88,7 @@ export default function InviteMember() {
       (data &&
         (data?.statusName !== "Pending" || data.inviteTo !== userInfo?.email))
     ) {
-      let message = "";
+      let message = "Invitation has been error";
       if (isError) {
         message = "URL invalid";
       } else if (data.inviteTo !== userInfo?.email) {
@@ -97,6 +97,8 @@ export default function InviteMember() {
         message = "Invitation accepted";
       } else if (data?.statusName === "Rejected") {
         message = "Invitation rejected";
+      } else {
+        message = "Invitation has been cancelled";
       }
       toast.error(message);
       navigate(paths.user);
