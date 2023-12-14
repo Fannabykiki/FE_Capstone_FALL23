@@ -5,6 +5,8 @@ import { IIteration } from "@/interfaces/iteration";
 import { useQueryClient } from "@tanstack/react-query";
 import { iterationApi } from "@/utils/api/iteration";
 import { useParams } from "react-router-dom";
+import { projectApi } from "@/utils/api/project";
+import { IProject } from "@/interfaces/project";
 
 interface Props {
   task: ITask;
@@ -20,7 +22,7 @@ export default function CommentTab({ task }: Props) {
   );
   return (
     <div>
-      <AddComment task={task} />
+      {!task?.isDelete && <AddComment task={task} />}
       <div className="mt-8 flex flex-col gap-2">
         {task.commentResponse
           ?.sort((a, b) => (a.createAt < b.createAt ? 1 : -1))

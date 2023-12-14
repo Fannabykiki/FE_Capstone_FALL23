@@ -254,10 +254,12 @@ export default function UpdateTask({
           <Col span={8}>
             <Form.Item label="State" name="statusId">
               <Select
-                options={statusList?.map((status) => ({
-                  label: status.title,
-                  value: status.boardStatusId,
-                }))}
+                options={statusList
+                  ?.filter((status) => status.title !== "Deleted")
+                  .map((status) => ({
+                    label: status.title,
+                    value: status.boardStatusId,
+                  }))}
               />
             </Form.Item>
           </Col>

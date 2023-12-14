@@ -285,6 +285,7 @@ export default function TaskDetail({ taskId, isOpen, onClose }: Props) {
                     <AttachmentDisplay
                       iterationId={currentIteration?.interationId || ""}
                       attachment={attachment}
+                      allowDelete={!task.isDelete}
                       key={attachment.attachmentId}
                     />
                   ))}

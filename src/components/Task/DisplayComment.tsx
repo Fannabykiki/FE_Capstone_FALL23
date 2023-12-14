@@ -12,6 +12,9 @@ import { toast } from "react-toastify";
 import { taskApi } from "@/utils/api/task";
 import { iterationApi } from "@/utils/api/iteration";
 import { IIteration } from "@/interfaces/iteration";
+import { projectApi } from "@/utils/api/project";
+import { IProject } from "@/interfaces/project";
+import { useParams } from "react-router-dom";
 
 interface Props {
   comment: IComment;
@@ -91,21 +94,23 @@ export default function DisplayComment({
               dangerouslySetInnerHTML={{ __html: comment.content }}
               className="border-0 border-l-2 border-solid border-neutral-200 pl-2"
             />
-            <div className="flex gap-x-2">
-              <Button type="text" onClick={() => setIsReplying(true)}>
-                Reply
-              </Button>
-              {userInfo!.id === comment.user.userId && (
-                <>
-                  <Button type="text" onClick={() => setIsEditing(true)}>
-                    Edit
-                  </Button>
-                  <Button type="text" onClick={() => onDelete()}>
-                    Delete
-                  </Button>
-                </>
-              )}
-            </div>
+            {!task?.isDelete && (
+              <div className="flex gap-x-2">
+                <Button type="text" onClick={() => setIsReplying(true)}>
+                  Reply
+                </Button>
+                {userInfo!.id === comment.user.userId && (
+                  <>
+                    <Button type="text" onClick={() => setIsEditing(true)}>
+                      Edit
+                    </Button>
+                    <Button type="text" onClick={() => onDelete()}>
+                      Delete
+                    </Button>
+                  </>
+                )}
+              </div>
+            )}
           </>
         )}
         <div className="mt-4">

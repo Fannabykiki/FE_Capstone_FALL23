@@ -1,6 +1,7 @@
 import {
   ILoginPayload,
   IRegisterPayload,
+  IResetPasswordPayload,
   IVerifyAccountPayload,
 } from "@/interfaces/auth";
 import { HTTP_METHODS } from "@/utils/constants";
@@ -33,6 +34,13 @@ const forgotPassword = (email: string) =>
     method: HTTP_METHODS.POST,
   }).then((resp) => resp.data);
 
+const resetPassword = (data: IResetPasswordPayload) =>
+  axiosClient({
+    url: `/api/authentication/reset-password`,
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
 const verifyAccount = (params: IVerifyAccountPayload) =>
   axiosClient({
     url: `/api/authentication/verify-user`,
@@ -45,10 +53,12 @@ export const authApi = {
   loginWithGG,
   register,
   forgotPassword,
+  resetPassword,
   verifyAccount,
   loginKey: "authLogin",
   loginWithGGKey: "loginWithGGKey",
   registerKey: "authRegister",
   forgotPasswordKey: "authForgotPassword",
+  resetPasswordKey: "authResetPassword",
   verifyAccountKey: "authVerifyAccount",
 };
