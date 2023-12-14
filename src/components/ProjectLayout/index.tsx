@@ -11,6 +11,7 @@ import useProjectDetail from "@/hooks/useProjectDetail";
 import { useAuthContext } from "@/context/Auth";
 import { useEffect } from "react";
 import { paths } from "@/routers/paths";
+import { toast } from "react-toastify";
 
 export default function ProjectLayout() {
   const { projectId } = useParams();
@@ -44,6 +45,7 @@ export default function ProjectLayout() {
             member.userId === userInfo?.id && member.statusName === "In Team"
         )
       ) {
+        toast.warning("You are not a part of this project");
         navigate(paths.user);
       }
     }
