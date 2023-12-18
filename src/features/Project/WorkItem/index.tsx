@@ -83,7 +83,7 @@ export default function WorkItem() {
     [projectId, queryClient]
   );
 
-  const { data, isLoading, refetch } = useQuery<IWorkItemList[]>({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: [
       projectApi.getWorkItemListByProjectIdKey,
       searchParams.get("type"),

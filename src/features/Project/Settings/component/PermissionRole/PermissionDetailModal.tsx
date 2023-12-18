@@ -31,8 +31,8 @@ const PermissionDetailModal = ({
 
   const { projectId } = useParams();
 
-  const { data: schema, isLoading } = useQuery<ISchema>({
-    queryKey: [schemaApi.getAdminSchemaDetailKey, isPermissionId],
+  const { data: schema, isFetching } = useQuery({
+    queryKey: [schemaApi.getAdminSchemaDetailKey],
     queryFn: ({ signal }) =>
       schemaApi.getAdminSchemaDetail(signal, isPermissionId!),
     enabled: Boolean(isPermissionId),
@@ -189,15 +189,19 @@ const PermissionDetailModal = ({
         <Typography.Title level={1} className="!m-0">
           Permission Schemes
         </Typography.Title>
-        <Typography.Title level={3} className="!m-0">
-          {schema?.schemaName}
-        </Typography.Title>
-        <Typography.Text>{schema?.description}</Typography.Text>
+        {!isFetching ? (
+          <>
+            <Typography.Title level={3} className="!m-0">
+              {schema?.schemaName}
+            </Typography.Title>
+            <Typography.Text>{schema?.description}</Typography.Text>
+          </>
+        ) : null}
         <Table
           rowKey="permissionId"
           className="shadow-custom"
           columns={columns}
-          loading={isLoading}
+          loading={isFetching}
           dataSource={schema?.rolePermissions}
           pagination={false}
         />

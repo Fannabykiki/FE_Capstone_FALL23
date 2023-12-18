@@ -32,6 +32,7 @@ const PermissionRole = ({ isAdminOrPO }: IProp) => {
     queryKey: [schemaApi.getProjectSchemaByProjectIdKey],
     queryFn: ({ signal }) =>
       schemaApi.getProjectSchemaByProjectId(signal, projectId!),
+    initialData: [],
     enabled: Boolean(projectId),
   });
 

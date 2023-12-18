@@ -35,10 +35,16 @@ const RevokePermission = ({
   const { mutate: revokePermission, isLoading } = useMutation({
     mutationKey: [schemaApi.revokePermissionKey],
     mutationFn: schemaApi.revokePermission,
-    onSuccess: async () => {
-      await queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+    onSuccess: async (data) => {
+      if (projectId) {
+        queryClient.setQueryData([schemaApi.getAdminSchemaDetailKey], data);
+        queryClient.refetchQueries([schemaApi.getProjectSchemaByProjectIdKey]);
+      } else {
+        await queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+      }
+
       toast.success("Revoke permission successfully");
-      handleClose();
+      onClose();
     },
     onError: (err: any) => {
       toast.error(err?.response?.data || "Revoke permission failed");
@@ -48,7 +54,7 @@ const RevokePermission = ({
   const handleSubmit = () => {
     if (!schemaId || !permission) {
       toast.error("Has an error, please try again");
-      handleClose();
+      onClose();
       return;
     } else if (!checkedList.length) {
       toast.error("Please select at least 1 permission");
@@ -67,12 +73,17 @@ const RevokePermission = ({
     setCheckedList(checkedValues as string[]);
   };
 
+  const onClose = () => {
+    setCheckedList([]);
+    handleClose();
+  };
+
   return (
     <Modal
       maskClosable={false}
       title="Remove permission"
       open={isOpen}
-      onCancel={handleClose}
+      onCancel={onClose}
       onOk={handleSubmit}
       okText="Remove"
       okButtonProps={{
@@ -107,6 +118,7 @@ const RevokePermission = ({
                   label: role.roleName,
                   value: role.roleId,
                 }))}
+                value={checkedList}
                 onChange={onChange}
               />
             </Space>
