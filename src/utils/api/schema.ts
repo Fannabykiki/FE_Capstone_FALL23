@@ -5,6 +5,7 @@ import {
   IGrantPermissionRequest,
   IProjectSchema,
   IRevokePermissionRequest,
+  ISchema,
 } from "@/interfaces/schema";
 
 const getAdminSchemas = async (
@@ -34,7 +35,7 @@ const updatePermissionScheme = (data: IPermissionSchemeInputType) =>
 const getAdminSchemaDetail = async (
   signal: AbortSignal | undefined,
   id: string
-) =>
+): Promise<ISchema> =>
   axiosClient({
     url: `/api/schema-management/schemas/${id}`,
     method: HTTP_METHODS.GET,

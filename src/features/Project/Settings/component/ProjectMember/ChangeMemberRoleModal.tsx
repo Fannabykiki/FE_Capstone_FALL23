@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Col, Divider, Modal, Row, Select, Space, Typography } from "antd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import buildQuery from "odata-query";
 
 import { IProjectMember } from "@/interfaces/project";
 import { projectApi } from "@/utils/api/project";
@@ -14,11 +15,15 @@ interface Props {
 }
 
 const ChangeMemberRoleModal = ({ currentMember, handleClose }: Props) => {
-  const [roleId, setRoleId] = useState("");
+  const [loadingCheckExistTask, setLoadingCheckExistTask] =
+    useState<boolean>(false);
+  const [roleId, setRoleId] = useState<string>();
 
   const queryClient = useQueryClient();
 
   const { projectId } = useParams();
+
+  const [modal, contextHolder] = Modal.useModal();
 
   const { data: roles, isLoading: isLoadingRoles } = useQuery({
     queryKey: [roleApi.getRolesByProjectIdKey, currentMember?.memberId],
@@ -39,27 +44,64 @@ const ChangeMemberRoleModal = ({ currentMember, handleClose }: Props) => {
         projectId,
       ]);
       toast.success("Change member role successfully");
-      handleClose();
+      onClose();
     },
     onError: (err: any) => {
       toast.error(err?.response?.data || "Change member role failed");
     },
   });
 
+  const onClose = () => {
+    setRoleId(undefined);
+    handleClose();
+  };
+
+  const handleSubmit = async () => {
+    if (!roleId) return;
+    setLoadingCheckExistTask(true);
+    const checkExistTasks = await projectApi.getWorkItemListByProjectId(
+      undefined,
+      projectId,
+      buildQuery({
+        filter: {
+          "assignTo/userId": {
+            eq: { type: "guid", value: currentMember?.userId },
+          },
+          or: [{ taskStatus: "To do" }, { taskStatus: "In Progress" }],
+        },
+      })
+    );
+    setLoadingCheckExistTask(false);
+    if (checkExistTasks.length) {
+      modal.confirm({
+        title: "Warning",
+        content:
+          "There are still tasks assigned to this member. Are you sure you want to change its role? All remaining tasks will be assigned to you.",
+        onOk: () => {
+          updateMemberRole({
+            memberId: currentMember?.memberId!,
+            roleId,
+          });
+        },
+      });
+    } else {
+      updateMemberRole({
+        memberId: currentMember?.memberId!,
+        roleId,
+      });
+    }
+  };
+
   return (
-    <Modal maskClosable={false}
+    <Modal
+      maskClosable={false}
       title="Change member role"
       open={!!currentMember}
-      onCancel={handleClose}
-      onOk={() =>
-        updateMemberRole({
-          memberId: currentMember?.memberId!,
-          roleId,
-        })
-      }
+      onCancel={onClose}
+      onOk={handleSubmit}
       okText="OK"
       okButtonProps={{
-        loading: isLoading || isLoadingRoles,
+        loading: isLoading || isLoadingRoles || loadingCheckExistTask,
       }}
     >
       <Divider className="!m-0" />
@@ -90,12 +132,14 @@ const ChangeMemberRoleModal = ({ currentMember, handleClose }: Props) => {
               }))}
               placeholder="Select new role"
               className="min-w-[200px]"
+              value={roleId}
               onChange={setRoleId}
             />
           </Col>
         </Row>
       </Space>
       <Divider className="!m-0" />
+      {contextHolder}
     </Modal>
   );
 };

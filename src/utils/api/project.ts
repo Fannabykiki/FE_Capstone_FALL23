@@ -9,6 +9,7 @@ import {
   IUpdateMemberRolePayload,
   IUpdatePrivacyProjectPayload,
   IUpdateProjectPayload,
+  IWorkItemList,
 } from "@/interfaces/project";
 import { HTTP_METHODS } from "../constants";
 import axiosClient from "./axios-client";
@@ -132,7 +133,7 @@ const getWorkItemListByProjectId = async (
   signal: AbortSignal | undefined,
   projectId: string | undefined,
   queryString: string
-) =>
+): Promise<IWorkItemList[]> =>
   axiosClient({
     url: `/api/project-management/projects/tasks/${projectId}` + queryString,
     method: HTTP_METHODS.GET,

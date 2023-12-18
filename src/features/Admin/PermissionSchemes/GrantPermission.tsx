@@ -35,8 +35,14 @@ const GrantPermission = ({
   const { mutate: grantPermission, isLoading } = useMutation({
     mutationKey: [schemaApi.grantPermissionKey],
     mutationFn: schemaApi.grantPermission,
-    onSuccess: async () => {
-      await queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+    onSuccess: async (data) => {
+      if (projectId) {
+        queryClient.setQueryData([schemaApi.getAdminSchemaDetailKey], data);
+        queryClient.refetchQueries([schemaApi.getProjectSchemaByProjectIdKey]);
+      } else {
+        await queryClient.refetchQueries([schemaApi.getAdminSchemaDetailKey]);
+      }
+
       toast.success("Grant permission successfully");
       handleClose();
     },
