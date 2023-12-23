@@ -208,14 +208,19 @@ export default function Routers() {
         />
         <Route
           path={paths.notification}
-          element={
-            <PageContainer
-              requireAuth={false}
-              Component={Notifications}
-              title="Notifications"
-            />
-          }
-        />
+          element={<Layout isAdmin={userInfo?.isAdmin} />}
+        >
+          <Route
+            index
+            element={
+              <PageContainer
+                requireAuth={false}
+                Component={Notifications}
+                title="Notifications"
+              />
+            }
+          />
+        </Route>
         <Route path={paths.notFound} element={<NotFound />} />
       </Routes>
     </BrowserRouter>

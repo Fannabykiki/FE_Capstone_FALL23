@@ -14,40 +14,33 @@ export default function Notifications() {
   });
   return (
     <>
-      <Layout className="min-h-screen flex flex-1 flex-col">
-        <Header />
-        <Content className="m-6 flex justify-center">
-          <Card className="min-h-fit w-3/5">
-            <Space className="flex items-center justify-between">
-              <Typography className="text-3xl font-semibold">
-                <BellIcon /> Notication
-              </Typography>
-            </Space>
-            <Tabs
-              className="mt-5"
-              type="card"
-              items={[
-                {
-                  key: "All",
-                  label: "All",
-                  children: <NotiAll notifications={notifications} />,
-                },
-                {
-                  key: "Unread",
-                  label: "Unread",
-                  children: (
-                    <NotiAll
-                      notifications={notifications.filter(
-                        (notification) => !notification.isRead
-                      )}
-                    />
-                  ),
-                },
-              ]}
-            />
-          </Card>
-        </Content>
-      </Layout>
+      <Space className="flex items-center justify-between">
+        <Typography className="text-3xl font-semibold">
+          <BellIcon /> Notication
+        </Typography>
+      </Space>
+      <Tabs
+        className="mt-5"
+        type="card"
+        items={[
+          {
+            key: "All",
+            label: "All",
+            children: <NotiAll notifications={notifications} />,
+          },
+          {
+            key: "Unread",
+            label: "Unread",
+            children: (
+              <NotiAll
+                notifications={notifications.filter(
+                  (notification) => !notification.isRead
+                )}
+              />
+            ),
+          },
+        ]}
+      />
     </>
   );
 }
