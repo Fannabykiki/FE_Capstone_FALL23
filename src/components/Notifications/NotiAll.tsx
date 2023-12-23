@@ -48,7 +48,7 @@ export default function NotiAll({ notifications }: Props) {
 
   return (
     <>
-      <div className="flex flex-col gap-y-2">
+      <div className="flex flex-col gap-y-2 bg-white px-4 py-2 rounded-xl">
         <Button
           disabled={isLoading}
           className="w-fit self-end"
