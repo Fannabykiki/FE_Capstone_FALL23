@@ -38,6 +38,8 @@ export default function DisplayComment({
   const { deleteCommentMutation } = useCommentActions();
   const queryClient = useQueryClient();
 
+  const { projectId } = useParams();
+
   const onDelete = () => {
     Modal.confirm({
       title: "Delete comment",
@@ -54,6 +56,9 @@ export default function DisplayComment({
                 iterationApi.getTasksKey,
                 currentIteration?.interationId || "",
               ],
+            });
+            await queryClient.invalidateQueries({
+              queryKey: [taskApi.getKanbanTasksKey, projectId],
             });
           },
           onError: (err: any) => {
