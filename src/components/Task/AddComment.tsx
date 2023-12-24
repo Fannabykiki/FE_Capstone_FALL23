@@ -67,6 +67,9 @@ export default function AddComment({
                   currentIteration?.interationId || "",
                 ],
               });
+              await queryClient.invalidateQueries({
+                queryKey: [taskApi.getKanbanTasksKey, projectId],
+              });
               onCancelComment();
             },
             onError: (err) => {
@@ -96,6 +99,9 @@ export default function AddComment({
                   iterationApi.getTasksKey,
                   currentIteration?.interationId || "",
                 ],
+              });
+              await queryClient.invalidateQueries({
+                queryKey: [taskApi.getKanbanTasksKey, projectId],
               });
               onCancelComment();
             },

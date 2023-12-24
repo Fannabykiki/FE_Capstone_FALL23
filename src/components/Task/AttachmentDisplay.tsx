@@ -5,6 +5,7 @@ import { taskApi } from "@/utils/api/task";
 import { DeleteOutlined, LinkOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "antd";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -24,6 +25,8 @@ export default function AttachmentDisplay({
 
   const queryClient = useQueryClient();
 
+  const { projectId } = useParams();
+
   const { mutate: removeAttachment, isLoading } = useMutation({
     mutationKey: [attachmentApi.removeKey],
     mutationFn: attachmentApi.remove,
@@ -36,6 +39,9 @@ export default function AttachmentDisplay({
         iterationApi.getTasksKey,
         iterationId,
       ]);
+      await queryClient.invalidateQueries({
+        queryKey: [taskApi.getKanbanTasksKey, projectId],
+      });
       toast.success("Delete attachment succeed!");
     },
     onError: (err) => {
