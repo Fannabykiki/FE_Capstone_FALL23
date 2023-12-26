@@ -105,7 +105,7 @@ const Report = () => {
       key: status.title,
       title: status.title,
       dataIndex: status.title,
-      width: `${70 / data?.memberTaks[0]?.reportStatuses.length}%`,
+      width: `${40 / data?.memberTaks[0]?.reportStatuses.length}%`,
       render: (value, _record) => (
         <Typography
           className="font-bold"
