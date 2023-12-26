@@ -49,11 +49,11 @@ export default function ProjectSettings() {
       icon: <LockOutlined />,
       key: "permission&role",
     },
-    {
-      label: "Status Management",
-      icon: <WarningOutlined />,
-      key: "statusManagement",
-    },
+    // {
+    //   label: "Status Management",
+    //   icon: <WarningOutlined />,
+    //   key: "statusManagement",
+    // },
   ];
 
   const [selectedKey, setSelectedKey] = useState(items[0].key);

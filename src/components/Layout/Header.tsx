@@ -44,7 +44,7 @@ export default function Header() {
       [paths.admin.index]: "Admin Dashboard",
       [paths.admin.userManagement]: "User Management",
       [paths.admin.roleManagement]: "Role Management",
-      [paths.admin.permissionManagement]: "Permission Schemes",
+      [paths.admin.permissionManagement]: "Permission Scheme",
     };
     if (detail && projectId) {
       routeObject[generatePath(paths.project.detail, { projectId })] =

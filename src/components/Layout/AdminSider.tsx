@@ -51,7 +51,7 @@ const AdminDashboardSider = () => {
       icon: <SettingOutlined width={iconSize} height={iconSize} />,
     },
     {
-      label: "Permission Schemes",
+      label: "Permission Scheme",
       key: paths.admin.permissionManagement,
       icon: <LockOutlined width={iconSize} height={iconSize} />,
     },
