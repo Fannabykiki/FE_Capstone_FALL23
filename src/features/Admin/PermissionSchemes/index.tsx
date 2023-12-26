@@ -185,7 +185,7 @@ const PermissionSchemes = () => {
       <Row>
         <Col span={18}>
           <Typography.Title level={1} className="!m-0">
-            Permission Schemes
+            Permission Scheme
           </Typography.Title>
           <Typography.Text>
             Permission Schemes allow you to create a set of permissions and
